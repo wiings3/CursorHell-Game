@@ -45,22 +45,25 @@ var last_lane_by_side := [-10.0, -10.0, -10.0, -10.0]
 @onready var projectile_layer: Node2D = %Projectiles
 @onready var warning_layer: CursorHellWarningLayer = %WarningLayer
 
-@onready var ui_layer: CanvasLayer = %UI
-@onready var timer_label: Label = %TimerLabel
-@onready var score_label: Label = %ScoreLabel
-@onready var tutorial_label: Label = %TutorialLabel
-@onready var combo_label: Label = %ComboLabel
-@onready var message_scrim: ColorRect = %MessageScrim
-@onready var message_border: ColorRect = %MessageBorder
-@onready var message_panel: ColorRect = %MessagePanel
-@onready var message_title: Label = %MessageTitle
-@onready var message_subtitle: Label = %MessageSubtitle
-@onready var message_body: Label = %MessageBody
-@onready var hit_flash: ColorRect = %HitFlash
-@onready var hit_label: Label = %HitLabel
-@onready var graze_popup_label: Label = %GrazePopupLabel
-@onready var countdown_label: Label = %CountdownLabel
-@onready var countdown_subtitle: Label = %CountdownSubtitle
+# The complete HUD is now a reusable component scene. BaseLevel talks to the
+# component root instead of reaching through another scene's unique-node scope.
+@onready var hud: CursorHellLevelHUD = %LevelHUD
+@onready var ui_layer: CanvasLayer = hud
+@onready var timer_label: Label = hud.timer_label
+@onready var score_label: Label = hud.score_label
+@onready var tutorial_label: Label = hud.tutorial_label
+@onready var combo_label: Label = hud.combo_label
+@onready var message_scrim: ColorRect = hud.message_scrim
+@onready var message_border: ColorRect = hud.message_border
+@onready var message_panel: ColorRect = hud.message_panel
+@onready var message_title: Label = hud.message_title
+@onready var message_subtitle: Label = hud.message_subtitle
+@onready var message_body: Label = hud.message_body
+@onready var hit_flash: ColorRect = hud.hit_flash
+@onready var hit_label: Label = hud.hit_label
+@onready var graze_popup_label: Label = hud.graze_popup_label
+@onready var countdown_label: Label = hud.countdown_label
+@onready var countdown_subtitle: Label = hud.countdown_subtitle
 
 func _ready() -> void:
 	rng.randomize()
