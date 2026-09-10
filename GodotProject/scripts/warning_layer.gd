@@ -1,4 +1,6 @@
+@tool
 extends Node2D
+class_name CursorHellWarningLayer
 
 @export var arena: Rect2 = Rect2()
 var warnings: Array = []
