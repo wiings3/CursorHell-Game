@@ -44,8 +44,10 @@ func load_level(index: int) -> void:
 		push_error("Cursor Hell: loaded level does not extend CursorHellBaseLevel.")
 		return
 
+	current_level.has_next_level = index < LEVEL_SCENES.size() - 1
 	current_level.level_completed.connect(_on_level_completed)
 	current_level.level_failed.connect(_on_level_failed)
+	current_level.continue_requested.connect(_on_continue_requested)
 
 func reload_current_level() -> void:
 	if current_level_index >= 0:
@@ -59,14 +61,21 @@ func load_next_level() -> bool:
 	return true
 
 func _on_level_completed(level_number: int, final_score: int) -> void:
-	# This is deliberately only a hook for now. The level keeps showing its
-	# completion panel until we add an explicit continue/level-select flow.
 	last_completed_level = level_number
 	last_completed_score = final_score
 
 func _on_level_failed(_level_number: int, _final_score: int) -> void:
 	# Failure/retry presentation currently belongs to the level itself.
 	pass
+
+func _on_continue_requested() -> void:
+	var next_index := current_level_index + 1
+	if next_index >= LEVEL_SCENES.size():
+		return
+
+	# Defer the swap so the click used to continue cannot also trigger the intro
+	# screen of the newly loaded level in the same input event.
+	call_deferred("load_level", next_index)
 
 func _on_debug_console_opened() -> void:
 	# Freeze the entire level while the console is open. The console itself uses
