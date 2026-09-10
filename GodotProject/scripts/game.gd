@@ -1,6 +1,6 @@
 extends Node2D
 
-const ProjectileScript = preload("res://scripts/projectile.gd")
+const ProjectileScene: PackedScene = preload("res://Scenes/Components/Projectile.tscn")
 const SfxScript = preload("res://scripts/sfx.gd")
 
 const DESIGN_SIZE := Vector2(1600.0, 900.0)
@@ -38,10 +38,10 @@ var countdown_left := 0.0
 var countdown_step := -1
 var last_lane_by_side := [-10.0, -10.0, -10.0, -10.0]
 
-# World and UI nodes now live in Main.tscn. Gameplay code only controls them.
-@onready var player: CursorHellPlayer = %Player
-@onready var projectile_layer: Node2D = %Projectiles
-@onready var warning_layer: CursorHellWarningLayer = %WarningLayer
+# Reusable gameplay components are instanced by the level scene.
+@onready var player: CursorHellPlayer = $Player
+@onready var projectile_layer: Node2D = $Projectiles
+@onready var warning_layer: CursorHellWarningLayer = $WarningLayer
 
 @onready var ui_layer: CanvasLayer = %UI
 @onready var timer_label: Label = %TimerLabel
@@ -325,7 +325,11 @@ func _release_warning(warning: Dictionary) -> void:
 			spawn_position = Vector2(ARENA.position.x + ARENA.size.x * lane, ARENA.end.y + padding)
 			velocity = Vector2(0.0, -speed)
 
-	var bullet := ProjectileScript.new()
+	var bullet := ProjectileScene.instantiate() as CursorHellProjectile
+	if bullet == null:
+		push_error("Projectile.tscn root must use CursorHellProjectile.")
+		return
+
 	bullet.position = spawn_position
 	bullet.velocity = velocity
 	bullet.radius = radius
