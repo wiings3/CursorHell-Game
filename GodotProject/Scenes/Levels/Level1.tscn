@@ -1,12 +1,12 @@
 [gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/levels/level_01.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/Player.tscn" id="4_player"]
 
 [node name="Level1" type="Node2D"]
-script = ExtResource("1_game")
+script = ExtResource("1_level")
 
 [node name="ArenaBackground" parent="." instance=ExtResource("2_arena")]
 position = Vector2(390, 72)
