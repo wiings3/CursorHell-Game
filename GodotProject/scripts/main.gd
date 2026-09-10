@@ -3,7 +3,8 @@ class_name CursorHellMain
 
 const LEVEL_SCENES: Array[PackedScene] = [
 	preload("res://Scenes/Levels/Level1.tscn"),
-	preload("res://Scenes/Levels/Level2.tscn")
+	preload("res://Scenes/Levels/Level2.tscn"),
+	preload("res://Scenes/Levels/Level3.tscn")
 ]
 
 @export var starting_level_index: int = 0
