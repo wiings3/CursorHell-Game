@@ -4,11 +4,10 @@ class_name CursorHellLevelHUD
 
 @export_multiline var level_display_text: String = "LEVEL 1\nFIRST CONTACT"
 
-# Intro instructions and the action prompt deliberately use separate layout
-# regions. This keeps CLICK TO BEGIN in one fixed position regardless of how
-# many lines of tutorial copy a level uses.
-@export var intro_body_bottom: float = 274.0
-@export var standard_body_bottom: float = 403.14
+# These are layout constants rather than exported properties so they can never
+# deserialize as null while the @tool script is reloading in the editor.
+const INTRO_BODY_BOTTOM := 274.0
+const STANDARD_BODY_BOTTOM := 403.14
 
 @onready var timer_label: Label = %TimerLabel
 @onready var score_label: Label = %ScoreLabel
@@ -37,7 +36,7 @@ func _process(_delta: float) -> void:
 		if level_label != null:
 			level_label.text = level_display_text
 		if message_body != null:
-			message_body.offset_bottom = intro_body_bottom
+			message_body.offset_bottom = INTRO_BODY_BOTTOM
 		if message_prompt != null:
 			message_prompt.visible = true
 		return
@@ -57,12 +56,12 @@ func _sync_message_prompt() -> void:
 	message_prompt.visible = is_intro
 
 	if is_intro:
-		message_body.offset_bottom = intro_body_bottom
+		message_body.offset_bottom = INTRO_BODY_BOTTOM
 		message_prompt.text = "CLICK TO BEGIN"
 		_strip_intro_prompt_from_body()
 	else:
 		# Death, pause, and completion panels still use their existing body layout.
-		message_body.offset_bottom = standard_body_bottom
+		message_body.offset_bottom = STANDARD_BODY_BOTTOM
 
 func _strip_intro_prompt_from_body() -> void:
 	const INTRO_PROMPT_SUFFIX := "\n\nCLICK TO BEGIN"
