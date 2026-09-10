@@ -25,6 +25,7 @@ const LEVEL_SCENES: Array[PackedScene] = [
 var save_manager := CursorHellSaveManager.new()
 var current_level_index: int = -1
 var current_level: CursorHellBaseLevel
+var current_level_records_progress := true
 var last_completed_level: int = 0
 var last_completed_score: int = 0
 
@@ -80,6 +81,7 @@ func load_level(index: int, record_progress: bool = true) -> void:
 		current_level = null
 
 	current_level_index = index
+	current_level_records_progress = record_progress
 	var level_instance := LEVEL_SCENES[index].instantiate()
 	current_level = level_instance as CursorHellBaseLevel
 	if current_level == null:
@@ -100,24 +102,26 @@ func load_level(index: int, record_progress: bool = true) -> void:
 
 func reload_current_level() -> void:
 	if current_level_index >= 0:
-		load_level(current_level_index, false)
+		load_level(current_level_index, current_level_records_progress)
 
 func load_next_level() -> bool:
 	var next_index := current_level_index + 1
 	if next_index >= LEVEL_SCENES.size():
 		return false
-	load_level(next_index)
+	load_level(next_index, current_level_records_progress)
 	return true
 
 func _on_level_completed(level_number: int, final_score: int) -> void:
 	last_completed_level = level_number
 	last_completed_score = final_score
-	save_manager.record_level_result(level_number, final_score, true)
-	_refresh_main_menu_save_status()
+	if current_level_records_progress:
+		save_manager.record_level_result(level_number, final_score, true)
+		_refresh_main_menu_save_status()
 
 func _on_level_failed(level_number: int, final_score: int) -> void:
-	save_manager.record_level_result(level_number, final_score, false)
-	_refresh_main_menu_save_status()
+	if current_level_records_progress:
+		save_manager.record_level_result(level_number, final_score, false)
+		_refresh_main_menu_save_status()
 
 func _on_continue_requested() -> void:
 	var next_index := current_level_index + 1
@@ -125,8 +129,9 @@ func _on_continue_requested() -> void:
 		return
 
 	# Defer the swap so the click used to continue cannot also trigger the intro
-	# screen of the newly loaded level in the same input event.
-	call_deferred("load_level", next_index)
+	# screen of the newly loaded level in the same input event. Preserve whether
+	# this run is a real save-tracked run or a debug-only test sequence.
+	call_deferred("load_level", next_index, current_level_records_progress)
 
 func _show_main_menu() -> void:
 	get_tree().paused = false
@@ -136,6 +141,7 @@ func _show_main_menu() -> void:
 		current_level.queue_free()
 	current_level = null
 	current_level_index = -1
+	current_level_records_progress = true
 
 	_refresh_main_menu_save_status()
 	main_menu.show_menu()
@@ -185,7 +191,7 @@ func _on_pause_restart_requested() -> void:
 
 	get_tree().paused = false
 	pause_menu.hide_menu()
-	load_level(current_level_index, false)
+	load_level(current_level_index, current_level_records_progress)
 
 func _on_pause_main_menu_requested() -> void:
 	_show_main_menu()
@@ -276,7 +282,8 @@ func _debug_load_level(level_number: int) -> void:
 		debug_console.write_line("level%d is not registered. Type 'levels' to see available levels." % level_number)
 		return
 
-	# Debug jumping must not unlock or overwrite the player's real continuation.
+	# Debug jumping and any retries/continuations from that debug run must not
+	# unlock levels or overwrite the player's real continuation/high scores.
 	load_level(index, false)
 	debug_console.write_line("Loaded level%d." % level_number)
 	debug_console.close_console()
