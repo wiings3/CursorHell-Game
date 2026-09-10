@@ -1,6 +1,6 @@
 extends Node2D
 
-var arena: Rect2 = Rect2()
+@export var arena: Rect2 = Rect2()
 var warnings: Array = []
 
 func _process(_delta: float) -> void:
