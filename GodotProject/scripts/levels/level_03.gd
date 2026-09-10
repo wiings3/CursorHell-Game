@@ -1,7 +1,7 @@
 extends "res://scripts/levels/standard_dodge_level.gd"
 class_name CursorHellLevel03
 
-const ROUND_TIME := 60.0
+const ROUND_TIME := 45.0
 const COMPLETION_BONUS := 3500.0
 
 var sweep_attack_index := 0
@@ -24,11 +24,11 @@ func _get_completion_bonus() -> float:
 func _get_phase() -> int:
 	if elapsed < 6.0:
 		return 0
-	if elapsed < 22.0:
+	if elapsed < 17.0:
 		return 1
-	if elapsed < 38.0:
+	if elapsed < 28.0:
 		return 2
-	if elapsed < 52.0:
+	if elapsed < 38.0:
 		return 3
 	return 4
 
@@ -56,28 +56,28 @@ func _schedule_level_projectile(current_phase: int) -> void:
 	match current_phase:
 		1:
 			# Fixed speed and timing make each sweep feel like one authored attack.
-			_queue_sweep(0, true, 7, 185.0, 1.05, 0.20, 0.12, 0.88)
+			_queue_sweep(0, true, 7, 170.0, 1.05, 0.20, 0.12, 0.88)
 		2:
 			# Alternate left/right entry and reverse the lane order every attack.
 			var phase2_side: int = 0 if sweep_attack_index % 2 == 1 else 1
 			var phase2_ascending: bool = sweep_attack_index % 2 == 1
-			_queue_sweep(phase2_side, phase2_ascending, 7, 200.0, 0.98, 0.18, 0.10, 0.90)
+			_queue_sweep(phase2_side, phase2_ascending, 7, 180.0, 0.98, 0.18, 0.10, 0.90)
 		3:
 			# Cycle around all four edges. Horizontal entry edges sweep through Y;
 			# vertical entry edges sweep through X, teaching the same rule on both axes.
 			var phase3_sides: Array[int] = [0, 2, 1, 3]
 			var phase3_side: int = phase3_sides[(sweep_attack_index - 1) % phase3_sides.size()]
 			var phase3_ascending: bool = sweep_attack_index % 2 == 1
-			_queue_sweep(phase3_side, phase3_ascending, 8, 215.0, 0.92, 0.17, 0.08, 0.92)
+			_queue_sweep(phase3_side, phase3_ascending, 8, 190.0, 0.92, 0.17, 0.08, 0.92)
 		_:
 			# Finale: two perpendicular sweeps overlap briefly. Their internal rhythm
 			# stays fixed so the difficulty comes from reading two patterns at once.
 			if sweep_attack_index % 2 == 1:
-				_queue_sweep(0, true, 8, 230.0, 0.86, 0.17, 0.08, 0.92)
-				_queue_sweep(2, true, 8, 225.0, 1.38, 0.16, 0.08, 0.92)
+				_queue_sweep(0, true, 8, 202.0, 0.86, 0.17, 0.08, 0.92)
+				_queue_sweep(2, true, 8, 198.0, 1.38, 0.16, 0.08, 0.92)
 			else:
-				_queue_sweep(1, false, 8, 230.0, 0.86, 0.17, 0.08, 0.92)
-				_queue_sweep(3, false, 8, 225.0, 1.38, 0.16, 0.08, 0.92)
+				_queue_sweep(1, false, 8, 202.0, 0.86, 0.17, 0.08, 0.92)
+				_queue_sweep(3, false, 8, 198.0, 1.38, 0.16, 0.08, 0.92)
 
 func _queue_sweep(side: int, ascending: bool, count: int, speed: float, base_delay: float, step_delay: float, lane_min: float, lane_max: float) -> void:
 	# Every shot in a sweep shares the same speed, spacing and timing cadence.
@@ -129,7 +129,7 @@ func _get_intro_subtitle() -> String:
 	return "LEVEL 3 — PATTERN"
 
 func _get_intro_body() -> String:
-	return "Warnings now form moving patterns.\n\nWatch the order they appear along an edge.\nStay ahead of the sweep or slip behind it.\nSurvive for 60 seconds.\n\nCLICK TO BEGIN"
+	return "Warnings now form moving patterns.\n\nWatch the order they appear along an edge.\nStay ahead of the sweep or slip behind it.\nSurvive for 45 seconds.\n\nCLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
 	return "LEVEL 3 — THE SWEEP"
@@ -147,7 +147,7 @@ func _get_death_subtitle() -> String:
 	return "LEVEL 3 — CAUGHT IN THE SWEEP"
 
 func _get_death_body(reason: String, run_time: float, final_score: int, best_score: int) -> String:
-	return "%s\n\nTIME   %s / 1:00\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
+	return "%s\n\nTIME   %s / 0:45\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
 
 func _get_win_title() -> String:
 	return "LEVEL COMPLETE"
@@ -159,4 +159,4 @@ func _get_win_tutorial_text() -> String:
 	return "LEVEL COMPLETE\nTHE SWEEP CLEARED"
 
 func _get_win_body(final_score: int, best_score: int) -> String:
-	return "60 SECONDS SURVIVED\n\nCOMPLETION BONUS   +3,500\nFINAL SCORE        %s\nBEST SCORE         %s\n\nSweep direction and moving patterns learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
+	return "45 SECONDS SURVIVED\n\nCOMPLETION BONUS   +3,500\nFINAL SCORE        %s\nBEST SCORE         %s\n\nSweep direction and moving patterns learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
