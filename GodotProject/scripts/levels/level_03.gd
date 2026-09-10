@@ -59,16 +59,16 @@ func _schedule_level_projectile(current_phase: int) -> void:
 			_queue_sweep(0, true, 5, 138.0, 152.0, 1.12, 0.26, 0.16, 0.84)
 		2:
 			# Alternate left/right entry and reverse the lane order every attack.
-			var side := 0 if sweep_attack_index % 2 == 1 else 1
-			var ascending := sweep_attack_index % 2 == 1
-			_queue_sweep(side, ascending, 5, 146.0, 164.0, 1.04, 0.23, 0.14, 0.86)
+			var phase2_side := 0 if sweep_attack_index % 2 == 1 else 1
+			var phase2_ascending := sweep_attack_index % 2 == 1
+			_queue_sweep(phase2_side, phase2_ascending, 5, 146.0, 164.0, 1.04, 0.23, 0.14, 0.86)
 		3:
 			# Cycle around all four edges. Horizontal entry edges sweep through Y;
 			# vertical entry edges sweep through X, teaching the same rule on both axes.
-			var sides := [0, 2, 1, 3]
-			var side := sides[(sweep_attack_index - 1) % sides.size()]
-			var ascending := sweep_attack_index % 2 == 1
-			_queue_sweep(side, ascending, 6, 155.0, 174.0, 0.98, 0.19, 0.13, 0.87)
+			var phase3_sides := [0, 2, 1, 3]
+			var phase3_side := phase3_sides[(sweep_attack_index - 1) % phase3_sides.size()]
+			var phase3_ascending := sweep_attack_index % 2 == 1
+			_queue_sweep(phase3_side, phase3_ascending, 6, 155.0, 174.0, 0.98, 0.19, 0.13, 0.87)
 		_:
 			# Finale: two perpendicular sweeps overlap briefly. They are offset enough
 			# that the player can read both patterns instead of facing a solid wall.
