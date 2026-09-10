@@ -1,7 +1,7 @@
 extends Node2D
 
-var radius: float = 10.0
-var visual_radius: float = 13.0
+@export var radius: float = 10.0
+@export var visual_radius: float = 13.0
 var pulse: float = 0.0
 var danger_flash: float = 0.0
 
