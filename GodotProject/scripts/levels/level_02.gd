@@ -1,4 +1,4 @@
-extends "res://scripts/levels/base_level.gd"
+extends "res://scripts/levels/standard_dodge_level.gd"
 class_name CursorHellLevel02
 
 const ROUND_TIME := 45.0
