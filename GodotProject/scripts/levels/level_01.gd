@@ -4,6 +4,14 @@ class_name CursorHellLevel01
 const ROUND_TIME := 45.0
 const COMPLETION_BONUS := 2500.0
 
+var last_attack_side := -1
+var same_side_streak := 0
+
+func _reset_round(start_now: bool) -> void:
+	last_attack_side = -1
+	same_side_streak = 0
+	super._reset_round(start_now)
+
 func _get_level_number() -> int:
 	return 1
 
@@ -32,13 +40,13 @@ func _update_level_tutorial() -> void:
 			else:
 				tutorial_label.text = "GOOD\nMovement is immediate. Stay inside the arena."
 		1:
-			tutorial_label.text = "READ THE EDGE\nOrange markers show where a projectile will enter."
+			tutorial_label.text = "READ THE EDGE\nOrange markers show where danger enters. Keep moving."
 		2:
 			tutorial_label.text = "CHECK EVERY SIDE\nWarnings can now appear on all four edges."
 		3:
 			tutorial_label.text = "GRAZE = BONUS\nPass close without touching to build score."
 		_:
-			tutorial_label.text = "FINAL 5 SECONDS\nSmall movements. Stay calm."
+			tutorial_label.text = "FINAL 5 SECONDS\nStay mobile. Make small, deliberate moves."
 
 func _schedule_level_projectile(current_phase: int) -> void:
 	var side := 0
@@ -69,6 +77,20 @@ func _schedule_level_projectile(current_phase: int) -> void:
 		speed = rng.randf_range(165.0, 195.0)
 		radius = 7.5
 		delay = 0.85
+
+	# Avoid long streaks from one edge. Level 1 should feel random, but never so
+	# random that the tutorial accidentally drills the same side over and over.
+	if side == last_attack_side and same_side_streak >= 2:
+		if current_phase == 1:
+			side = 1 - side
+		else:
+			side = (side + rng.randi_range(1, 3)) % 4
+
+	if side == last_attack_side:
+		same_side_streak += 1
+	else:
+		last_attack_side = side
+		same_side_streak = 1
 
 	# Keep Level 1 readable: avoid visually stacked near-identical lanes on the
 	# same edge without making the random pattern predictable.
