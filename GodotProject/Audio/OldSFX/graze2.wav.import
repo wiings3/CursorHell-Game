@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://dsf1ajw1vxfce"
-path="res://.godot/imported/graze1.wav-18a3307625bc94db737eab4d737e9b50.sample"
+uid="uid://o4q44ptgqrs6"
+path="res://.godot/imported/graze2.wav-8e7b019cf93a03567f3bf124f1de1ad3.sample"
 
 [deps]
 
-source_file="res://Audio/SFX/graze1.wav"
-dest_files=["res://.godot/imported/graze1.wav-18a3307625bc94db737eab4d737e9b50.sample"]
+source_file="res://Audio/OldSFX/graze2.wav"
+dest_files=["res://.godot/imported/graze2.wav-8e7b019cf93a03567f3bf124f1de1ad3.sample"]
 
 [params]
 
