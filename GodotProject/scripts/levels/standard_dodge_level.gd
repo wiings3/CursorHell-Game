@@ -5,6 +5,8 @@ class_name CursorHellStandardDodgeLevel
 # staying within the same small area for too long arms a targeted pressure shot.
 # The shot is deferred until the level-authored danger has fully cleared, so a
 # player is never punished for correctly holding a safe lane or opening.
+# If dense authored danger prevents that shot from safely releasing for too long,
+# survival time and passive score stop advancing until the player relocates.
 const CAMP_HOLD_TIME := 1.0
 const CAMP_ESCAPE_DISTANCE := 65.0
 const CAMP_PRESSURE_COOLDOWN := 2.4
@@ -13,6 +15,7 @@ const CAMP_PRESSURE_RADIUS := 7.0
 const CAMP_PRESSURE_SPEED_MIN := 165.0
 const CAMP_PRESSURE_SPEED_MAX := 185.0
 const CAMP_LULL_GRACE_TIME := 0.5
+const CAMP_PROGRESS_STALL_DELAY := 1.75
 
 var camp_hold_time := 0.0
 var camp_pressure_cooldown := 0.0
@@ -20,11 +23,22 @@ var camp_anchor_position := Vector2.ZERO
 var next_camp_shot_horizontal := true
 var camp_pressure_ready := false
 var camp_lull_clear_time := 0.0
+var camp_pressure_wait_time := 0.0
+var camp_progress_blocked := false
 
 func _physics_process(delta: float) -> void:
-	# Preserve every existing BaseLevel system first: timing, spawning, warnings,
-	# collision, scoring, death and win behavior all remain unchanged.
+	# BaseLevel still owns the trusted runtime systems. When anti-camp fallback is
+	# already active, remember that state so we can remove only this frame's normal
+	# survival-time/passive-score gain after BaseLevel has processed the hazards.
+	# Projectile movement, warning timing, collision and graze bonuses remain live.
+	var progress_was_blocked := camp_progress_blocked
 	super._physics_process(delta)
+
+	if progress_was_blocked and state == "playing":
+		elapsed = maxf(0.0, elapsed - delta)
+		time_left = maxf(0.0, _get_round_time() - elapsed)
+		score = maxf(0.0, score - delta * 10.0)
+		_update_ui()
 
 	if state != "playing":
 		_reset_camp_tracking()
@@ -44,6 +58,8 @@ func _reset_round(start_now: bool) -> void:
 	next_camp_shot_horizontal = true
 	camp_pressure_ready = false
 	camp_lull_clear_time = 0.0
+	camp_pressure_wait_time = 0.0
+	camp_progress_blocked = false
 	super._reset_round(start_now)
 	camp_anchor_position = player.position
 
@@ -51,6 +67,8 @@ func _reset_camp_tracking() -> void:
 	camp_hold_time = 0.0
 	camp_pressure_ready = false
 	camp_lull_clear_time = 0.0
+	camp_pressure_wait_time = 0.0
+	camp_progress_blocked = false
 	camp_anchor_position = player.position
 
 func _update_camp_pressure(delta: float) -> void:
@@ -63,18 +81,22 @@ func _update_camp_pressure(delta: float) -> void:
 		camp_hold_time = 0.0
 		camp_pressure_ready = false
 		camp_lull_clear_time = 0.0
+		camp_pressure_wait_time = 0.0
+		camp_progress_blocked = false
 		camp_anchor_position = player.position
 		return
 
 	# The timer is tied to an AREA, not frame-to-frame motion. Wiggling a few
 	# pixels, drawing tiny circles, or otherwise moving inside this radius does
 	# not count as escaping the camp position. A real relocation also clears any
-	# pressure that was armed during a busy attack.
+	# armed pressure and immediately resumes survival progress.
 	if player.position.distance_to(camp_anchor_position) > CAMP_ESCAPE_DISTANCE:
 		camp_anchor_position = player.position
 		camp_hold_time = 0.0
 		camp_pressure_ready = false
 		camp_lull_clear_time = 0.0
+		camp_pressure_wait_time = 0.0
+		camp_progress_blocked = false
 		return
 
 	# Stationary time can build while the authored attack is happening, but it
@@ -84,21 +106,25 @@ func _update_camp_pressure(delta: float) -> void:
 		if camp_hold_time >= CAMP_HOLD_TIME:
 			camp_hold_time = CAMP_HOLD_TIME
 			camp_pressure_ready = true
+			camp_pressure_wait_time = 0.0
 
 	if not camp_pressure_ready:
 		return
 
 	# Never release anti-camp pressure while a warning is visible or a projectile
-	# is still crossing the arena. This makes authored safe lanes genuinely safe.
-	# If high-pressure patterns overlap continuously, anti-camp simply waits; the
-	# level itself is already doing the job of forcing the player to react.
+	# is still crossing the arena. This keeps authored safe lanes genuinely safe.
+	# However, continuously dense levels can no longer suppress anti-camp forever:
+	# after a short additional wait, survival time/passive score are suspended.
 	if _has_active_level_danger():
 		camp_lull_clear_time = 0.0
+		camp_pressure_wait_time += delta
+		if camp_pressure_wait_time >= CAMP_PROGRESS_STALL_DELAY:
+			camp_progress_blocked = true
 		return
 
-	# Require a short uninterrupted lull after all danger clears. This prevents a
-	# technically-safe-but-annoying pressure warning from appearing one frame after
-	# a wall or volley leaves the arena.
+	# Require a short uninterrupted lull after all danger clears. If progress was
+	# already stalled, it remains stalled through this grace window and resumes as
+	# soon as the pressure shot is safely released (or the player relocates).
 	camp_lull_clear_time += delta
 	if camp_lull_clear_time < CAMP_LULL_GRACE_TIME:
 		return
@@ -107,6 +133,8 @@ func _update_camp_pressure(delta: float) -> void:
 	camp_hold_time = 0.0
 	camp_pressure_ready = false
 	camp_lull_clear_time = 0.0
+	camp_pressure_wait_time = 0.0
+	camp_progress_blocked = false
 	camp_pressure_cooldown = CAMP_PRESSURE_COOLDOWN
 	camp_anchor_position = player.position
 	next_camp_shot_horizontal = not next_camp_shot_horizontal
