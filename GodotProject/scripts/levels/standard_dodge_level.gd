@@ -69,6 +69,14 @@ func _update_camp_pressure(delta: float) -> void:
 	if camp_hold_time < CAMP_HOLD_TIME:
 		return
 
+	# Do not stack the anti-camp warning on top of a level-authored warning.
+	# Once the player has earned a pressure shot, hold it at the threshold until
+	# the current telegraph clears. This keeps the punishment readable without
+	# letting the player escape it by waiting for busy attack patterns.
+	if not warnings.is_empty():
+		camp_hold_time = CAMP_HOLD_TIME
+		return
+
 	_queue_camp_pressure_shot()
 	camp_hold_time = 0.0
 	camp_pressure_cooldown = CAMP_PRESSURE_COOLDOWN
