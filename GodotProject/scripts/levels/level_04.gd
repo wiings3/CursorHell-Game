@@ -1,7 +1,7 @@
 extends "res://scripts/levels/standard_dodge_level.gd"
 class_name CursorHellLevel04
 
-const ROUND_TIME := 45.0
+const ROUND_TIME := 60.0
 const COMPLETION_BONUS := 4000.0
 const WALL_SLOT_COUNT := 21
 const WALL_LANE_MIN := 0.05
@@ -29,11 +29,11 @@ func _get_completion_bonus() -> float:
 func _get_phase() -> int:
 	if elapsed < 6.0:
 		return 0
-	if elapsed < 17.0:
+	if elapsed < 22.0:
 		return 1
-	if elapsed < 28.0:
-		return 2
 	if elapsed < 38.0:
+		return 2
+	if elapsed < 52.0:
 		return 3
 	return 4
 
@@ -61,33 +61,32 @@ func _schedule_level_projectile(current_phase: int) -> void:
 
 	match current_phase:
 		1:
-			# A large, obvious opening from one consistent edge teaches the rule.
+			# The first opening is still readable, but no longer wide enough to solve
+			# the wall with a vague move toward the middle of the gap.
 			var phase1_gap: float = _choose_gap_lane(0.18)
-			_queue_gap_wall(0, phase1_gap, 0.105, 175.0, 1.25)
+			_queue_gap_wall(0, phase1_gap, 0.075, 205.0, 1.20)
 		2:
-			# Alternate left and right while shrinking the opening enough to demand a
-			# deliberate reposition rather than simply hovering near center.
+			# Alternate left and right with a tighter opening and faster travel time.
 			var phase2_side: int = 0 if gap_attack_index % 2 == 1 else 1
 			var phase2_gap: float = _choose_gap_lane(0.22)
-			_queue_gap_wall(phase2_side, phase2_gap, 0.085, 185.0, 1.12)
+			_queue_gap_wall(phase2_side, phase2_gap, 0.060, 220.0, 1.08)
 		3:
-			# Carry the same safe-gap read around all four edges. Dense wall spacing is
-			# intentional: outside the authored opening, adjacent shots are too close
-			# for the player hitbox to safely thread between them.
+			# Carry the same safe-gap read around all four edges. Outside the authored
+			# opening, adjacent shots are too close for the player hitbox to thread.
 			var phase3_sides: Array[int] = [0, 2, 1, 3]
 			var phase3_side: int = phase3_sides[(gap_attack_index - 1) % phase3_sides.size()]
 			var phase3_gap: float = _choose_gap_lane(0.22)
-			_queue_gap_wall(phase3_side, phase3_gap, 0.070, 195.0, 1.00)
+			_queue_gap_wall(phase3_side, phase3_gap, 0.050, 235.0, 0.96)
 		_:
-			# Finale: two perpendicular walls are telegraphed together but arrive in
-			# sequence. Their gaps define a temporary safe intersection the player can
-			# identify before either wall fires.
+			# Finale: two fast perpendicular walls are telegraphed together. The gaps
+			# are deliberately narrow, so reaching their intersection requires a real
+			# commitment instead of simply drifting toward the general open area.
 			var horizontal_side: int = 0 if gap_attack_index % 2 == 1 else 1
 			var vertical_side: int = 2 if gap_attack_index % 2 == 1 else 3
 			var horizontal_gap: float = _choose_gap_lane(0.24)
 			var vertical_gap: float = rng.randf_range(0.18, 0.82)
-			_queue_gap_wall(horizontal_side, horizontal_gap, 0.060, 205.0, 0.95)
-			_queue_gap_wall(vertical_side, vertical_gap, 0.060, 200.0, 1.72)
+			_queue_gap_wall(horizontal_side, horizontal_gap, 0.045, 250.0, 0.90)
+			_queue_gap_wall(vertical_side, vertical_gap, 0.045, 245.0, 1.62)
 
 func _choose_gap_lane(min_separation: float) -> float:
 	var candidate: float = rng.randf_range(0.18, 0.82)
@@ -138,7 +137,7 @@ func _get_intro_subtitle() -> String:
 	return "LEVEL 4 — COMMITMENT"
 
 func _get_intro_body() -> String:
-	return "Projectile walls now cover almost the entire arena.\n\nEvery wall has one safe opening.\nFind it early and commit to the move.\nSurvive for 45 seconds.\n\nCLICK TO BEGIN"
+	return "Projectile walls now cover almost the entire arena.\n\nEvery wall has one safe opening.\nFind it early and commit to the move.\nSurvive for 60 seconds.\n\nCLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
 	return "LEVEL 4 — THE GAP"
@@ -156,7 +155,7 @@ func _get_death_subtitle() -> String:
 	return "LEVEL 4 — NO OPENING"
 
 func _get_death_body(reason: String, run_time: float, final_score: int, best_score: int) -> String:
-	return "%s\n\nTIME   %s / 0:45\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
+	return "%s\n\nTIME   %s / 1:00\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
 
 func _get_win_title() -> String:
 	return "LEVEL COMPLETE"
@@ -168,4 +167,4 @@ func _get_win_tutorial_text() -> String:
 	return "LEVEL COMPLETE\nTHE GAP CLEARED"
 
 func _get_win_body(final_score: int, best_score: int) -> String:
-	return "45 SECONDS SURVIVED\n\nCOMPLETION BONUS   +4,000\nFINAL SCORE        %s\nBEST SCORE         %s\n\nSafe-space reading and committed movement learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
+	return "60 SECONDS SURVIVED\n\nCOMPLETION BONUS   +4,000\nFINAL SCORE        %s\nBEST SCORE         %s\n\nSafe-space reading and committed movement learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
