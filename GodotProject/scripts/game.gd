@@ -1,9 +1,6 @@
 extends Node2D
 
-const PlayerScript = preload("res://scripts/player.gd")
 const ProjectileScript = preload("res://scripts/projectile.gd")
-const ArenaBackgroundScript = preload("res://scripts/arena_background.gd")
-const WarningLayerScript = preload("res://scripts/warning_layer.gd")
 const SfxScript = preload("res://scripts/sfx.gd")
 
 const DESIGN_SIZE := Vector2(1600.0, 900.0)
@@ -15,9 +12,6 @@ const DEATH_FEEDBACK_TIME := 0.42
 const COUNTDOWN_TIME := 3.90
 
 var rng := RandomNumberGenerator.new()
-var player: Node2D
-var projectile_layer: Node2D
-var warning_layer: Node2D
 var warnings: Array = []
 
 var state := "intro"
@@ -44,171 +38,34 @@ var countdown_left := 0.0
 var countdown_step := -1
 var last_lane_by_side := [-10.0, -10.0, -10.0, -10.0]
 
-var ui_layer: CanvasLayer
-var timer_label: Label
-var score_label: Label
-var tutorial_label: Label
-var combo_label: Label
-var message_scrim: ColorRect
-var message_border: ColorRect
-var message_panel: ColorRect
-var message_title: Label
-var message_subtitle: Label
-var message_body: Label
-var hit_flash: ColorRect
-var hit_label: Label
-var graze_popup_label: Label
-var countdown_label: Label
-var countdown_subtitle: Label
+# World and UI nodes now live in Main.tscn. Gameplay code only controls them.
+@onready var player: Node2D = %Player
+@onready var projectile_layer: Node2D = %Projectiles
+@onready var warning_layer: Node2D = %WarningLayer
+
+@onready var ui_layer: CanvasLayer = %UI
+@onready var timer_label: Label = %TimerLabel
+@onready var score_label: Label = %ScoreLabel
+@onready var tutorial_label: Label = %TutorialLabel
+@onready var combo_label: Label = %ComboLabel
+@onready var message_scrim: ColorRect = %MessageScrim
+@onready var message_border: ColorRect = %MessageBorder
+@onready var message_panel: ColorRect = %MessagePanel
+@onready var message_title: Label = %MessageTitle
+@onready var message_subtitle: Label = %MessageSubtitle
+@onready var message_body: Label = %MessageBody
+@onready var hit_flash: ColorRect = %HitFlash
+@onready var hit_label: Label = %HitLabel
+@onready var graze_popup_label: Label = %GrazePopupLabel
+@onready var countdown_label: Label = %CountdownLabel
+@onready var countdown_subtitle: Label = %CountdownSubtitle
 
 func _ready() -> void:
 	rng.randomize()
-	_build_world()
-	_build_ui()
+	warning_layer.warnings = warnings
 	get_viewport().size_changed.connect(_apply_viewport_layout)
 	_apply_viewport_layout()
 	_reset_round(false)
-
-func _build_world() -> void:
-	var background := ArenaBackgroundScript.new()
-	background.arena = ARENA
-	add_child(background)
-
-	warning_layer = WarningLayerScript.new()
-	warning_layer.arena = ARENA
-	warning_layer.warnings = warnings
-	add_child(warning_layer)
-
-	projectile_layer = Node2D.new()
-	projectile_layer.name = "Projectiles"
-	add_child(projectile_layer)
-
-	player = PlayerScript.new()
-	player.radius = PLAYER_RADIUS
-	add_child(player)
-	_reset_player_position()
-
-func _make_label(text_value: String, font_size: int, pos: Vector2, control_size: Vector2, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
-	var label := Label.new()
-	label.text = text_value
-	label.position = pos
-	label.size = control_size
-	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", Color(0.98, 0.97, 0.93))
-	label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.85))
-	label.add_theme_constant_override("shadow_offset_x", 3)
-	label.add_theme_constant_override("shadow_offset_y", 3)
-	label.horizontal_alignment = align
-	return label
-
-func _build_ui() -> void:
-	ui_layer = CanvasLayer.new()
-	add_child(ui_layer)
-
-	ui_layer.add_child(_make_label("TIME REMAINING", 25, Vector2(24, 18), Vector2(340, 40)))
-
-	var timer_box := ColorRect.new()
-	timer_box.position = Vector2(26, 57)
-	timer_box.size = Vector2(278, 86)
-	timer_box.color = Color(0.96, 0.95, 0.91, 1.0)
-	timer_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui_layer.add_child(timer_box)
-
-	timer_label = _make_label("0:45", 52, Vector2(26, 61), Vector2(278, 76), HORIZONTAL_ALIGNMENT_CENTER)
-	timer_label.add_theme_color_override("font_color", Color(0.035, 0.03, 0.035))
-	timer_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
-	ui_layer.add_child(timer_label)
-
-	ui_layer.add_child(_make_label("SCORE", 25, Vector2(1260, 18), Vector2(310, 40), HORIZONTAL_ALIGNMENT_CENTER))
-
-	var score_box := ColorRect.new()
-	score_box.position = Vector2(1310, 57)
-	score_box.size = Vector2(264, 86)
-	score_box.color = Color(0.96, 0.95, 0.91, 1.0)
-	score_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui_layer.add_child(score_box)
-
-	score_label = _make_label("0", 46, Vector2(1310, 64), Vector2(264, 70), HORIZONTAL_ALIGNMENT_CENTER)
-	score_label.add_theme_color_override("font_color", Color(0.035, 0.03, 0.035))
-	score_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
-	score_label.pivot_offset = score_label.size * 0.5
-	ui_layer.add_child(score_label)
-
-	var level_label := _make_label("LEVEL 1\nFIRST CONTACT", 40, Vector2(22, 400), Vector2(330, 160), HORIZONTAL_ALIGNMENT_CENTER)
-	level_label.rotation = -0.22
-	ui_layer.add_child(level_label)
-
-	tutorial_label = _make_label("", 22, Vector2(440, 88), Vector2(720, 82), HORIZONTAL_ALIGNMENT_CENTER)
-	tutorial_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	ui_layer.add_child(tutorial_label)
-
-	combo_label = _make_label("", 27, Vector2(1180, 700), Vector2(380, 80), HORIZONTAL_ALIGNMENT_CENTER)
-	combo_label.add_theme_color_override("font_color", Color(1.0, 0.67, 0.18))
-	ui_layer.add_child(combo_label)
-
-	hit_flash = ColorRect.new()
-	hit_flash.position = ARENA.position
-	hit_flash.size = ARENA.size
-	hit_flash.color = Color(1.0, 0.12, 0.06, 0.0)
-	hit_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui_layer.add_child(hit_flash)
-
-	hit_label = _make_label("IMPACT", 30, Vector2.ZERO, Vector2(160, 44), HORIZONTAL_ALIGNMENT_CENTER)
-	hit_label.add_theme_color_override("font_color", Color(1.0, 0.34, 0.18))
-	hit_label.visible = false
-	ui_layer.add_child(hit_label)
-
-	graze_popup_label = _make_label("", 20, Vector2.ZERO, Vector2(220, 40), HORIZONTAL_ALIGNMENT_CENTER)
-	graze_popup_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.28))
-	graze_popup_label.visible = false
-	ui_layer.add_child(graze_popup_label)
-
-	countdown_label = _make_label("", 72, Vector2(590, 342), Vector2(420, 104), HORIZONTAL_ALIGNMENT_CENTER)
-	countdown_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	countdown_label.visible = false
-	ui_layer.add_child(countdown_label)
-
-	countdown_subtitle = _make_label("", 20, Vector2(590, 438), Vector2(420, 42), HORIZONTAL_ALIGNMENT_CENTER)
-	countdown_subtitle.add_theme_color_override("font_color", Color(1.0, 0.73, 0.30))
-	countdown_subtitle.visible = false
-	ui_layer.add_child(countdown_subtitle)
-
-	var hint_label := _make_label("MOUSE = MOVE    •    ESC = RELEASE MOUSE    •    R = RESTART", 17, Vector2(390, 842), Vector2(820, 32), HORIZONTAL_ALIGNMENT_CENTER)
-	hint_label.add_theme_color_override("font_color", Color(0.74, 0.70, 0.68))
-	ui_layer.add_child(hint_label)
-
-	message_scrim = ColorRect.new()
-	message_scrim.position = ARENA.position
-	message_scrim.size = ARENA.size
-	message_scrim.color = Color(0.0, 0.0, 0.0, 0.36)
-	message_scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui_layer.add_child(message_scrim)
-
-	message_border = ColorRect.new()
-	message_border.position = Vector2(501, 256)
-	message_border.size = Vector2(598, 358)
-	message_border.color = Color(1.0, 0.57, 0.13, 0.58)
-	message_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui_layer.add_child(message_border)
-
-	message_panel = ColorRect.new()
-	message_panel.position = Vector2(505, 260)
-	message_panel.size = Vector2(590, 350)
-	message_panel.color = Color(0.025, 0.020, 0.025, 0.975)
-	ui_layer.add_child(message_panel)
-
-	message_title = _make_label("FIRST CONTACT", 42, Vector2(20, 24), Vector2(550, 60), HORIZONTAL_ALIGNMENT_CENTER)
-	message_panel.add_child(message_title)
-
-	message_subtitle = _make_label("LEVEL 1", 18, Vector2(0, 84), Vector2(590, 30), HORIZONTAL_ALIGNMENT_CENTER)
-	message_subtitle.add_theme_color_override("font_color", Color(1.0, 0.70, 0.25))
-	message_panel.add_child(message_subtitle)
-
-	message_body = _make_label("", 18, Vector2(42, 112), Vector2(506, 220), HORIZONTAL_ALIGNMENT_CENTER)
-	message_body.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	message_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	message_panel.add_child(message_body)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
