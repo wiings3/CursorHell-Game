@@ -3,6 +3,7 @@ class_name CursorHellLevel06
 
 const ROUND_TIME := 60.0
 const COMPLETION_BONUS := 5000.0
+const FAST_PROJECTILE_RADIUS := 7.0
 
 var flood_attack_index := 0
 var flood_phase := -1
@@ -81,8 +82,8 @@ func _queue_intro_blockers() -> void:
 
 func _queue_lingering_pressure() -> void:
 	# By 12 seconds the player is already maintaining several persistent threats.
-	# A fast shot occasionally cuts across the space between them so this phase does
-	# not become a calm waiting room before the real level starts.
+	# Fast triplets now arrive every attack so the slow blockers immediately start
+	# restricting where the player can safely dodge the smaller pressure layer.
 	var primary_side: int = _next_slow_side()
 	var secondary_side: int = (primary_side + 1 + (flood_attack_index % 2)) % 4
 	var lane_a: float = rng.randf_range(0.16, 0.84)
@@ -93,13 +94,16 @@ func _queue_lingering_pressure() -> void:
 	_queue_slow_projectile(secondary_side, lane_b, 112.0, 18.0, 1.14)
 	_queue_slow_projectile((primary_side + 2) % 4, lane_c, 112.0, 17.0, 1.34)
 
+	var fast_side: int = (secondary_side + 2) % 4
+	_queue_fast_triplet(fast_side, rng.randf_range(0.18, 0.82), 265.0, 0.74, 0.060)
+
 	if flood_attack_index % 2 == 0:
-		var fast_side: int = (secondary_side + 2) % 4
-		queue_projectile_warning(fast_side, rng.randf_range(0.16, 0.84), 260.0, 8.0, 0.76)
+		_queue_fast_triplet((fast_side + 1) % 4, rng.randf_range(0.18, 0.82), 265.0, 1.12, 0.055)
 
 func _queue_mixed_attack() -> void:
 	# From 22 seconds onward, slow blockers are the terrain and fast shots are the
-	# immediate dodge problem. Every attack adds at least two persistent hazards.
+	# immediate dodge problem. Five-shot fans are backed by a perpendicular triplet,
+	# making each safe pocket temporary without changing the level's core identity.
 	var blocker_side: int = _next_slow_side()
 	var blocker_lane_a: float = rng.randf_range(0.16, 0.44)
 	var blocker_lane_b: float = rng.randf_range(0.56, 0.84)
@@ -108,15 +112,14 @@ func _queue_mixed_attack() -> void:
 
 	var fast_side: int = (blocker_side + 2) % 4
 	var fast_center: float = rng.randf_range(0.22, 0.78)
-	_queue_fast_fan(fast_side, fast_center, 280.0, 0.72, 0.085)
+	_queue_fast_fan(fast_side, fast_center, 280.0, 0.72, 0.070)
 
-	if flood_attack_index % 2 == 0:
-		var second_fast_side: int = (fast_side + 1) % 4
-		queue_projectile_warning(second_fast_side, rng.randf_range(0.14, 0.86), 280.0, 8.0, 1.12)
+	var second_fast_side: int = (fast_side + 1) % 4
+	_queue_fast_triplet(second_fast_side, rng.randf_range(0.16, 0.84), 280.0, 1.08, 0.060)
 
 func _queue_pressure_attack() -> void:
 	# Hard state: several large persistent blockers are already crossing while each
-	# new beat adds more terrain and a compact fast pattern through the remaining room.
+	# new beat fills more of the remaining lanes with small fast projectile clusters.
 	var pattern: int = (flood_attack_index - 1) % 4
 
 	if pattern == 0:
@@ -129,47 +132,50 @@ func _queue_pressure_attack() -> void:
 		_queue_slow_projectile(side, rng.randf_range(0.14, 0.36), 120.0, 20.0, 0.82)
 		_queue_slow_projectile(side, rng.randf_range(0.42, 0.62), 120.0, 18.0, 1.00)
 		_queue_slow_projectile(side, rng.randf_range(0.66, 0.86), 120.0, 20.0, 1.18)
-		_queue_fast_fan((side + 2) % 4, rng.randf_range(0.24, 0.76), 300.0, 0.64, 0.080)
+		_queue_fast_fan((side + 2) % 4, rng.randf_range(0.24, 0.76), 300.0, 0.64, 0.070)
+		_queue_fast_triplet((side + 1) % 4, rng.randf_range(0.18, 0.82), 300.0, 1.02, 0.055)
 	elif pattern == 2:
 		_queue_cross_blockers(120.0, 20.0, 0.80)
 		_queue_cross_blockers(122.0, 18.0, 1.16)
 		var fast_side: int = rng.randi_range(0, 3)
-		_queue_fast_fan(fast_side, rng.randf_range(0.22, 0.78), 300.0, 0.62, 0.075)
+		_queue_fast_fan(fast_side, rng.randf_range(0.22, 0.78), 300.0, 0.62, 0.068)
+		_queue_fast_triplet((fast_side + 1) % 4, rng.randf_range(0.18, 0.82), 300.0, 0.98, 0.055)
 	else:
 		var blocker_side: int = _next_slow_side()
 		_queue_slow_projectile(blocker_side, rng.randf_range(0.18, 0.82), 120.0, 21.0, 0.80)
 		_queue_slow_projectile((blocker_side + 1) % 4, rng.randf_range(0.18, 0.82), 120.0, 19.0, 1.04)
 		_queue_fast_crossfire(300.0, 0.62, 0.20)
-		queue_projectile_warning((blocker_side + 2) % 4, rng.randf_range(0.12, 0.88), 300.0, 8.0, 1.02)
+		_queue_fast_triplet((blocker_side + 2) % 4, rng.randf_range(0.16, 0.84), 300.0, 1.00, 0.055)
 
 func _queue_final_attack() -> void:
-	# Final phase escalates the already-established flood. Fast attacks jump once
-	# to 315 px/s while blockers become slightly larger and more numerous.
+	# Final phase escalates the already-established flood. Fast attacks stay at the
+	# existing 315 px/s jump, but their quantity rises sharply so movement corridors
+	# are carved by the interaction between persistent blockers and fast clusters.
 	var pattern: int = (flood_attack_index - 1) % 3
 
 	if pattern == 0:
 		_queue_cross_blockers(124.0, 22.0, 0.76)
 		_queue_slow_projectile(_next_slow_side(), rng.randf_range(0.18, 0.82), 124.0, 20.0, 1.00)
 		_queue_fast_crossfire(315.0, 0.56, 0.18)
-		_queue_fast_fan(rng.randi_range(0, 3), rng.randf_range(0.22, 0.78), 315.0, 1.00, 0.070)
+		_queue_fast_fan(rng.randi_range(0, 3), rng.randf_range(0.22, 0.78), 315.0, 0.96, 0.062)
 	elif pattern == 1:
 		var side_a: int = _next_slow_side()
 		var side_b: int = (side_a + 1) % 4
 		_queue_slow_projectile(side_a, rng.randf_range(0.16, 0.38), 125.0, 22.0, 0.74)
 		_queue_slow_projectile(side_a, rng.randf_range(0.62, 0.84), 125.0, 22.0, 0.98)
 		_queue_slow_projectile(side_b, rng.randf_range(0.24, 0.76), 125.0, 20.0, 1.18)
-		_queue_fast_fan((side_a + 2) % 4, rng.randf_range(0.20, 0.80), 315.0, 0.54, 0.070)
-		queue_projectile_warning((side_b + 2) % 4, rng.randf_range(0.12, 0.88), 315.0, 8.0, 0.92)
+		_queue_fast_fan((side_a + 2) % 4, rng.randf_range(0.20, 0.80), 315.0, 0.54, 0.062)
+		_queue_fast_triplet((side_b + 2) % 4, rng.randf_range(0.16, 0.84), 315.0, 0.90, 0.052)
 	else:
-		# Four staggered blockers briefly carve the arena into moving pockets while
-		# two compact fast patterns force the player to keep abandoning those pockets.
+		# Four staggered blockers carve the arena into moving pockets while two dense
+		# fast patterns force the player to keep abandoning whichever pocket opens.
 		var start_side: int = _next_slow_side()
 		for offset in range(4):
 			var side: int = (start_side + offset) % 4
 			var lane: float = rng.randf_range(0.16, 0.84)
 			_queue_slow_projectile(side, lane, 125.0, 21.0, 0.72 + float(offset) * 0.18)
 		_queue_fast_crossfire(315.0, 0.52, 0.17)
-		_queue_fast_fan((start_side + 2) % 4, rng.randf_range(0.22, 0.78), 315.0, 1.02, 0.065)
+		_queue_fast_fan((start_side + 2) % 4, rng.randf_range(0.22, 0.78), 315.0, 0.96, 0.060)
 
 func _queue_cross_blockers(speed: float, radius: float, delay: float) -> void:
 	var horizontal_side: int = 0 if flood_attack_index % 2 == 1 else 1
@@ -180,19 +186,27 @@ func _queue_cross_blockers(speed: float, radius: float, delay: float) -> void:
 	_queue_slow_projectile(vertical_side, vertical_lane, speed, radius, delay + 0.22)
 
 func _queue_fast_crossfire(speed: float, delay: float, stagger: float) -> void:
-	var horizontal_lane: float = rng.randf_range(0.15, 0.85)
-	var vertical_lane: float = rng.randf_range(0.15, 0.85)
+	# Crossfire now uses small three-shot clusters on both axes rather than one
+	# projectile per axis. The bullets stay slightly smaller so density restricts
+	# movement without quietly inflating individual hitboxes.
+	var horizontal_lane: float = rng.randf_range(0.18, 0.82)
+	var vertical_lane: float = rng.randf_range(0.18, 0.82)
 	var horizontal_side: int = 0 if rng.randf() < 0.5 else 1
 	var vertical_side: int = 2 if rng.randf() < 0.5 else 3
-	queue_projectile_warning(horizontal_side, horizontal_lane, speed, 8.0, delay)
-	queue_projectile_warning(vertical_side, vertical_lane, speed, 8.0, delay + stagger)
+	_queue_fast_triplet(horizontal_side, horizontal_lane, speed, delay, 0.055)
+	_queue_fast_triplet(vertical_side, vertical_lane, speed, delay + stagger, 0.055)
+
+func _queue_fast_triplet(side: int, center_lane: float, speed: float, delay: float, spacing: float) -> void:
+	for offset in [-1, 0, 1]:
+		var lane: float = clampf(center_lane + float(offset) * spacing, 0.07, 0.93)
+		queue_projectile_warning(side, lane, speed, FAST_PROJECTILE_RADIUS, delay)
 
 func _queue_fast_fan(side: int, center_lane: float, speed: float, delay: float, spacing: float) -> void:
-	# Three-shot fast fans are compact enough to read as one attack while occupying
-	# enough lane space that the player has to route around them rather than twitch once.
-	for offset in [-1, 0, 1]:
-		var lane: float = clampf(center_lane + float(offset) * spacing, 0.08, 0.92)
-		queue_projectile_warning(side, lane, speed, 8.0, delay)
+	# Five small shots occupy a meaningful band of the arena without becoming a
+	# solid wall. The goal is to narrow routes around the persistent slow blockers.
+	for offset in [-2, -1, 0, 1, 2]:
+		var lane: float = clampf(center_lane + float(offset) * spacing, 0.07, 0.93)
+		queue_projectile_warning(side, lane, speed, FAST_PROJECTILE_RADIUS, delay)
 
 func _queue_slow_projectile(side: int, lane: float, speed: float, radius: float, delay: float) -> void:
 	queue_projectile_warning(side, lane, speed, radius, delay)
