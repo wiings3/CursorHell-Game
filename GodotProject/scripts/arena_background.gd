@@ -1,6 +1,5 @@
 extends Node2D
 
-var test = "test"
 var arena: Rect2 = Rect2()
 
 func _draw() -> void:
