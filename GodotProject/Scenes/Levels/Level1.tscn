@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=5 format=3 uid="uid://bhhhv6kq3qnsh"]
 
-[ext_resource type="Script" path="res://scripts/levels/level_01.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://b07w2rovxj6nq" path="res://scripts/levels/level_01.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/Player.tscn" id="4_player"]
@@ -106,7 +106,8 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 40
-text = "LEVEL 1\nFIRST CONTACT"
+text = "LEVEL 1
+FIRST CONTACT"
 horizontal_alignment = 1
 
 [node name="TutorialLabel" type="Label" parent="UI"]
@@ -241,6 +242,7 @@ color = Color(0.025, 0.02, 0.025, 0.975)
 
 [node name="MessageTitle" type="Label" parent="UI/MessagePanel"]
 unique_name_in_owner = true
+layout_mode = 0
 offset_left = 20.0
 offset_top = 24.0
 offset_right = 570.0
@@ -255,6 +257,7 @@ horizontal_alignment = 1
 
 [node name="MessageSubtitle" type="Label" parent="UI/MessagePanel"]
 unique_name_in_owner = true
+layout_mode = 0
 offset_top = 84.0
 offset_right = 590.0
 offset_bottom = 114.0
@@ -268,6 +271,7 @@ horizontal_alignment = 1
 
 [node name="MessageBody" type="Label" parent="UI/MessagePanel"]
 unique_name_in_owner = true
+layout_mode = 0
 offset_left = 42.0
 offset_top = 112.0
 offset_right = 548.0
