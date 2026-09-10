@@ -3,6 +3,7 @@ class_name CursorHellBaseLevel
 
 signal level_completed(level_number: int, final_score: int)
 signal level_failed(level_number: int, final_score: int)
+signal continue_requested
 
 const ProjectileScene := preload("res://Scenes/Components/Projectile.tscn")
 const SfxScript = preload("res://scripts/sfx.gd")
@@ -41,6 +42,10 @@ var countdown_left := 0.0
 var countdown_step := -1
 var last_lane_by_side := [-10.0, -10.0, -10.0, -10.0]
 
+# Main sets this when the level is loaded. Levels stay independent of the
+# loader while still being able to present the correct completion action.
+var has_next_level: bool = false
+
 @onready var player: CursorHellPlayer = %Player
 @onready var projectile_layer: Node2D = %Projectiles
 @onready var warning_layer: CursorHellWarningLayer = %WarningLayer
@@ -76,7 +81,13 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mouse_button := event as InputEventMouseButton
 		if mouse_button.button_index == MOUSE_BUTTON_LEFT and mouse_button.pressed:
-			if state == "intro" or state == "dead" or state == "won":
+			if state == "won":
+				if has_next_level:
+					continue_requested.emit()
+				else:
+					_reset_round(true)
+				return
+			if state == "intro" or state == "dead":
 				_reset_round(true)
 				return
 			if state == "paused":
@@ -528,6 +539,11 @@ func _format_score(value: int) -> String:
 		remaining = remaining.substr(0, remaining.length() - 3)
 	return remaining + result
 
+func _get_win_action_text() -> String:
+	if has_next_level:
+		return "CLICK TO CONTINUE\nR = REPLAY LEVEL"
+	return "CLICK OR PRESS R TO PLAY AGAIN"
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -598,4 +614,4 @@ func _get_win_tutorial_text() -> String:
 	return "LEVEL COMPLETE"
 
 func _get_win_body(final_score: int, best_score: int) -> String:
-	return "FINAL SCORE   %s\nBEST SCORE    %s\n\nCLICK OR PRESS R TO PLAY AGAIN" % [_format_score(final_score), _format_score(best_score)]
+	return "FINAL SCORE   %s\nBEST SCORE    %s\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
