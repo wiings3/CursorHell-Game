@@ -1,6 +1,6 @@
 extends Node2D
 
-var arena: Rect2 = Rect2()
+@export var arena: Rect2 = Rect2()
 
 func _draw() -> void:
 	draw_rect(arena, Color(0.088, 0.098, 0.118, 1.0), true)
