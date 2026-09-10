@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cursor Hell — Level 1: First Contact</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#151015;color:#fff;font-family:Arial,Helvetica,sans-serif;user-select:none}
+  body{display:grid;place-items:center}
+  #wrap{position:relative;width:100vw;height:100vh;min-width:900px;min-height:600px;background:
+    radial-gradient(circle at 17% 24%,rgba(207,115,37,.15),transparent 26%),
+    radial-gradient(circle at 84% 35%,rgba(165,87,36,.14),transparent 30%),
+    linear-gradient(135deg,#3b1e17 0%,#664020 35%,#2b1715 68%,#55351d 100%)}
+  #canvas{position:absolute;inset:0;width:100%;height:100%}
+  .hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 3px 0 #000,2px 0 0 #000,-2px 0 0 #000,0 -2px 0 #000}
+  .label{position:absolute;font-weight:900;letter-spacing:.5px}
+  #timeTitle{left:1.5vw;top:1.3vh;font-size:clamp(20px,2.1vw,38px)}
+  #scoreTitle{right:3.2vw;top:1.3vh;font-size:clamp(20px,2.1vw,38px)}
+  .box{position:absolute;background:#f6f5ef;color:#0b090c;border:6px solid #070607;border-radius:28px;text-shadow:none;font-weight:900;display:grid;place-items:center;font-family:Consolas,monospace}
+  #timeBox{left:1.55vw;top:6.2vh;width:16.8vw;height:9.8vh;font-size:clamp(34px,4vw,72px)}
+  #scoreBox{right:1.5vw;top:6.2vh;width:16.8vw;height:9.8vh;font-size:clamp(28px,3.4vw,62px)}
+  #level{left:1.2vw;top:47vh;width:19vw;transform:rotate(-10deg);font-weight:1000;font-size:clamp(28px,3.7vw,68px);line-height:.95;text-align:center}
+  #level small{display:block;font-size:.48em;margin-top:.35em}
+  #combo{position:absolute;right:2vw;bottom:13vh;width:20vw;text-align:center;font-size:clamp(18px,2vw,34px);font-weight:900;color:#ffad31}
+  #tutorial{position:absolute;left:25%;width:50%;top:9.5vh;text-align:center;font-size:clamp(18px,1.5vw,27px);font-weight:900;letter-spacing:.5px;color:#fff7e9;transition:opacity .2s}
+  #tutorial small{display:block;font-weight:600;font-size:.67em;margin-top:5px;color:#d8cbc2;letter-spacing:0}
+  #hint{position:absolute;left:24%;width:52%;bottom:2.4vh;text-align:center;color:#c9b9ae;font-size:clamp(12px,1vw,18px);text-shadow:0 2px #000}
+  #overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.15);cursor:pointer}
+  #card{width:min(610px,49vw);padding:34px 42px 30px;background:rgba(18,13,16,.96);border:5px solid #080608;border-radius:22px;text-align:center;box-shadow:0 25px 90px rgba(0,0,0,.55)}
+  #card h1{margin:0 0 8px;font-size:clamp(34px,4vw,60px);letter-spacing:1px}
+  #card h2{margin:0 0 18px;font-size:clamp(15px,1.25vw,21px);color:#ffb23e;letter-spacing:3px}
+  #card p{margin:0;font-size:clamp(17px,1.35vw,23px);line-height:1.5;color:#eee5de}
+  #card .go{margin-top:24px;font-size:clamp(20px,1.8vw,30px);font-weight:900;color:#ffb23e;animation:pulse 1.1s infinite alternate}
+  @keyframes pulse{from{opacity:.65;transform:scale(.98)}to{opacity:1;transform:scale(1.02)}}
+  #badge{position:absolute;left:50%;top:2.3vh;transform:translateX(-50%);font-size:13px;letter-spacing:2px;color:#cdbab0;opacity:.75}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="canvas"></canvas>
+  <div class="hud">
+    <div id="badge">CURSOR HELL — LEVEL 1 VERTICAL SLICE v0.2</div>
+    <div id="timeTitle" class="label">Time Remaining</div>
+    <div id="timeBox" class="box">0:45</div>
+    <div id="scoreTitle" class="label">Score</div>
+    <div id="scoreBox" class="box">0</div>
+    <div id="level">LEVEL 1<small>FIRST CONTACT</small></div>
+    <div id="tutorial"></div>
+    <div id="combo"></div>
+    <div id="hint">MOUSE = MOVE&nbsp;&nbsp; • &nbsp;&nbsp;ESC = RELEASE / PAUSE&nbsp;&nbsp; • &nbsp;&nbsp;R = RESTART</div>
+  </div>
+  <div id="overlay">
+    <div id="card">
+      <h1>FIRST CONTACT</h1>
+      <h2>LEVEL 1</h2>
+      <p>Your character <b>is</b> the cursor.<br><br>Move the mouse to move your character. Dodge the orange projectiles and survive for <b>45 seconds</b>.<br><br>This level starts slowly and teaches the basics as you play.</p>
+      <div class="go">CLICK TO BEGIN</div>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+'use strict';
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+const overlay=document.getElementById('overlay');
+const card=document.getElementById('card');
+const timeBox=document.getElementById('timeBox');
+const scoreBox=document.getElementById('scoreBox');
+const comboEl=document.getElementById('combo');
+const tutorialEl=document.getElementById('tutorial');
+
+const ROUND_TIME=45;
+let W=1600,H=900;
+let arena={x:390,y:72,w:820,h:756};
+let state='intro',tLeft=ROUND_TIME,elapsed=0,score=0,combo=0,comboTimer=0;
+let last=performance.now(),spawnClock=999,flash=0,shake=0;
+let high=Number(localStorage.getItem('cursorHellLevel1High')||0);
+let movedDistance=0,lastPhase=-1;
+const player={x:800,y:450,r:10,vr:13,prevX:800,prevY:450};
+const shots=[];
+const warnings=[];
+const sparks=[];
+const TWO_PI=Math.PI*2;
+
+function resize(){
+  W=innerWidth;H=innerHeight;
+  const dpr=Math.min(devicePixelRatio||1,2);
+  canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const targetH=Math.min(H*.84,H-110);
+  const targetW=Math.min(W*.52,targetH*1.085);
+  arena.w=Math.max(520,targetW);arena.h=Math.max(500,targetH);
+  arena.x=(W-arena.w)/2;arena.y=(H-arena.h)/2;
+  if(state!=='playing')resetPlayer();
+}
+addEventListener('resize',resize);resize();
+
+function resetPlayer(){
+  player.x=arena.x+arena.w*.5;player.y=arena.y+arena.h*.53;
+  player.prevX=player.x;player.prevY=player.y;
+}
+function reset(play=true){
+  shots.length=0;warnings.length=0;sparks.length=0;
+  tLeft=ROUND_TIME;elapsed=0;score=0;combo=0;comboTimer=0;flash=0;shake=0;movedDistance=0;lastPhase=-1;
+  spawnClock=999;resetPlayer();updateTutorial();updateHUD();
+  if(play){state='playing';overlay.style.display='none';canvas.requestPointerLock?.();last=performance.now();}
+  else{state='intro';overlay.style.display='grid';}
+}
+function showCard(title,subtitle,html,button){
+  card.innerHTML=`<h1>${title}</h1><h2>${subtitle}</h2><p>${html}</p><div class="go">${button}</div>`;
+  overlay.style.display='grid';
+}
+function die(reason){
+  if(state!=='playing')return;
+  state='dead';shake=10;high=Math.max(high,Math.floor(score));localStorage.setItem('cursorHellLevel1High',high);
+  document.exitPointerLock?.();
+  showCard('TRY AGAIN','LEVEL 1',`${reason}<br><br>You made it <b>${Math.floor(elapsed)} seconds</b>.<br>SCORE&nbsp;&nbsp;<b>${fmt(score)}</b><br>BEST&nbsp;&nbsp;<b>${fmt(high)}</b>`,`CLICK OR PRESS R TO RETRY`);
+}
+function win(){
+  if(state!=='playing')return;
+  score+=2500;high=Math.max(high,Math.floor(score));localStorage.setItem('cursorHellLevel1High',high);
+  state='won';document.exitPointerLock?.();updateHUD();
+  showCard('LEVEL COMPLETE','FIRST CONTACT',`You survived your first encounter.<br><br>FINAL SCORE&nbsp;&nbsp;<b>${fmt(score)}</b><br>BEST SCORE&nbsp;&nbsp;<b>${fmt(high)}</b><br><br><b>Movement, dodging, telegraphs and grazing learned.</b>`,`CLICK OR PRESS R TO PLAY AGAIN`);
+}
+function pause(){
+  if(state!=='playing')return;
+  state='paused';showCard('PAUSED','LEVEL 1','Mouse released.<br><br>Click to resume.','CLICK TO RESUME');
+}
+overlay.addEventListener('click',()=>{
+  if(state==='paused'){state='playing';overlay.style.display='none';canvas.requestPointerLock?.();last=performance.now();}
+  else reset(true);
+});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==canvas&&state==='playing')pause();});
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='r')reset(true);});
+document.addEventListener('mousemove',e=>{
+  if(state!=='playing'||document.pointerLockElement!==canvas)return;
+  const oldX=player.x,oldY=player.y;
+  player.prevX=oldX;player.prevY=oldY;
+  player.x=Math.max(arena.x+player.r,Math.min(arena.x+arena.w-player.r,player.x+e.movementX));
+  player.y=Math.max(arena.y+player.r,Math.min(arena.y+arena.h-player.r,player.y+e.movementY));
+  movedDistance+=Math.hypot(player.x-oldX,player.y-oldY);
+  if(sweepPlayer(oldX,oldY,player.x,player.y))return;
+});
+
+function closest(px,py,ax,ay,bx,by){
+  const abx=bx-ax,aby=by-ay,l=abx*abx+aby*aby;
+  if(l<.0001)return[ax,ay];
+  const t=Math.max(0,Math.min(1,((px-ax)*abx+(py-ay)*aby)/l));
+  return[ax+abx*t,ay+aby*t];
+}
+function sweepPlayer(ax,ay,bx,by){
+  for(const s of shots){
+    const[cx,cy]=closest(s.x,s.y,ax,ay,bx,by),rr=player.r+s.r,dx=cx-s.x,dy=cy-s.y;
+    if(dx*dx+dy*dy<=rr*rr){player.x=cx;player.y=cy;die('You touched a projectile.');return true;}
+  }
+  return false;
+}
+function spawn(x,y,vx,vy,r=7){
+  shots.push({x,y,px:x,py:y,vx,vy,r,age:0,grazed:false,trail:[]});
+}
+function warnShot(side,lane,speed,r=7,delay=.8){
+  warnings.push({side,lane,speed,r,time:delay,max:delay});
+}
+function releaseWarning(w){
+  const pad=26;let x,y,vx=0,vy=0;
+  if(w.side===0){x=arena.x-pad;y=arena.y+arena.h*w.lane;vx=w.speed;}
+  if(w.side===1){x=arena.x+arena.w+pad;y=arena.y+arena.h*w.lane;vx=-w.speed;}
+  if(w.side===2){x=arena.x+arena.w*w.lane;y=arena.y-pad;vy=w.speed;}
+  if(w.side===3){x=arena.x+arena.w*w.lane;y=arena.y+arena.h+pad;vy=-w.speed;}
+  spawn(x,y,vx,vy,w.r);
+}
+function phase(){
+  if(elapsed<6)return 0;
+  if(elapsed<18)return 1;
+  if(elapsed<30)return 2;
+  if(elapsed<40)return 3;
+  return 4;
+}
+function updateTutorial(){
+  const p=phase();
+  if(p!==lastPhase){lastPhase=p;spawnClock=p===0?999:.65;}
+  if(p===0){
+    tutorialEl.innerHTML=movedDistance<80?'MOVE THE MOUSE<small>Your character follows your mouse movement exactly.</small>':'THAT’S IT<small>You are the cursor. Get comfortable moving around the arena.</small>';
+  }else if(p===1){
+    tutorialEl.innerHTML='DODGE<small>Orange projectiles are telegraphed before they enter. One hit ends the run.</small>';
+  }else if(p===2){
+    tutorialEl.innerHTML='WATCH THE EDGES<small>Projectiles can now enter from any side.</small>';
+  }else if(p===3){
+    tutorialEl.innerHTML='GRAZE FOR SCORE<small>Passing close to a projectile is safe — touching it is not.</small>';
+  }else{
+    tutorialEl.innerHTML='FINAL 5 SECONDS<small>Stay calm. Keep moving only when you need to.</small>';
+  }
+}
+function scheduleShot(p){
+  let side,lane,speed,r=7;
+  if(p===1){
+    side=Math.random()<.5?0:1;lane=.14+Math.random()*.72;speed=145+Math.random()*25;r=7;
+  }else if(p===2){
+    side=(Math.random()*4)|0;lane=.12+Math.random()*.76;speed=155+Math.random()*35;r=7;
+  }else if(p===3){
+    side=(Math.random()*4)|0;lane=.10+Math.random()*.80;speed=170+Math.random()*40;r=7+Math.random()*1.5;
+  }else{
+    side=(Math.random()*4)|0;lane=.10+Math.random()*.80;speed=185+Math.random()*35;r=7.5;
+  }
+  warnShot(side,lane,speed,r,p===4?.65:.82);
+}
+function spawnInterval(p){
+  if(p===1)return 1.50+Math.random()*.35;
+  if(p===2)return 1.25+Math.random()*.28;
+  if(p===3)return 1.05+Math.random()*.22;
+  return .90+Math.random()*.18;
+}
+function graze(s){
+  s.grazed=true;combo=Math.min(8,combo+1);comboTimer=1.6;
+  const bonus=50*Math.max(1,combo);score+=bonus;flash=1;
+  for(let i=0;i<10;i++){const a=Math.random()*TWO_PI,sp=35+Math.random()*90;sparks.push({x:player.x,y:player.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:.32});}
+}
+function update(dt){
+  if(state!=='playing')return;
+  elapsed+=dt;tLeft=Math.max(0,ROUND_TIME-elapsed);score+=dt*10;comboTimer-=dt;flash=Math.max(0,flash-dt*2);if(comboTimer<=0)combo=0;
+  updateTutorial();
+  const p=phase();
+  if(p>0){spawnClock-=dt;if(spawnClock<=0){scheduleShot(p);spawnClock=spawnInterval(p);}}
+  for(let i=warnings.length-1;i>=0;i--){const w=warnings[i];w.time-=dt;if(w.time<=0){releaseWarning(w);warnings.splice(i,1);}}
+  for(let i=shots.length-1;i>=0;i--){
+    const s=shots[i];s.age+=dt;s.px=s.x;s.py=s.y;s.x+=s.vx*dt;s.y+=s.vy*dt;
+    s.trail.unshift([s.x,s.y]);if(s.trail.length>9)s.trail.pop();
+    const[cx,cy]=closest(player.x,player.y,s.px,s.py,s.x,s.y),dx=player.x-cx,dy=player.y-cy,rr=player.r+s.r;
+    if(dx*dx+dy*dy<=rr*rr){die('You touched a projectile.');return;}
+    const dd=Math.hypot(player.x-s.x,player.y-s.y);
+    if(p>=3&&!s.grazed&&dd<=40+s.r)graze(s);
+    if(s.age>1&&(s.x<arena.x-100||s.x>arena.x+arena.w+100||s.y<arena.y-100||s.y>arena.y+arena.h+100))shots.splice(i,1);
+  }
+  for(let i=sparks.length-1;i>=0;i--){const q=sparks[i];q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.95;q.vy*=.95;q.life-=dt;if(q.life<=0)sparks.splice(i,1);}
+  if(tLeft<=0)win();
+  updateHUD();
+}
+function updateHUD(){
+  const sec=Math.ceil(tLeft),m=Math.floor(sec/60),s=sec%60;timeBox.textContent=`${m}:${String(s).padStart(2,'0')}`;scoreBox.textContent=fmt(score);
+  comboEl.innerHTML=combo>1&&comboTimer>0?`GRAZE COMBO&nbsp; x${combo}${flash>0?`<br><span style="font-size:.75em">+${50*combo}</span>`:''}`:(flash>0?`GRAZE&nbsp; +${50*Math.max(1,combo)}`:'');
+}
+function fmt(n){return Math.floor(Number(n)||0).toLocaleString('en-US');}
+function roundedRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+
+function drawBackground(now){
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#835321');g.addColorStop(.25,'#b56a22');g.addColorStop(.51,'#4a2420');g.addColorStop(.76,'#b06d27');g.addColorStop(1,'#53351e');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=.16;for(let i=0;i<18;i++){ctx.strokeStyle=i%3===0?'#e0a144':'#49251b';ctx.lineWidth=18+((i*13)%42);ctx.beginPath();const x=(i/17)*W;ctx.moveTo(x,-30);ctx.bezierCurveTo(x-100,H*.3,x+130,H*.68,x-70,H+30);ctx.stroke();}ctx.globalAlpha=1;
+  drawArena(now);
+}
+function drawArena(now){
+  ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*2,(Math.random()-.5)*shake*2);shake=Math.max(0,shake-.45);}
+  roundedRect(arena.x,arena.y,arena.w,arena.h,18);ctx.fillStyle='#17191d';ctx.fill();ctx.clip();
+  const bg=ctx.createLinearGradient(arena.x,arena.y,arena.x+arena.w,arena.y+arena.h);bg.addColorStop(0,'#20242a');bg.addColorStop(.5,'#16191e');bg.addColorStop(1,'#242027');ctx.fillStyle=bg;ctx.fillRect(arena.x,arena.y,arena.w,arena.h);
+  ctx.globalAlpha=.12;ctx.strokeStyle='#9e8c7f';ctx.lineWidth=1;const grid=52;for(let x=arena.x+grid;x<arena.x+arena.w;x+=grid){ctx.beginPath();ctx.moveTo(x,arena.y);ctx.lineTo(x,arena.y+arena.h);ctx.stroke();}for(let y=arena.y+grid;y<arena.y+arena.h;y+=grid){ctx.beginPath();ctx.moveTo(arena.x,y);ctx.lineTo(arena.x+arena.w,y);ctx.stroke();}ctx.globalAlpha=1;
+  drawWarnings();drawShots();drawSparks();drawPlayer(now);
+  ctx.restore();roundedRect(arena.x,arena.y,arena.w,arena.h,18);ctx.strokeStyle='#070607';ctx.lineWidth=8;ctx.stroke();
+}
+function warningPoint(w){
+  if(w.side===0)return[arena.x+8,arena.y+arena.h*w.lane,0];
+  if(w.side===1)return[arena.x+arena.w-8,arena.y+arena.h*w.lane,Math.PI];
+  if(w.side===2)return[arena.x+arena.w*w.lane,arena.y+8,Math.PI/2];
+  return[arena.x+arena.w*w.lane,arena.y+arena.h-8,-Math.PI/2];
+}
+function drawWarnings(){
+  for(const w of warnings){
+    const[x,y,a]=warningPoint(w),pulse=.45+.55*Math.abs(Math.sin((w.time/w.max)*Math.PI*5));
+    ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.globalAlpha=.55+.35*pulse;ctx.fillStyle='#ffb02e';ctx.shadowBlur=12;ctx.shadowColor='#ff8a18';ctx.beginPath();ctx.moveTo(18,0);ctx.lineTo(-5,-11);ctx.lineTo(-5,11);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.restore();
+    ctx.globalAlpha=.08+.08*pulse;ctx.strokeStyle='#ffb02e';ctx.lineWidth=2;ctx.setLineDash([8,10]);ctx.beginPath();
+    if(w.side<2){ctx.moveTo(arena.x,y);ctx.lineTo(arena.x+arena.w,y);}else{ctx.moveTo(x,arena.y);ctx.lineTo(x,arena.y+arena.h);}ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+  }
+}
+function drawShots(){
+  for(const s of shots){
+    for(let i=0;i<s.trail.length-1;i++){const a=s.trail[i],b=s.trail[i+1],alpha=.22*(1-i/s.trail.length);ctx.strokeStyle=`rgba(255,86,13,${alpha})`;ctx.lineWidth=Math.max(1,s.r*.9-i*.45);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}
+    const ang=Math.atan2(s.vy,s.vx),dx=Math.cos(ang),dy=Math.sin(ang),px=-dy,py=dx;
+    const tip=[s.x+dx*s.r*1.6,s.y+dy*s.r*1.6],backx=s.x-dx*s.r*2.3,backy=s.y-dy*s.r*2.3;
+    ctx.fillStyle='#ff5f0d';ctx.beginPath();ctx.moveTo(...tip);ctx.lineTo(backx+px*s.r*.85,backy+py*s.r*.85);ctx.lineTo(backx-px*s.r*.85,backy-py*s.r*.85);ctx.closePath();ctx.fill();
+    ctx.shadowBlur=15;ctx.shadowColor='#ff7a15';ctx.fillStyle='#ffa51b';ctx.beginPath();ctx.arc(s.x,s.y,s.r*.78,0,TWO_PI);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#fff0a8';ctx.beginPath();ctx.arc(s.x,s.y,s.r*.33,0,TWO_PI);ctx.fill();
+  }
+}
+function drawPlayer(now){
+  const pulse=(Math.sin(now*.004)+1)/2,glow=22+pulse*6;
+  ctx.shadowBlur=glow;ctx.shadowColor=flash>0?'#ffad2f':'#fff0b0';ctx.fillStyle='#fffdf1';ctx.beginPath();ctx.arc(player.x,player.y,13,0,TWO_PI);ctx.fill();ctx.shadowBlur=0;
+  ctx.strokeStyle='rgba(255,202,74,.65)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(player.x,player.y,20+pulse*2,0,TWO_PI);ctx.stroke();ctx.fillStyle='#ffa62b';ctx.beginPath();ctx.arc(player.x,player.y,4.7,0,TWO_PI);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='700 14px Arial';ctx.textAlign='center';ctx.fillText('PLAYER',player.x,player.y-28);
+}
+function drawSparks(){for(const p of sparks){ctx.globalAlpha=Math.max(0,p.life/.32);ctx.fillStyle='#ffc65e';ctx.fillRect(p.x-1.5,p.y-1.5,3,3);}ctx.globalAlpha=1;}
+function frame(now){const dt=Math.min(.033,(now-last)/1000);last=now;update(dt);drawBackground(now);requestAnimationFrame(frame);}
+requestAnimationFrame(frame);reset(false);
+})();
+</script>
+</body>
+</html>
