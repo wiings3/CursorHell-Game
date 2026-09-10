@@ -1,29 +1,23 @@
-[gd_scene load_steps=5 format=3 uid="uid://bwxipt41vty3q"]
+[gd_scene load_steps=6 format=3 uid="uid://bwxipt41vty3q"]
 
 [ext_resource type="Script" uid="uid://bb4p6it1v2wrk" path="res://scripts/game.gd" id="1_game"]
-[ext_resource type="Script" uid="uid://cox012i434ju5" path="res://scripts/arena_background.gd" id="2_arena"]
-[ext_resource type="Script" uid="uid://clrctclef56de" path="res://scripts/warning_layer.gd" id="3_warning"]
-[ext_resource type="Script" uid="uid://oana8vaxfpbb" path="res://scripts/player.gd" id="4_player"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/Player.tscn" id="2_rgh2o"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="3_rgh2o"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="4_pbw6q"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/Projectile.tscn" id="5_pbw6q"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_game")
 
-[node name="ArenaBackground" type="Node2D" parent="."]
-script = ExtResource("2_arena")
-arena = Rect2(390, 72, 820, 756)
+[node name="Player" parent="." instance=ExtResource("2_rgh2o")]
 
-[node name="WarningLayer" type="Node2D" parent="."]
-unique_name_in_owner = true
-script = ExtResource("3_warning")
-arena = Rect2(390, 72, 820, 756)
+[node name="ArenaBackground" parent="." instance=ExtResource("3_rgh2o")]
+position = Vector2(393, 69)
 
-[node name="Projectiles" type="Node2D" parent="."]
-unique_name_in_owner = true
+[node name="WarningLayer" parent="." instance=ExtResource("4_pbw6q")]
 
-[node name="Player" type="Node2D" parent="."]
-unique_name_in_owner = true
-position = Vector2(800, 472.68)
-script = ExtResource("4_player")
+[node name="Projectile" parent="." instance=ExtResource("5_pbw6q")]
+position = Vector2(809, 433)
 
 [node name="UI" type="CanvasLayer" parent="."]
 unique_name_in_owner = true
