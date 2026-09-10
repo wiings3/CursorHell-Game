@@ -1,7 +1,7 @@
 extends "res://scripts/levels/standard_dodge_level.gd"
 class_name CursorHellLevel01
 
-const ROUND_TIME := 60.0
+const ROUND_TIME := 45.0
 const COMPLETION_BONUS := 2500.0
 
 var last_attack_side := -1
@@ -24,11 +24,11 @@ func _get_completion_bonus() -> float:
 func _get_phase() -> int:
 	if elapsed < 7.0:
 		return 0
-	if elapsed < 24.0:
+	if elapsed < 20.0:
 		return 1
-	if elapsed < 41.0:
+	if elapsed < 32.0:
 		return 2
-	if elapsed < 53.0:
+	if elapsed < 40.0:
 		return 3
 	return 4
 
@@ -46,7 +46,7 @@ func _update_level_tutorial() -> void:
 		3:
 			tutorial_label.text = "GRAZE = BONUS\nPass close without touching to build score."
 		_:
-			tutorial_label.text = "FINAL 7 SECONDS\nStay mobile. Make small, deliberate moves."
+			tutorial_label.text = "FINAL 5 SECONDS\nStay mobile. Make small, deliberate moves."
 
 func _schedule_level_projectile(current_phase: int) -> void:
 	var side := 0
@@ -58,23 +58,23 @@ func _schedule_level_projectile(current_phase: int) -> void:
 	if current_phase == 1:
 		side = 0 if rng.randf() < 0.5 else 1
 		lane = rng.randf_range(0.14, 0.86)
-		speed = rng.randf_range(150.0, 170.0)
+		speed = rng.randf_range(135.0, 155.0)
 		delay = 1.15
 	elif current_phase == 2:
 		side = rng.randi_range(0, 3)
 		lane = rng.randf_range(0.12, 0.88)
-		speed = rng.randf_range(165.0, 195.0)
+		speed = rng.randf_range(145.0, 175.0)
 		delay = 1.0
 	elif current_phase == 3:
 		side = rng.randi_range(0, 3)
 		lane = rng.randf_range(0.10, 0.90)
-		speed = rng.randf_range(180.0, 215.0)
+		speed = rng.randf_range(155.0, 188.0)
 		radius = rng.randf_range(7.0, 8.0)
 		delay = 0.92
 	else:
 		side = rng.randi_range(0, 3)
 		lane = rng.randf_range(0.10, 0.90)
-		speed = rng.randf_range(195.0, 225.0)
+		speed = rng.randf_range(165.0, 195.0)
 		radius = 7.5
 		delay = 0.85
 
@@ -123,7 +123,7 @@ func _get_intro_subtitle() -> String:
 	return "LEVEL 1 — TRAINING"
 
 func _get_intro_body() -> String:
-	return "Your character IS the cursor.\n\nMove the mouse to move.\nDodge the orange projectiles.\nSurvive for 60 seconds.\n\nWarnings show where danger will enter.\n\nCLICK TO BEGIN"
+	return "Your character IS the cursor.\n\nMove the mouse to move.\nDodge the orange projectiles.\nSurvive for 45 seconds.\n\nWarnings show where danger will enter.\n\nCLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
 	return "LEVEL 1 — FIRST CONTACT"
@@ -141,7 +141,7 @@ func _get_death_subtitle() -> String:
 	return "LEVEL 1 — IMPACT"
 
 func _get_death_body(reason: String, run_time: float, final_score: int, best_score: int) -> String:
-	return "%s\n\nTIME   %s / 1:00\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
+	return "%s\n\nTIME   %s / 0:45\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
 
 func _get_win_title() -> String:
 	return "LEVEL COMPLETE"
@@ -153,4 +153,4 @@ func _get_win_tutorial_text() -> String:
 	return "LEVEL COMPLETE\nFIRST CONTACT CLEARED"
 
 func _get_win_body(final_score: int, best_score: int) -> String:
-	return "60 SECONDS SURVIVED\n\nCOMPLETION BONUS   +2,500\nFINAL SCORE        %s\nBEST SCORE         %s\n\nMovement, warnings, dodging and grazing learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
+	return "45 SECONDS SURVIVED\n\nCOMPLETION BONUS   +2,500\nFINAL SCORE        %s\nBEST SCORE         %s\n\nMovement, warnings, dodging and grazing learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
