@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://bwxipt41vty3q"]
+[gd_scene load_steps=5 format=3 uid="uid://bwxipt41vty3q"]
 
 [ext_resource type="Script" uid="uid://8o2ugckn5scp" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="PackedScene" path="res://Scenes/Debug/DebugConsole.tscn" id="2_console"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/MainMenu.tscn" id="2_main_menu"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="3_pause_menu"]
+[ext_resource type="PackedScene" path="res://Scenes/Debug/DebugConsole.tscn" id="4_console"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -9,5 +11,11 @@ script = ExtResource("1_main")
 [node name="LevelContainer" type="Node" parent="."]
 unique_name_in_owner = true
 
-[node name="DebugConsole" parent="." instance=ExtResource("2_console")]
+[node name="MainMenu" parent="." instance=ExtResource("2_main_menu")]
+unique_name_in_owner = true
+
+[node name="PauseMenu" parent="." instance=ExtResource("3_pause_menu")]
+unique_name_in_owner = true
+
+[node name="DebugConsole" parent="." instance=ExtResource("4_console")]
 unique_name_in_owner = true
