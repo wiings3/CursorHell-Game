@@ -52,6 +52,12 @@ func _physics_process(delta: float) -> void:
 
 	_update_camp_pressure(delta)
 
+	# Reuse the existing tutorial readout rather than adding another HUD element.
+	# BaseLevel refreshes the normal level tutorial every frame, so as soon as the
+	# player relocates and the stall clears, the level-specific text returns.
+	if camp_progress_blocked:
+		tutorial_label.text = "ANTI-CAMP ACTIVE\nMOVE TO RESUME TIME + SCORE"
+
 func _reset_round(start_now: bool) -> void:
 	camp_hold_time = 0.0
 	camp_pressure_cooldown = 0.0
