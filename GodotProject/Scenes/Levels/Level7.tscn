@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://bc252p30m60ju"]
 
-[ext_resource type="Script" path="res://scripts/levels/level_07.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://dm3r8o25p41j2" path="res://scripts/levels/level_07.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/Player.tscn" id="4_player"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
 
 [node name="Level7" type="Node2D"]
 script = ExtResource("1_level")
@@ -25,4 +25,5 @@ position = Vector2(800, 472.68)
 
 [node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
 unique_name_in_owner = true
-level_display_text = "LEVEL 7\nAFTERSHOCK"
+level_display_text = "LEVEL 7
+AFTERSHOCK"
