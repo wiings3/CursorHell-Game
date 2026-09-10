@@ -55,36 +55,34 @@ func _schedule_level_projectile(current_phase: int) -> void:
 
 	match current_phase:
 		1:
-			# First lesson is still simple, but seven lanes make standing between the
-			# projectiles less trivial and the faster shots force an earlier read.
-			_queue_sweep(0, true, 7, 160.0, 178.0, 1.05, 0.20, 0.12, 0.88)
+			# Fixed speed and timing make each sweep feel like one authored attack.
+			_queue_sweep(0, true, 7, 170.0, 1.05, 0.20, 0.12, 0.88)
 		2:
 			# Alternate left/right entry and reverse the lane order every attack.
 			var phase2_side: int = 0 if sweep_attack_index % 2 == 1 else 1
 			var phase2_ascending: bool = sweep_attack_index % 2 == 1
-			_queue_sweep(phase2_side, phase2_ascending, 7, 168.0, 188.0, 0.98, 0.18, 0.10, 0.90)
+			_queue_sweep(phase2_side, phase2_ascending, 7, 180.0, 0.98, 0.18, 0.10, 0.90)
 		3:
 			# Cycle around all four edges. Horizontal entry edges sweep through Y;
 			# vertical entry edges sweep through X, teaching the same rule on both axes.
 			var phase3_sides: Array[int] = [0, 2, 1, 3]
 			var phase3_side: int = phase3_sides[(sweep_attack_index - 1) % phase3_sides.size()]
 			var phase3_ascending: bool = sweep_attack_index % 2 == 1
-			_queue_sweep(phase3_side, phase3_ascending, 8, 178.0, 200.0, 0.92, 0.17, 0.08, 0.92)
+			_queue_sweep(phase3_side, phase3_ascending, 8, 190.0, 0.92, 0.17, 0.08, 0.92)
 		_:
-			# Finale: two perpendicular sweeps overlap briefly. Eight tighter lanes and
-			# higher projectile speed make the open space temporary rather than static.
+			# Finale: two perpendicular sweeps overlap briefly. Their internal rhythm
+			# stays fixed so the difficulty comes from reading two patterns at once.
 			if sweep_attack_index % 2 == 1:
-				_queue_sweep(0, true, 8, 190.0, 212.0, 0.86, 0.17, 0.08, 0.92)
-				_queue_sweep(2, true, 8, 186.0, 208.0, 1.38, 0.16, 0.08, 0.92)
+				_queue_sweep(0, true, 8, 202.0, 0.86, 0.17, 0.08, 0.92)
+				_queue_sweep(2, true, 8, 198.0, 1.38, 0.16, 0.08, 0.92)
 			else:
-				_queue_sweep(1, false, 8, 190.0, 212.0, 0.86, 0.17, 0.08, 0.92)
-				_queue_sweep(3, false, 8, 186.0, 208.0, 1.38, 0.16, 0.08, 0.92)
+				_queue_sweep(1, false, 8, 202.0, 0.86, 0.17, 0.08, 0.92)
+				_queue_sweep(3, false, 8, 198.0, 1.38, 0.16, 0.08, 0.92)
 
-func _queue_sweep(side: int, ascending: bool, count: int, speed_min: float, speed_max: float, base_delay: float, step_delay: float, lane_min: float, lane_max: float) -> void:
-	# One speed per sweep makes the attack read as a coherent moving pattern.
-	# The lanes are intentionally tighter now, but still leave enough room for a
-	# late player to thread through if they make a precise movement.
-	var speed := rng.randf_range(speed_min, speed_max)
+func _queue_sweep(side: int, ascending: bool, count: int, speed: float, base_delay: float, step_delay: float, lane_min: float, lane_max: float) -> void:
+	# Every shot in a sweep shares the same speed, spacing and timing cadence.
+	# The warning layer receives optional sweep metadata so the telegraph itself
+	# visually travels in the same order as the projectiles will release.
 	var radius := 7.0
 	var divisor := maxi(count - 1, 1)
 
@@ -94,7 +92,21 @@ func _queue_sweep(side: int, ascending: bool, count: int, speed_min: float, spee
 			t = 1.0 - t
 		var lane := lerpf(lane_min, lane_max, t)
 		var delay := base_delay + float(index) * step_delay
-		queue_projectile_warning(side, lane, speed, radius, delay)
+		_queue_sweep_warning(side, lane, speed, radius, delay, index == 0)
+
+func _queue_sweep_warning(side: int, lane: float, speed: float, radius: float, delay: float, is_first: bool) -> void:
+	queue_projectile_warning(side, lane, speed, radius, delay)
+
+	# BaseLevel intentionally remains unaware of sweep presentation. Tag only the
+	# warning we just added; Levels 1 and 2 continue using their existing visuals.
+	var warning_index := warnings.size() - 1
+	if warning_index < 0:
+		return
+	var warning: Dictionary = warnings[warning_index]
+	warning["sweep_visual"] = true
+	warning["sweep_start"] = is_first
+	warning["sweep_focus_time"] = 0.55
+	warning["sweep_focus_width"] = 0.18
 
 func _get_spawn_interval(current_phase: int) -> float:
 	match current_phase:
