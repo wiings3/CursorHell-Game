@@ -27,15 +27,17 @@ func _get_completion_bonus() -> float:
 	return COMPLETION_BONUS
 
 func _get_phase() -> int:
-	if elapsed < 6.0:
+	if elapsed < 5.0:
 		return 0
-	if elapsed < 22.0:
+	if elapsed < 13.0:
 		return 1
-	if elapsed < 38.0:
+	if elapsed < 23.0:
 		return 2
-	if elapsed < 52.0:
+	if elapsed < 35.0:
 		return 3
-	return 4
+	if elapsed < 48.0:
+		return 4
+	return 5
 
 func _update_level_tutorial() -> void:
 	match _get_phase():
@@ -47,12 +49,14 @@ func _update_level_tutorial() -> void:
 			tutorial_label.text = "COMMIT EARLY\nThe opening is smaller and can arrive from either side."
 		3:
 			tutorial_label.text = "EVERY EDGE\nFind the safe lane before the wall crosses the arena."
+		4:
+			tutorial_label.text = "PRESSURE RHYTHM\nSingle and double walls now mix. Keep reading."
 		_:
-			tutorial_label.text = "TWO WALLS\nRead both openings. Move toward their intersection."
+			tutorial_label.text = "NO RESET\nFaster walls. Smaller openings. Commit immediately."
 
 func _schedule_level_projectile(current_phase: int) -> void:
 	# Reset the local attack rhythm at each phase transition so every lesson begins
-	# with a predictable side pattern instead of inheriting parity from the last one.
+	# with a deliberate pattern rather than inheriting parity from the last one.
 	if current_phase != gap_phase:
 		gap_phase = current_phase
 		gap_attack_index = 0
@@ -61,32 +65,78 @@ func _schedule_level_projectile(current_phase: int) -> void:
 
 	match current_phase:
 		1:
-			# The first opening is still readable, but no longer wide enough to solve
-			# the wall with a vague move toward the middle of the gap.
+			# Teach the rule quickly: one readable wall from a consistent edge.
 			var phase1_gap: float = _choose_gap_lane(0.18)
 			_queue_gap_wall(0, phase1_gap, 0.075, 205.0, 1.20)
 		2:
-			# Alternate left and right with a tighter opening and faster travel time.
+			# Alternate left and right with a tighter opening and a clear speed jump.
 			var phase2_side: int = 0 if gap_attack_index % 2 == 1 else 1
 			var phase2_gap: float = _choose_gap_lane(0.22)
 			_queue_gap_wall(phase2_side, phase2_gap, 0.060, 220.0, 1.08)
 		3:
-			# Carry the same safe-gap read around all four edges. Outside the authored
-			# opening, adjacent shots are too close for the player hitbox to thread.
+			# Carry the same safe-gap read around all four edges. This is the final
+			# practice phase before double-wall pressure becomes normal gameplay.
 			var phase3_sides: Array[int] = [0, 2, 1, 3]
 			var phase3_side: int = phase3_sides[(gap_attack_index - 1) % phase3_sides.size()]
 			var phase3_gap: float = _choose_gap_lane(0.22)
 			_queue_gap_wall(phase3_side, phase3_gap, 0.050, 235.0, 0.96)
+		4:
+			_queue_pressure_attack()
 		_:
-			# Finale: two fast perpendicular walls are telegraphed together. The gaps
-			# are deliberately narrow, so reaching their intersection requires a real
-			# commitment instead of simply drifting toward the general open area.
-			var horizontal_side: int = 0 if gap_attack_index % 2 == 1 else 1
-			var vertical_side: int = 2 if gap_attack_index % 2 == 1 else 3
-			var horizontal_gap: float = _choose_gap_lane(0.24)
-			var vertical_gap: float = rng.randf_range(0.18, 0.82)
-			_queue_gap_wall(horizontal_side, horizontal_gap, 0.045, 250.0, 0.90)
-			_queue_gap_wall(vertical_side, vertical_gap, 0.045, 245.0, 1.62)
+			_queue_final_attack()
+
+func _queue_pressure_attack() -> void:
+	# The hard state starts at 35 seconds and stays active long enough to become
+	# the level's main gameplay. Lower-pressure single walls are mixed between
+	# double walls so the rhythm breathes without dropping back to tutorial play.
+	var pattern: int = (gap_attack_index - 1) % 4
+
+	if pattern == 0:
+		var pressure_horizontal_gap: float = _choose_gap_lane(0.24)
+		var pressure_vertical_gap: float = rng.randf_range(0.18, 0.82)
+		_queue_gap_wall(0, pressure_horizontal_gap, 0.045, 245.0, 0.90)
+		_queue_gap_wall(2, pressure_vertical_gap, 0.045, 245.0, 1.55)
+	elif pattern == 1:
+		var pressure_vertical_side: int = 2 if gap_attack_index % 2 == 0 else 3
+		var pressure_single_vertical_gap: float = _choose_gap_lane(0.24)
+		_queue_gap_wall(pressure_vertical_side, pressure_single_vertical_gap, 0.050, 245.0, 0.90)
+	elif pattern == 2:
+		var pressure_horizontal_gap_b: float = _choose_gap_lane(0.24)
+		var pressure_vertical_gap_b: float = rng.randf_range(0.18, 0.82)
+		_queue_gap_wall(1, pressure_horizontal_gap_b, 0.045, 245.0, 0.88)
+		_queue_gap_wall(3, pressure_vertical_gap_b, 0.045, 245.0, 1.48)
+	else:
+		var pressure_horizontal_side: int = 0 if gap_attack_index % 2 == 1 else 1
+		var pressure_single_horizontal_gap: float = _choose_gap_lane(0.24)
+		_queue_gap_wall(pressure_horizontal_side, pressure_single_horizontal_gap, 0.050, 245.0, 0.88)
+
+func _queue_final_attack() -> void:
+	# Final phase is an escalation of the already-established hard state, not the
+	# first appearance of it. Speed jumps once at 48 seconds and stays fixed.
+	var pattern: int = (gap_attack_index - 1) % 3
+
+	if pattern == 0:
+		var final_horizontal_side: int = 0 if gap_attack_index % 2 == 1 else 1
+		var final_vertical_side: int = 2 if gap_attack_index % 2 == 1 else 3
+		var final_horizontal_gap: float = _choose_gap_lane(0.26)
+		var final_vertical_gap: float = rng.randf_range(0.16, 0.84)
+		_queue_gap_wall(final_horizontal_side, final_horizontal_gap, 0.042, 260.0, 0.84)
+		_queue_gap_wall(final_vertical_side, final_vertical_gap, 0.042, 260.0, 1.40)
+	elif pattern == 1:
+		# One fast single wall acts as a brief reset beat without reducing speed.
+		var final_single_sides: Array[int] = [2, 1, 3, 0]
+		var final_single_side: int = final_single_sides[(gap_attack_index - 1) % final_single_sides.size()]
+		var final_single_gap: float = _choose_gap_lane(0.28)
+		_queue_gap_wall(final_single_side, final_single_gap, 0.045, 260.0, 0.82)
+	else:
+		# Push both openings toward outer portions of the arena. The intersection
+		# remains readable, but the required commitment is larger than a center gap.
+		var tight_horizontal_side: int = 1 if gap_attack_index % 2 == 1 else 0
+		var tight_vertical_side: int = 3 if gap_attack_index % 2 == 1 else 2
+		var tight_horizontal_gap: float = _choose_edge_gap_lane()
+		var tight_vertical_gap: float = _choose_edge_gap_lane()
+		_queue_gap_wall(tight_horizontal_side, tight_horizontal_gap, 0.040, 260.0, 0.80)
+		_queue_gap_wall(tight_vertical_side, tight_vertical_gap, 0.040, 260.0, 1.30)
 
 func _choose_gap_lane(min_separation: float) -> float:
 	var candidate: float = rng.randf_range(0.18, 0.82)
@@ -95,8 +145,7 @@ func _choose_gap_lane(min_separation: float) -> float:
 		return candidate
 
 	# Prefer a meaningfully different opening from the previous wall. A handful
-	# of attempts is enough to prevent repetitive center camping without making
-	# the gap location deterministic.
+	# of attempts prevents repetitive center camping without making it predictable.
 	for _attempt in range(6):
 		if absf(candidate - last_gap_lane) >= min_separation:
 			break
@@ -104,6 +153,11 @@ func _choose_gap_lane(min_separation: float) -> float:
 
 	last_gap_lane = candidate
 	return candidate
+
+func _choose_edge_gap_lane() -> float:
+	if rng.randf() < 0.5:
+		return rng.randf_range(0.14, 0.30)
+	return rng.randf_range(0.70, 0.86)
 
 func _queue_gap_wall(side: int, gap_lane: float, gap_half_width: float, speed: float, delay: float) -> void:
 	var radius: float = 9.0
@@ -119,13 +173,15 @@ func _queue_gap_wall(side: int, gap_lane: float, gap_half_width: float, speed: f
 func _get_spawn_interval(current_phase: int) -> float:
 	match current_phase:
 		1:
-			return rng.randf_range(4.25, 4.55)
+			return rng.randf_range(3.80, 4.10)
 		2:
-			return rng.randf_range(3.85, 4.10)
+			return rng.randf_range(3.40, 3.70)
 		3:
-			return rng.randf_range(3.45, 3.70)
+			return rng.randf_range(3.05, 3.30)
+		4:
+			return rng.randf_range(2.75, 3.00)
 		_:
-			return rng.randf_range(3.90, 4.15)
+			return rng.randf_range(2.55, 2.80)
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase > 0
