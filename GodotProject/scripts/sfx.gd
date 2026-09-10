@@ -3,7 +3,7 @@ extends Node
 # Audio drop-in system.
 #
 # Put your own .wav files in:
-#   res://audio/sfx/
+#   res://Audio/SFX/
 #
 # Exact filenames:
 #   projectile.wav
@@ -16,12 +16,12 @@ extends Node
 # If any file is missing, the old generated tone is used automatically.
 # This means a missing/renamed sound cannot break gameplay.
 
-const PROJECTILE_PATH := "res://audio/sfx/projectile.wav"
-const GRAZE_PATH := "res://audio/sfx/graze.wav"
-const COUNTDOWN_PATH := "res://audio/sfx/countdown.wav"
-const GO_PATH := "res://audio/sfx/go.wav"
-const HIT_PATH := "res://audio/sfx/hit.wav"
-const LEVEL_COMPLETE_PATH := "res://audio/sfx/level_complete.wav"
+const PROJECTILE_PATH := "res://Audio/SFX/projectile.wav"
+const GRAZE_PATH := "res://Audio/SFX/graze.wav"
+const COUNTDOWN_PATH := "res://Audio/SFX/countdown.wav"
+const GO_PATH := "res://Audio/SFX/go.wav"
+const HIT_PATH := "res://Audio/SFX/hit.wav"
+const LEVEL_COMPLETE_PATH := "res://Audio/SFX/level_complete.wav"
 
 
 static func play_projectile(parent: Node) -> void:
