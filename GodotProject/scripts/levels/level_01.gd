@@ -131,4 +131,4 @@ func _get_win_tutorial_text() -> String:
 	return "LEVEL COMPLETE\nFIRST CONTACT CLEARED"
 
 func _get_win_body(final_score: int, best_score: int) -> String:
-	return "45 SECONDS SURVIVED\n\nCOMPLETION BONUS   +2,500\nFINAL SCORE        %s\nBEST SCORE         %s\n\nMovement, warnings, dodging and grazing learned.\n\nCLICK OR PRESS R TO PLAY AGAIN" % [_format_score(final_score), _format_score(best_score)]
+	return "45 SECONDS SURVIVED\n\nCOMPLETION BONUS   +2,500\nFINAL SCORE        %s\nBEST SCORE         %s\n\nMovement, warnings, dodging and grazing learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
