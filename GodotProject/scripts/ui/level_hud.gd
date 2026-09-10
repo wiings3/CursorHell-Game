@@ -4,6 +4,12 @@ class_name CursorHellLevelHUD
 
 @export_multiline var level_display_text: String = "LEVEL 1\nFIRST CONTACT"
 
+# Intro instructions and the action prompt deliberately use separate layout
+# regions. This keeps CLICK TO BEGIN in one fixed position regardless of how
+# many lines of tutorial copy a level uses.
+@export var intro_body_bottom: float = 274.0
+@export var standard_body_bottom: float = 403.14
+
 @onready var timer_label: Label = %TimerLabel
 @onready var score_label: Label = %ScoreLabel
 @onready var level_label: Label = %LevelLabel
@@ -15,6 +21,7 @@ class_name CursorHellLevelHUD
 @onready var message_title: Label = %MessageTitle
 @onready var message_subtitle: Label = %MessageSubtitle
 @onready var message_body: Label = %MessageBody
+@onready var message_prompt: Label = %MessagePrompt
 @onready var hit_flash: ColorRect = %HitFlash
 @onready var hit_label: Label = %HitLabel
 @onready var graze_popup_label: Label = %GrazePopupLabel
@@ -25,6 +32,40 @@ func _ready() -> void:
 	level_label.text = level_display_text
 
 func _process(_delta: float) -> void:
-	# Keep the per-level label preview live while editing the HUD/level scene.
-	if Engine.is_editor_hint() and level_label != null:
-		level_label.text = level_display_text
+	if Engine.is_editor_hint():
+		# Keep the per-level label and intro layout preview live while editing.
+		if level_label != null:
+			level_label.text = level_display_text
+		if message_body != null:
+			message_body.offset_bottom = intro_body_bottom
+		if message_prompt != null:
+			message_prompt.visible = true
+		return
+
+	_sync_message_prompt()
+
+func _sync_message_prompt() -> void:
+	if message_body == null or message_prompt == null:
+		return
+
+	var level := get_parent()
+	if level == null:
+		return
+
+	var level_state := str(level.get("state"))
+	var is_intro := level_state == "intro"
+	message_prompt.visible = is_intro
+
+	if is_intro:
+		message_body.offset_bottom = intro_body_bottom
+		message_prompt.text = "CLICK TO BEGIN"
+		_strip_intro_prompt_from_body()
+	else:
+		# Death, pause, and completion panels still use their existing body layout.
+		message_body.offset_bottom = standard_body_bottom
+
+func _strip_intro_prompt_from_body() -> void:
+	const INTRO_PROMPT_SUFFIX := "\n\nCLICK TO BEGIN"
+	if not message_body.text.ends_with(INTRO_PROMPT_SUFFIX):
+		return
+	message_body.text = message_body.text.substr(0, message_body.text.length() - INTRO_PROMPT_SUFFIX.length())
