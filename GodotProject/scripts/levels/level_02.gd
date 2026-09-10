@@ -1,7 +1,7 @@
 extends "res://scripts/levels/standard_dodge_level.gd"
 class_name CursorHellLevel02
 
-const ROUND_TIME := 45.0
+const ROUND_TIME := 60.0
 const COMPLETION_BONUS := 3000.0
 
 var crossfire_attack_index := 0
@@ -24,11 +24,11 @@ func _get_completion_bonus() -> float:
 func _get_phase() -> int:
 	if elapsed < 6.0:
 		return 0
-	if elapsed < 18.0:
+	if elapsed < 23.0:
 		return 1
-	if elapsed < 30.0:
-		return 2
 	if elapsed < 40.0:
+		return 2
+	if elapsed < 53.0:
 		return 3
 	return 4
 
@@ -56,9 +56,9 @@ func _schedule_level_projectile(current_phase: int) -> void:
 
 	match current_phase:
 		1:
-			_queue_crossfire_pair(true, 132.0, 150.0, 1.20, 0.22, 0.34)
+			_queue_crossfire_pair(true, 150.0, 170.0, 1.20, 0.22, 0.34)
 		2:
-			_queue_crossfire_pair(false, 140.0, 160.0, 1.10, 0.18, 0.30)
+			_queue_crossfire_pair(false, 160.0, 182.0, 1.10, 0.18, 0.30)
 		3:
 			# Start horizontal, then alternate axes. Every second attack becomes a
 			# two-beat pair so the player learns the stagger before the finale.
@@ -66,19 +66,19 @@ func _schedule_level_projectile(current_phase: int) -> void:
 			var stagger := 0.0
 			if crossfire_attack_index % 2 == 0:
 				stagger = rng.randf_range(0.25, 0.38)
-			_queue_crossfire_pair(horizontal, 150.0, 175.0, 1.00, 0.16, 0.26, stagger)
+			_queue_crossfire_pair(horizontal, 175.0, 200.0, 1.00, 0.16, 0.26, stagger)
 		_:
 			# The finale always enters on the same readable sequence: horizontal,
 			# vertical, then both axes. Stagger keeps the overlap rhythmic rather than
 			# releasing four projectiles on the exact same frame.
 			var pattern := (crossfire_attack_index - 1) % 3
 			if pattern == 0:
-				_queue_crossfire_pair(true, 160.0, 182.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
+				_queue_crossfire_pair(true, 185.0, 210.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
 			elif pattern == 1:
-				_queue_crossfire_pair(false, 160.0, 182.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
+				_queue_crossfire_pair(false, 185.0, 210.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
 			else:
-				_queue_crossfire_pair(true, 158.0, 178.0, 1.00, 0.16, 0.25, rng.randf_range(0.24, 0.32))
-				_queue_crossfire_pair(false, 158.0, 178.0, 1.00, 0.16, 0.25, rng.randf_range(0.32, 0.40))
+				_queue_crossfire_pair(true, 182.0, 205.0, 1.00, 0.16, 0.25, rng.randf_range(0.24, 0.32))
+				_queue_crossfire_pair(false, 182.0, 205.0, 1.00, 0.16, 0.25, rng.randf_range(0.32, 0.40))
 
 func _queue_crossfire_pair(horizontal: bool, speed_min: float, speed_max: float, delay: float, gap_min: float, gap_max: float, stagger: float = 0.0) -> void:
 	# Build the pair around a shared center, then offset the two lanes. Keeping
@@ -133,7 +133,7 @@ func _get_intro_subtitle() -> String:
 	return "LEVEL 2 — COORDINATION"
 
 func _get_intro_body() -> String:
-	return "Warnings now arrive in coordinated pairs.\n\nOpposite edges fire together.\nRead both lanes before moving.\nSurvive for 45 seconds.\n\nCLICK TO BEGIN"
+	return "Warnings now arrive in coordinated pairs.\n\nOpposite edges fire together.\nRead both lanes before moving.\nSurvive for 60 seconds.\n\nCLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
 	return "LEVEL 2 — CROSSFIRE"
@@ -151,7 +151,7 @@ func _get_death_subtitle() -> String:
 	return "LEVEL 2 — CAUGHT IN THE CROSS"
 
 func _get_death_body(reason: String, run_time: float, final_score: int, best_score: int) -> String:
-	return "%s\n\nTIME   %s / 0:45\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
+	return "%s\n\nTIME   %s / 1:00\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
 
 func _get_win_title() -> String:
 	return "LEVEL COMPLETE"
@@ -163,4 +163,4 @@ func _get_win_tutorial_text() -> String:
 	return "LEVEL COMPLETE\nCROSSFIRE CLEARED"
 
 func _get_win_body(final_score: int, best_score: int) -> String:
-	return "45 SECONDS SURVIVED\n\nCOMPLETION BONUS   +3,000\nFINAL SCORE        %s\nBEST SCORE         %s\n\nOpposing lanes and coordinated attacks learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
+	return "60 SECONDS SURVIVED\n\nCOMPLETION BONUS   +3,000\nFINAL SCORE        %s\nBEST SCORE         %s\n\nOpposing lanes and coordinated attacks learned.\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
