@@ -1,0 +1,77 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/debug_console.gd" id="1_console"]
+
+[node name="DebugConsole" type="CanvasLayer"]
+visible = false
+layer = 100
+process_mode = 3
+script = ExtResource("1_console")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 0.42
+mouse_filter = 0
+color = Color(0.018, 0.018, 0.022, 0.97)
+
+[node name="Header" type="Label" parent="Backdrop"]
+offset_left = 18.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.72, 0.28, 1)
+theme_override_font_sizes/font_size = 20
+text = "CURSOR HELL // DEBUG CONSOLE"
+
+[node name="HelpHint" type="Label" parent="Backdrop"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -520.0
+offset_top = 14.0
+offset_right = -18.0
+offset_bottom = 38.0
+theme_override_colors/font_color = Color(0.7, 0.7, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+text = "` / ESC CLOSE   •   ENTER RUN   •   ↑ ↓ HISTORY"
+horizontal_alignment = 2
+
+[node name="Output" type="RichTextLabel" parent="Backdrop"]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 48.0
+offset_right = -18.0
+offset_bottom = -62.0
+mouse_filter = 1
+theme_override_colors/default_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/normal_font_size = 16
+scroll_active = true
+scroll_following = true
+
+[node name="Prompt" type="Label" parent="Backdrop"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -50.0
+offset_right = 42.0
+offset_bottom = -14.0
+theme_override_colors/font_color = Color(1, 0.72, 0.28, 1)
+theme_override_font_sizes/font_size = 20
+text = ">"
+vertical_alignment = 1
+
+[node name="CommandInput" type="LineEdit" parent="Backdrop"]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 44.0
+offset_top = -50.0
+offset_right = -18.0
+offset_bottom = -14.0
+theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
+theme_override_colors/font_placeholder_color = Color(0.48, 0.48, 0.52, 1)
+theme_override_font_sizes/font_size = 18
+placeholder_text = "Type a command..."
+caret_blink = true
