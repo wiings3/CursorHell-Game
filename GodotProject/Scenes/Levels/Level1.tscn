@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/Player.tscn" id="4_player"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
 
 [node name="Level1" type="Node2D"]
 script = ExtResource("1_level")
@@ -25,4 +25,3 @@ position = Vector2(800, 472.68)
 
 [node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
 unique_name_in_owner = true
-level_display_text = "LEVEL 1\nFIRST CONTACT"

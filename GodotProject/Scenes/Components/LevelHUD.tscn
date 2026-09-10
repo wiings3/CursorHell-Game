@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://b2lhdy7vpuc3r"]
 
-[ext_resource type="Script" path="res://scripts/ui/level_hud.gd" id="1_hud"]
+[ext_resource type="Script" uid="uid://ryr65upawi1r" path="res://scripts/ui/level_hud.gd" id="1_hud"]
 
 [node name="LevelHUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -87,7 +87,8 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 40
-text = "LEVEL 1\nFIRST CONTACT"
+text = "LEVEL 1
+FIRST CONTACT"
 horizontal_alignment = 1
 
 [node name="TutorialLabel" type="Label" parent="."]
@@ -255,7 +256,7 @@ layout_mode = 0
 offset_left = 42.0
 offset_top = 112.0
 offset_right = 548.0
-offset_bottom = 332.0
+offset_bottom = 403.14
 theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 3
