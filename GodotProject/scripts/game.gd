@@ -39,9 +39,9 @@ var countdown_step := -1
 var last_lane_by_side := [-10.0, -10.0, -10.0, -10.0]
 
 # World and UI nodes now live in Main.tscn. Gameplay code only controls them.
-@onready var player: Node2D = %Player
+@onready var player: CursorHellPlayer = %Player
 @onready var projectile_layer: Node2D = %Projectiles
-@onready var warning_layer: Node2D = %WarningLayer
+@onready var warning_layer: CursorHellWarningLayer = %WarningLayer
 
 @onready var ui_layer: CanvasLayer = %UI
 @onready var timer_label: Label = %TimerLabel
