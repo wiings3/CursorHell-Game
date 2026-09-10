@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Cursor Hell - Level 1"
-run/main_scene="res://Scenes/Levels/Level1.tscn"
+run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.5")
 
 [display]
