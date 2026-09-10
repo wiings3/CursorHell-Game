@@ -62,35 +62,35 @@ func _schedule_level_projectile(current_phase: int) -> void:
 	match current_phase:
 		1:
 			# A large, obvious opening from one consistent edge teaches the rule.
-			var gap_lane := _choose_gap_lane(0.18)
-			_queue_gap_wall(0, gap_lane, 0.105, 175.0, 1.25)
+			var phase1_gap: float = _choose_gap_lane(0.18)
+			_queue_gap_wall(0, phase1_gap, 0.105, 175.0, 1.25)
 		2:
 			# Alternate left and right while shrinking the opening enough to demand a
 			# deliberate reposition rather than simply hovering near center.
-			var side: int = 0 if gap_attack_index % 2 == 1 else 1
-			var gap_lane := _choose_gap_lane(0.22)
-			_queue_gap_wall(side, gap_lane, 0.085, 185.0, 1.12)
+			var phase2_side: int = 0 if gap_attack_index % 2 == 1 else 1
+			var phase2_gap: float = _choose_gap_lane(0.22)
+			_queue_gap_wall(phase2_side, phase2_gap, 0.085, 185.0, 1.12)
 		3:
 			# Carry the same safe-gap read around all four edges. Dense wall spacing is
 			# intentional: outside the authored opening, adjacent shots are too close
 			# for the player hitbox to safely thread between them.
-			var sides: Array[int] = [0, 2, 1, 3]
-			var side: int = sides[(gap_attack_index - 1) % sides.size()]
-			var gap_lane := _choose_gap_lane(0.22)
-			_queue_gap_wall(side, gap_lane, 0.070, 195.0, 1.00)
+			var phase3_sides: Array[int] = [0, 2, 1, 3]
+			var phase3_side: int = phase3_sides[(gap_attack_index - 1) % phase3_sides.size()]
+			var phase3_gap: float = _choose_gap_lane(0.22)
+			_queue_gap_wall(phase3_side, phase3_gap, 0.070, 195.0, 1.00)
 		_:
 			# Finale: two perpendicular walls are telegraphed together but arrive in
 			# sequence. Their gaps define a temporary safe intersection the player can
 			# identify before either wall fires.
 			var horizontal_side: int = 0 if gap_attack_index % 2 == 1 else 1
 			var vertical_side: int = 2 if gap_attack_index % 2 == 1 else 3
-			var horizontal_gap := _choose_gap_lane(0.24)
-			var vertical_gap := rng.randf_range(0.18, 0.82)
+			var horizontal_gap: float = _choose_gap_lane(0.24)
+			var vertical_gap: float = rng.randf_range(0.18, 0.82)
 			_queue_gap_wall(horizontal_side, horizontal_gap, 0.060, 205.0, 0.95)
 			_queue_gap_wall(vertical_side, vertical_gap, 0.060, 200.0, 1.72)
 
 func _choose_gap_lane(min_separation: float) -> float:
-	var candidate := rng.randf_range(0.18, 0.82)
+	var candidate: float = rng.randf_range(0.18, 0.82)
 	if last_gap_lane < 0.0:
 		last_gap_lane = candidate
 		return candidate
@@ -107,12 +107,12 @@ func _choose_gap_lane(min_separation: float) -> float:
 	return candidate
 
 func _queue_gap_wall(side: int, gap_lane: float, gap_half_width: float, speed: float, delay: float) -> void:
-	var radius := 9.0
-	var divisor := maxi(WALL_SLOT_COUNT - 1, 1)
+	var radius: float = 9.0
+	var divisor: int = maxi(WALL_SLOT_COUNT - 1, 1)
 
 	for index in range(WALL_SLOT_COUNT):
-		var t := float(index) / float(divisor)
-		var lane := lerpf(WALL_LANE_MIN, WALL_LANE_MAX, t)
+		var t: float = float(index) / float(divisor)
+		var lane: float = lerpf(WALL_LANE_MIN, WALL_LANE_MAX, t)
 		if absf(lane - gap_lane) <= gap_half_width:
 			continue
 		queue_projectile_warning(side, lane, speed, radius, delay)
