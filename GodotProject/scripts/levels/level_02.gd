@@ -5,9 +5,11 @@ const ROUND_TIME := 45.0
 const COMPLETION_BONUS := 3000.0
 
 var crossfire_attack_index := 0
+var crossfire_phase := -1
 
 func _reset_round(start_now: bool) -> void:
 	crossfire_attack_index = 0
+	crossfire_phase = -1
 	super._reset_round(start_now)
 
 func _get_level_number() -> int:
@@ -33,17 +35,23 @@ func _get_phase() -> int:
 func _update_level_tutorial() -> void:
 	match _get_phase():
 		0:
-			tutorial_label.text = "CROSSFIRE\nThreats now arrive in coordinated pairs."
+			tutorial_label.text = "CROSSFIRE\nOpposite edges now work together."
 		1:
-			tutorial_label.text = "OPPOSING SIDES\nLeft and right warnings belong to one attack."
+			tutorial_label.text = "OPPOSING SIDES\nRead both warnings before committing to a move."
 		2:
-			tutorial_label.text = "VERTICAL PAIRS\nWatch the top and bottom together."
+			tutorial_label.text = "VERTICAL PAIRS\nTop and bottom are one attack. Reposition early."
 		3:
-			tutorial_label.text = "TWO BEATS\nSome pairs fire one shot, then the other. Keep moving."
+			tutorial_label.text = "TWO BEATS\nSome pairs split their timing. Keep moving between shots."
 		_:
-			tutorial_label.text = "TRUE CROSSFIRE\nStaggered attacks can overlap. Read the timing."
+			tutorial_label.text = "TRUE CROSSFIRE\nRead the open space, then read the timing."
 
 func _schedule_level_projectile(current_phase: int) -> void:
+	# Each phase owns its own attack rhythm. Resetting here makes the first attack
+	# of every section intentional instead of depending on how many random-timed
+	# attacks happened to fit inside the previous section.
+	if current_phase != crossfire_phase:
+		crossfire_phase = current_phase
+		crossfire_attack_index = 0
 	crossfire_attack_index += 1
 
 	match current_phase:
@@ -52,18 +60,18 @@ func _schedule_level_projectile(current_phase: int) -> void:
 		2:
 			_queue_crossfire_pair(false, 140.0, 160.0, 1.10, 0.18, 0.30)
 		3:
-			# Keep the axis rhythm readable, then make every second attack a two-beat
-			# pair. Both warnings appear together; only their firing times differ.
-			var horizontal := crossfire_attack_index % 2 == 0
+			# Start horizontal, then alternate axes. Every second attack becomes a
+			# two-beat pair so the player learns the stagger before the finale.
+			var horizontal := crossfire_attack_index % 2 == 1
 			var stagger := 0.0
 			if crossfire_attack_index % 2 == 0:
 				stagger = rng.randf_range(0.25, 0.38)
 			_queue_crossfire_pair(horizontal, 150.0, 175.0, 1.00, 0.16, 0.26, stagger)
 		_:
-			# Controlled final sequence: horizontal, vertical, then both axes. The
-			# stagger turns the overlap into a readable rhythm instead of four shots
-			# releasing on the exact same frame.
-			var pattern := crossfire_attack_index % 3
+			# The finale always enters on the same readable sequence: horizontal,
+			# vertical, then both axes. Stagger keeps the overlap rhythmic rather than
+			# releasing four projectiles on the exact same frame.
+			var pattern := (crossfire_attack_index - 1) % 3
 			if pattern == 0:
 				_queue_crossfire_pair(true, 160.0, 182.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
 			elif pattern == 1:
