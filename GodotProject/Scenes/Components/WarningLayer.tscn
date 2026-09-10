@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/warning_layer.gd" id="1_warning"]
+
+[node name="WarningLayer" type="Node2D"]
+script = ExtResource("1_warning")
+arena = Rect2(0, 0, 820, 756)
