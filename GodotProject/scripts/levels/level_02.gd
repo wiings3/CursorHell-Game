@@ -4,6 +4,12 @@ class_name CursorHellLevel02
 const ROUND_TIME := 45.0
 const COMPLETION_BONUS := 3000.0
 
+var crossfire_attack_index := 0
+
+func _reset_round(start_now: bool) -> void:
+	crossfire_attack_index = 0
+	super._reset_round(start_now)
+
 func _get_level_number() -> int:
 	return 2
 
@@ -33,34 +39,40 @@ func _update_level_tutorial() -> void:
 		2:
 			tutorial_label.text = "VERTICAL PAIRS\nWatch the top and bottom together."
 		3:
-			tutorial_label.text = "READ THE PATTERN\nHorizontal. Vertical. Reposition between attacks."
+			tutorial_label.text = "TWO BEATS\nSome pairs fire one shot, then the other. Keep moving."
 		_:
-			tutorial_label.text = "TRUE CROSSFIRE\nTwo axes can overlap. Find open space."
+			tutorial_label.text = "TRUE CROSSFIRE\nStaggered attacks can overlap. Read the timing."
 
 func _schedule_level_projectile(current_phase: int) -> void:
+	crossfire_attack_index += 1
+
 	match current_phase:
 		1:
 			_queue_crossfire_pair(true, 132.0, 150.0, 1.20, 0.22, 0.34)
 		2:
 			_queue_crossfire_pair(false, 140.0, 160.0, 1.10, 0.18, 0.30)
 		3:
-			# Alternate axes instead of choosing randomly. This makes the pressure
-			# readable while still forcing the player to reposition each attack.
-			var horizontal := int(floor((elapsed - 30.0) / 2.0)) % 2 == 0
-			_queue_crossfire_pair(horizontal, 150.0, 175.0, 1.00, 0.16, 0.26)
+			# Keep the axis rhythm readable, then make every second attack a two-beat
+			# pair. Both warnings appear together; only their firing times differ.
+			var horizontal := crossfire_attack_index % 2 == 0
+			var stagger := 0.0
+			if crossfire_attack_index % 2 == 0:
+				stagger = rng.randf_range(0.25, 0.38)
+			_queue_crossfire_pair(horizontal, 150.0, 175.0, 1.00, 0.16, 0.26, stagger)
 		_:
-			# Controlled final pattern: horizontal, vertical, then both axes.
-			# The overlap is deliberate and telegraphed rather than four random shots.
-			var pattern := int(floor((elapsed - 40.0) / 1.6)) % 3
+			# Controlled final sequence: horizontal, vertical, then both axes. The
+			# stagger turns the overlap into a readable rhythm instead of four shots
+			# releasing on the exact same frame.
+			var pattern := crossfire_attack_index % 3
 			if pattern == 0:
-				_queue_crossfire_pair(true, 160.0, 182.0, 0.92, 0.14, 0.23)
+				_queue_crossfire_pair(true, 160.0, 182.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
 			elif pattern == 1:
-				_queue_crossfire_pair(false, 160.0, 182.0, 0.92, 0.14, 0.23)
+				_queue_crossfire_pair(false, 160.0, 182.0, 0.95, 0.14, 0.23, rng.randf_range(0.28, 0.38))
 			else:
-				_queue_crossfire_pair(true, 158.0, 178.0, 1.00, 0.16, 0.25)
-				_queue_crossfire_pair(false, 158.0, 178.0, 1.00, 0.16, 0.25)
+				_queue_crossfire_pair(true, 158.0, 178.0, 1.00, 0.16, 0.25, rng.randf_range(0.24, 0.32))
+				_queue_crossfire_pair(false, 158.0, 178.0, 1.00, 0.16, 0.25, rng.randf_range(0.32, 0.40))
 
-func _queue_crossfire_pair(horizontal: bool, speed_min: float, speed_max: float, delay: float, gap_min: float, gap_max: float) -> void:
+func _queue_crossfire_pair(horizontal: bool, speed_min: float, speed_max: float, delay: float, gap_min: float, gap_max: float, stagger: float = 0.0) -> void:
 	# Build the pair around a shared center, then offset the two lanes. Keeping
 	# them separated avoids cheap same-lane pinches while preserving the idea
 	# that both warnings are one coordinated attack.
@@ -75,13 +87,22 @@ func _queue_crossfire_pair(horizontal: bool, speed_min: float, speed_max: float,
 
 	var speed := rng.randf_range(speed_min, speed_max)
 	var radius := 7.0
+	var delay_a := delay
+	var delay_b := delay + stagger
+
+	# Randomize which side gets the second beat so the rhythm is predictable but
+	# the exact dodge direction is not. Both warning markers are queued now.
+	if stagger > 0.0 and rng.randf() < 0.5:
+		var delay_swap := delay_a
+		delay_a = delay_b
+		delay_b = delay_swap
 
 	if horizontal:
-		queue_projectile_warning(0, lane_a, speed, radius, delay)
-		queue_projectile_warning(1, lane_b, speed, radius, delay)
+		queue_projectile_warning(0, lane_a, speed, radius, delay_a)
+		queue_projectile_warning(1, lane_b, speed, radius, delay_b)
 	else:
-		queue_projectile_warning(2, lane_a, speed, radius, delay)
-		queue_projectile_warning(3, lane_b, speed, radius, delay)
+		queue_projectile_warning(2, lane_a, speed, radius, delay_a)
+		queue_projectile_warning(3, lane_b, speed, radius, delay_b)
 
 func _get_spawn_interval(current_phase: int) -> float:
 	match current_phase:
