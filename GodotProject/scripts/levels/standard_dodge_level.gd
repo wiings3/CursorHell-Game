@@ -2,20 +2,21 @@ extends "res://scripts/levels/base_level.gd"
 class_name CursorHellStandardDodgeLevel
 
 # Shared anti-camping rule for normal dodge levels. Once hazards are active,
-# remaining effectively stationary anywhere in the arena for too long creates
-# a targeted, fully telegraphed shot through the player's current position.
-const STATIONARY_HOLD_TIME := 1.0
-const STATIONARY_MOVEMENT_EPSILON := 0.5
-const STATIONARY_PRESSURE_COOLDOWN := 2.4
-const STATIONARY_WARNING_DELAY := 1.05
-const STATIONARY_PRESSURE_RADIUS := 7.0
-const STATIONARY_PRESSURE_SPEED_MIN := 165.0
-const STATIONARY_PRESSURE_SPEED_MAX := 185.0
+# staying within the same small area for too long creates a targeted, fully
+# telegraphed shot through the player's current position. Small mouse wiggles
+# do not reset the timer; the player has to actually relocate.
+const CAMP_HOLD_TIME := 1.0
+const CAMP_ESCAPE_DISTANCE := 65.0
+const CAMP_PRESSURE_COOLDOWN := 2.4
+const CAMP_WARNING_DELAY := 1.05
+const CAMP_PRESSURE_RADIUS := 7.0
+const CAMP_PRESSURE_SPEED_MIN := 165.0
+const CAMP_PRESSURE_SPEED_MAX := 185.0
 
-var stationary_hold_time := 0.0
-var stationary_pressure_cooldown := 0.0
-var last_stationary_position := Vector2.ZERO
-var next_stationary_shot_horizontal := true
+var camp_hold_time := 0.0
+var camp_pressure_cooldown := 0.0
+var camp_anchor_position := Vector2.ZERO
+var next_camp_shot_horizontal := true
 
 func _physics_process(delta: float) -> void:
 	# Preserve every existing BaseLevel system first: timing, spawning, warnings,
@@ -23,57 +24,63 @@ func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 
 	if state != "playing":
-		stationary_hold_time = 0.0
-		last_stationary_position = player.position
+		_reset_camp_tracking()
 		return
 
 	# Intro/tutorial phases deliberately remain safe. The anti-camp rule only
 	# begins once the level itself has entered an active hazard phase.
 	if _get_phase() <= 0:
-		stationary_hold_time = 0.0
-		last_stationary_position = player.position
+		_reset_camp_tracking()
 		return
 
-	_update_stationary_pressure(delta)
+	_update_camp_pressure(delta)
 
 func _reset_round(start_now: bool) -> void:
-	stationary_hold_time = 0.0
-	stationary_pressure_cooldown = 0.0
-	next_stationary_shot_horizontal = true
+	camp_hold_time = 0.0
+	camp_pressure_cooldown = 0.0
+	next_camp_shot_horizontal = true
 	super._reset_round(start_now)
-	last_stationary_position = player.position
+	camp_anchor_position = player.position
 
-func _update_stationary_pressure(delta: float) -> void:
-	stationary_pressure_cooldown = maxf(0.0, stationary_pressure_cooldown - delta)
+func _reset_camp_tracking() -> void:
+	camp_hold_time = 0.0
+	camp_anchor_position = player.position
 
-	var moved := player.position.distance_to(last_stationary_position) > STATIONARY_MOVEMENT_EPSILON
-	last_stationary_position = player.position
+func _update_camp_pressure(delta: float) -> void:
+	camp_pressure_cooldown = maxf(0.0, camp_pressure_cooldown - delta)
 
-	if moved:
-		stationary_hold_time = 0.0
+	# While the pressure shot is on cooldown, keep moving the anchor with the
+	# player. When the cooldown ends they receive a fresh one-second grace window
+	# from wherever they currently are.
+	if camp_pressure_cooldown > 0.0:
+		camp_hold_time = 0.0
+		camp_anchor_position = player.position
 		return
 
-	# Require another full second of stillness after each pressure-shot cooldown,
-	# rather than immediately firing again when the cooldown expires.
-	if stationary_pressure_cooldown > 0.0:
-		stationary_hold_time = 0.0
+	# The timer is tied to an AREA, not frame-to-frame motion. Wiggling a few
+	# pixels, drawing tiny circles, or otherwise moving inside this radius does
+	# not count as escaping the camp position.
+	if player.position.distance_to(camp_anchor_position) > CAMP_ESCAPE_DISTANCE:
+		camp_anchor_position = player.position
+		camp_hold_time = 0.0
 		return
 
-	stationary_hold_time += delta
-	if stationary_hold_time < STATIONARY_HOLD_TIME:
+	camp_hold_time += delta
+	if camp_hold_time < CAMP_HOLD_TIME:
 		return
 
-	_queue_stationary_pressure_shot()
-	stationary_hold_time = 0.0
-	stationary_pressure_cooldown = STATIONARY_PRESSURE_COOLDOWN
-	next_stationary_shot_horizontal = not next_stationary_shot_horizontal
+	_queue_camp_pressure_shot()
+	camp_hold_time = 0.0
+	camp_pressure_cooldown = CAMP_PRESSURE_COOLDOWN
+	camp_anchor_position = player.position
+	next_camp_shot_horizontal = not next_camp_shot_horizontal
 
-func _queue_stationary_pressure_shot() -> void:
+func _queue_camp_pressure_shot() -> void:
 	# Aim at the player's CURRENT lane when the warning appears. The projectile
 	# does not track afterward, so moving during the warning is always the counter.
 	var x_lane := clampf((player.position.x - ARENA.position.x) / ARENA.size.x, 0.01, 0.99)
 	var y_lane := clampf((player.position.y - ARENA.position.y) / ARENA.size.y, 0.01, 0.99)
-	var horizontal := next_stationary_shot_horizontal
+	var horizontal := next_camp_shot_horizontal
 	var side := 0
 	var lane := y_lane
 
@@ -89,7 +96,7 @@ func _queue_stationary_pressure_shot() -> void:
 	queue_projectile_warning(
 		side,
 		lane,
-		rng.randf_range(STATIONARY_PRESSURE_SPEED_MIN, STATIONARY_PRESSURE_SPEED_MAX),
-		STATIONARY_PRESSURE_RADIUS,
-		STATIONARY_WARNING_DELAY
+		rng.randf_range(CAMP_PRESSURE_SPEED_MIN, CAMP_PRESSURE_SPEED_MAX),
+		CAMP_PRESSURE_RADIUS,
+		CAMP_WARNING_DELAY
 	)
