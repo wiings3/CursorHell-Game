@@ -1,7 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/warning_layer.gd" id="1_warning"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/WarningMarker.tscn" id="2_marker"]
 
 [node name="WarningLayer" type="Node2D"]
 script = ExtResource("1_warning")
 arena = Rect2(0, 0, 820, 756)
+
+[node name="RuntimeMarkers" type="Node2D" parent="."]
+
+[node name="DesignPreview" parent="." instance=ExtResource("2_marker")]
+position = Vector2(11, 378)
