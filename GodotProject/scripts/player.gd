@@ -55,10 +55,11 @@ func _draw() -> void:
 	# of the actual collision circle.
 	var tick_color := body_color
 	tick_color.a = 0.58
-	for direction in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
-		var from := direction * (visual_radius + 3.5)
-		var to := direction * (visual_radius + 6.5)
-		draw_line(from, to, tick_color, 1.25, true)
+	var tick_directions: Array[Vector2] = [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]
+	for direction: Vector2 in tick_directions:
+		var tick_start: Vector2 = direction * (visual_radius + 3.5)
+		var tick_end: Vector2 = direction * (visual_radius + 6.5)
+		draw_line(tick_start, tick_end, tick_color, 1.25, true)
 
 	# Solid cursor body.
 	draw_circle(Vector2.ZERO, visual_radius, body_color)
