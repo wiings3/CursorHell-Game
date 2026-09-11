@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/warning_marker.gd" id="1_marker"]
+
+[node name="WarningMarker" type="Node2D"]
+script = ExtResource("1_marker")
+
+[node name="Guide" type="Line2D" parent="."]
+points = PackedVector2Array(-11, 0, 809, 0)
+width = 2.0
+default_color = Color(1, 0.69, 0.18, 1)
+antialiased = true
+
+[node name="EdgeWide" type="Line2D" parent="."]
+points = PackedVector2Array(0, -18, 0, 18)
+width = 7.0
+default_color = Color(1, 0.5, 0.08, 1)
+antialiased = true
+
+[node name="EdgeCore" type="Line2D" parent="."]
+points = PackedVector2Array(0, -18, 0, 18)
+width = 2.0
+default_color = Color(1, 0.91, 0.58, 1)
+antialiased = true
+
+[node name="MarkerBody" type="Node2D" parent="."]
+
+[node name="Arrow" type="Polygon2D" parent="MarkerBody"]
+polygon = PackedVector2Array(22, 0, -5, 12, -5, -12)
+color = Color(1, 0.63, 0.12, 1)
+
+[node name="CountdownRing" type="Line2D" parent="MarkerBody"]
+points = PackedVector2Array(0, -22, 5.375, -21.333, 10.425, -19.373, 14.843, -16.239, 18.361, -12.12, 20.765, -7.266, 21.911, -1.972, 21.729, 3.442, 20.23, 8.647, 17.504, 13.327, 13.717, 17.2, 9.098, 20.031, 3.928, 21.646, -1.48, 21.95, -6.798, 20.923, -11.705, 18.628, -15.901, 15.203, -19.134, 10.857, -21.207, 5.853, -21.994, 0.494, -21.448, -4.895, -19.602, -9.988)
+width = 2.5
+default_color = Color(1, 0.91, 0.58, 1)
+antialiased = true
+
+[node name="SweepRing" type="Line2D" parent="MarkerBody"]
+visible = false
+points = PackedVector2Array(29, 0, 28.443, 5.658, 26.793, 11.098, 24.113, 16.112, 20.506, 20.506, 16.112, 24.113, 11.098, 26.793, 5.658, 28.443, 0, 29, -5.658, 28.443, -11.098, 26.793, -16.112, 24.113, -20.506, 20.506, -24.113, 16.112, -26.793, 11.098, -28.443, 5.658, -29, 0, -28.443, -5.658, -26.793, -11.098, -24.113, -16.112, -20.506, -20.506, -16.112, -24.113, -11.098, -26.793, -5.658, -28.443, 0, -29, 5.658, -28.443, 11.098, -26.793, 16.112, -24.113, 20.506, -20.506, 24.113, -16.112, 26.793, -11.098, 28.443, -5.658)
+width = 2.0
+default_color = Color(1, 0.78, 0.3, 1)
+closed = true
+antialiased = true
