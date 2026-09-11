@@ -7,9 +7,59 @@ script = ExtResource("1_projectile")
 velocity = Vector2(0, 0)
 max_age = 10.0
 radius = 7.0
-trail_color = Color(1, 0.29, 0.05, 1)
-flare_color = Color(1, 0.25, 0.035, 0.96)
-glow_color = Color(1, 0.35, 0.045, 0.16)
-body_color = Color(1, 0.5, 0.07, 1)
-core_color = Color(1, 0.88, 0.42, 1)
-center_color = Color(1, 0.99, 0.84, 1)
+
+[node name="VisualRoot" type="Node2D" parent="."]
+
+[node name="DirectionalRoot" type="Node2D" parent="VisualRoot"]
+
+[node name="SpeedStretch" type="Node2D" parent="VisualRoot/DirectionalRoot"]
+
+[node name="TailHaze" type="Polygon2D" parent="VisualRoot/DirectionalRoot/SpeedStretch"]
+polygon = PackedVector2Array(3, -6, -27, -4, -48, 0, -27, 4, 3, 6)
+color = Color(1, 0.35, 0.045, 0.09)
+
+[node name="TailCore" type="Polygon2D" parent="VisualRoot/DirectionalRoot/SpeedStretch"]
+polygon = PackedVector2Array(3, -2.4, -22, -1.5, -38, 0, -22, 1.5, 3, 2.4)
+color = Color(1, 0.29, 0.05, 0.26)
+
+[node name="Flare" type="Polygon2D" parent="VisualRoot/DirectionalRoot/SpeedStretch"]
+polygon = PackedVector2Array(10.2, 0, -17.8, -5.5, -17.8, 5.5)
+color = Color(1, 0.25, 0.035, 0.96)
+
+[node name="WideGlow" type="Polygon2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.835, 0.835)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.35, 0.045, 0.10)
+
+[node name="Glow" type="Polygon2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.657, 0.657)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.35, 0.045, 0.16)
+
+[node name="Body" type="Polygon2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.5385, 0.5385)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.5, 0.07, 1)
+
+[node name="CollisionEdge" type="Line2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.7, 0.7)
+points = PackedVector2Array(10, 0, 9.808, 1.951, 9.239, 3.827, 8.315, 5.556, 7.071, 7.071, 5.556, 8.315, 3.827, 9.239, 1.951, 9.808, 0, 10, -1.951, 9.808, -3.827, 9.239, -5.556, 8.315, -7.071, 7.071, -8.315, 5.556, -9.239, 3.827, -9.808, 1.951, -10, 0, -9.808, -1.951, -9.239, -3.827, -8.315, -5.556, -7.071, -7.071, -5.556, -8.315, -3.827, -9.239, -1.951, -9.808, 0, -10, 1.951, -9.808, 3.827, -9.239, 5.556, -8.315, 7.071, -7.071, 8.315, -5.556, 9.239, -3.827, 9.808, -1.951)
+width = 1.3
+default_color = Color(1, 0.88, 0.42, 0.92)
+closed = true
+antialiased = true
+
+[node name="Core" type="Polygon2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.28, 0.28)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.88, 0.42, 1)
+
+[node name="Center" type="Polygon2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.1185, 0.1185)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.99, 0.84, 1)
+
+[node name="HotPin" type="Polygon2D" parent="VisualRoot/DirectionalRoot"]
+scale = Vector2(0.0405, 0.0405)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 1, 1, 0.92)
