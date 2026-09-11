@@ -1,16 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://cqaqr61lap2q6"]
+[gd_scene load_steps=6 format=3 uid="uid://cqaqr61lap2q6"]
 
 [ext_resource type="Script" uid="uid://25bnsnhdtu8a" path="res://scripts/levels/level_02.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
 [ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
 [ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/GameplayBackdrop.tscn" id="6_backdrop"]
 
 [node name="Level2" type="Node2D"]
 script = ExtResource("1_level")
-
-[node name="GameplayBackdrop" parent="." instance=ExtResource("6_backdrop")]
 
 [node name="ArenaBackground" parent="." instance=ExtResource("2_arena")]
 position = Vector2(390, 72)
