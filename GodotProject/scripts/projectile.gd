@@ -55,22 +55,49 @@ func _draw() -> void:
 	var speed := velocity.length()
 	var direction := Vector2.RIGHT if speed <= 0.1 else velocity.normalized()
 	var perpendicular := Vector2(-direction.y, direction.x)
+	var streak_scale := clampf(speed / 300.0, 0.78, 1.30)
 
+	# Layered trail: a broad ember haze underneath a brighter inner streak. The
+	# trail remains entirely visual; projectile history used for collision is unchanged.
 	for i in range(trail.size() - 1):
 		var a := trail[i] - position
 		var b := trail[i + 1] - position
-		var alpha := 0.25 * (1.0 - float(i) / maxf(1.0, float(trail.size())))
-		var trail_segment_color := trail_color
-		trail_segment_color.a = alpha
-		draw_line(a, b, trail_segment_color, maxf(1.0, radius * 0.9 - i * 0.45))
+		var normalized_age := float(i) / maxf(1.0, float(trail.size() - 1))
+		var fade := 1.0 - normalized_age
 
-	# The long flare communicates direction; the bright round core is the danger.
-	var back := -direction * (radius * 2.35)
-	var tip := direction * (radius * 1.70)
-	var p1 := back + perpendicular * radius * 0.82
-	var p2 := back - perpendicular * radius * 0.82
+		var haze := glow_color
+		haze.a = 0.10 * fade
+		draw_line(a, b, haze, maxf(2.0, radius * 1.55 * fade), true)
+
+		var streak := trail_color
+		streak.a = 0.28 * fade
+		draw_line(a, b, streak, maxf(1.0, radius * 0.72 * fade), true)
+
+	# Directional flare scales slightly with speed so faster shots feel sharper
+	# without changing their collision radius.
+	var back := -direction * (radius * 2.55 * streak_scale)
+	var tip := direction * (radius * 1.45)
+	var p1 := back + perpendicular * radius * 0.78
+	var p2 := back - perpendicular * radius * 0.78
 	draw_colored_polygon(PackedVector2Array([tip, p1, p2]), flare_color)
-	draw_circle(Vector2.ZERO, radius * 1.25, glow_color)
-	draw_circle(Vector2.ZERO, radius * 0.92, body_color)
-	draw_circle(Vector2.ZERO, radius * 0.50, core_color)
-	draw_circle(Vector2.ZERO, radius * 0.20, center_color)
+
+	# Multiple translucent layers produce a compact hot glow while keeping the true
+	# danger size readable even during the dense later levels.
+	var wide_glow := glow_color
+	wide_glow.a *= 0.62
+	draw_circle(Vector2.ZERO, radius * 1.55, wide_glow)
+	draw_circle(Vector2.ZERO, radius * 1.22, glow_color)
+
+	# The bright body now reaches the actual collision radius. This makes projectile
+	# size visually honest, especially for the large slow blockers in THE FLOOD.
+	draw_circle(Vector2.ZERO, radius, body_color)
+
+	var collision_edge := core_color
+	collision_edge.a = 0.92
+	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 28, collision_edge, maxf(1.0, radius * 0.13), true)
+
+	draw_circle(Vector2.ZERO, radius * 0.52, core_color)
+	draw_circle(Vector2.ZERO, radius * 0.22, center_color)
+
+	var hot_pin := Color(1.0, 1.0, 1.0, 0.92)
+	draw_circle(Vector2.ZERO, maxf(1.0, radius * 0.075), hot_pin)
