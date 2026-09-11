@@ -1,4 +1,22 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3 uid="uid://vetw0ieivkyj"]
+
+[ext_resource type="Shader" uid="uid://bn7ugajtfyydq" path="res://Shaders/ArenaBackground.gdshader" id="1_wvnat"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kyqhp"]
+shader = ExtResource("1_wvnat")
+shader_parameter/polar_coordinates = false
+shader_parameter/polar_center = Vector2(0.5, 0.5)
+shader_parameter/polar_zoom = 3.12
+shader_parameter/polar_repeat = 8.225
+shader_parameter/spin_rotation = 0.0
+shader_parameter/spin_speed = 2.0
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/colour_1 = Color(0.40392157, 0.47058824, 0.6509804, 0.6431373)
+shader_parameter/colour_2 = Color(0.012617188, 0.012617188, 0.007205989, 0.6431373)
+shader_parameter/colour_3 = Color(0, 0, 0, 0.60784316)
+shader_parameter/contrast = 2.0
+shader_parameter/spin_amount = 0.36
+shader_parameter/pixel_filter = 700.0
 
 [node name="ArenaBackground" type="Node2D"]
 
@@ -8,175 +26,209 @@ offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.088, 0.098, 0.118, 1)
 
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_kyqhp")
+offset_right = 819.0
+offset_bottom = 752.0
+
 [node name="Grid" type="Node2D" parent="."]
+
 [node name="V01" type="ColorRect" parent="Grid"]
 offset_left = 52.0
 offset_right = 53.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V02" type="ColorRect" parent="Grid"]
 offset_left = 104.0
 offset_right = 105.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V03" type="ColorRect" parent="Grid"]
 offset_left = 156.0
 offset_right = 157.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V04" type="ColorRect" parent="Grid"]
 offset_left = 208.0
 offset_right = 209.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V05" type="ColorRect" parent="Grid"]
 offset_left = 260.0
 offset_right = 261.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V06" type="ColorRect" parent="Grid"]
 offset_left = 312.0
 offset_right = 313.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V07" type="ColorRect" parent="Grid"]
 offset_left = 364.0
 offset_right = 365.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V08" type="ColorRect" parent="Grid"]
 offset_left = 416.0
 offset_right = 417.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V09" type="ColorRect" parent="Grid"]
 offset_left = 468.0
 offset_right = 469.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V10" type="ColorRect" parent="Grid"]
 offset_left = 520.0
 offset_right = 521.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V11" type="ColorRect" parent="Grid"]
 offset_left = 572.0
 offset_right = 573.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V12" type="ColorRect" parent="Grid"]
 offset_left = 624.0
 offset_right = 625.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V13" type="ColorRect" parent="Grid"]
 offset_left = 676.0
 offset_right = 677.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V14" type="ColorRect" parent="Grid"]
 offset_left = 728.0
 offset_right = 729.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="V15" type="ColorRect" parent="Grid"]
 offset_left = 780.0
 offset_right = 781.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H01" type="ColorRect" parent="Grid"]
 offset_top = 52.0
 offset_right = 820.0
 offset_bottom = 53.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H02" type="ColorRect" parent="Grid"]
 offset_top = 104.0
 offset_right = 820.0
 offset_bottom = 105.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H03" type="ColorRect" parent="Grid"]
 offset_top = 156.0
 offset_right = 820.0
 offset_bottom = 157.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H04" type="ColorRect" parent="Grid"]
 offset_top = 208.0
 offset_right = 820.0
 offset_bottom = 209.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H05" type="ColorRect" parent="Grid"]
 offset_top = 260.0
 offset_right = 820.0
 offset_bottom = 261.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H06" type="ColorRect" parent="Grid"]
 offset_top = 312.0
 offset_right = 820.0
 offset_bottom = 313.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H07" type="ColorRect" parent="Grid"]
 offset_top = 364.0
 offset_right = 820.0
 offset_bottom = 365.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H08" type="ColorRect" parent="Grid"]
 offset_top = 416.0
 offset_right = 820.0
 offset_bottom = 417.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H09" type="ColorRect" parent="Grid"]
 offset_top = 468.0
 offset_right = 820.0
 offset_bottom = 469.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H10" type="ColorRect" parent="Grid"]
 offset_top = 520.0
 offset_right = 820.0
 offset_bottom = 521.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H11" type="ColorRect" parent="Grid"]
 offset_top = 572.0
 offset_right = 820.0
 offset_bottom = 573.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H12" type="ColorRect" parent="Grid"]
 offset_top = 624.0
 offset_right = 820.0
 offset_bottom = 625.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H13" type="ColorRect" parent="Grid"]
 offset_top = 676.0
 offset_right = 820.0
 offset_bottom = 677.0
 mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
+
 [node name="H14" type="ColorRect" parent="Grid"]
 offset_top = 728.0
 offset_right = 820.0
@@ -185,6 +237,7 @@ mouse_filter = 2
 color = Color(0.62, 0.55, 0.5, 0.065)
 
 [node name="InnerEdge" type="Node2D" parent="."]
+
 [node name="Top" type="ColorRect" parent="InnerEdge"]
 offset_left = 5.0
 offset_top = 5.0
@@ -192,6 +245,7 @@ offset_right = 815.0
 offset_bottom = 6.0
 mouse_filter = 2
 color = Color(0.3, 0.28, 0.28, 0.1)
+
 [node name="Bottom" type="ColorRect" parent="InnerEdge"]
 offset_left = 5.0
 offset_top = 750.0
@@ -199,6 +253,7 @@ offset_right = 815.0
 offset_bottom = 751.0
 mouse_filter = 2
 color = Color(0.3, 0.28, 0.28, 0.1)
+
 [node name="Left" type="ColorRect" parent="InnerEdge"]
 offset_left = 5.0
 offset_top = 5.0
@@ -206,6 +261,7 @@ offset_right = 6.0
 offset_bottom = 751.0
 mouse_filter = 2
 color = Color(0.3, 0.28, 0.28, 0.1)
+
 [node name="Right" type="ColorRect" parent="InnerEdge"]
 offset_left = 814.0
 offset_top = 5.0
@@ -215,22 +271,26 @@ mouse_filter = 2
 color = Color(0.3, 0.28, 0.28, 0.1)
 
 [node name="Border" type="Node2D" parent="."]
+
 [node name="Top" type="ColorRect" parent="Border"]
 offset_right = 820.0
 offset_bottom = 7.0
 mouse_filter = 2
 color = Color(0.012, 0.01, 0.013, 1)
+
 [node name="Bottom" type="ColorRect" parent="Border"]
 offset_top = 749.0
 offset_right = 820.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.012, 0.01, 0.013, 1)
+
 [node name="Left" type="ColorRect" parent="Border"]
 offset_right = 7.0
 offset_bottom = 756.0
 mouse_filter = 2
 color = Color(0.012, 0.01, 0.013, 1)
+
 [node name="Right" type="ColorRect" parent="Border"]
 offset_left = 813.0
 offset_right = 820.0
@@ -239,64 +299,73 @@ mouse_filter = 2
 color = Color(0.012, 0.01, 0.013, 1)
 
 [node name="CornerAccents" type="Node2D" parent="."]
+
 [node name="TL_H" type="ColorRect" parent="CornerAccents"]
 offset_left = 9.0
 offset_top = 9.0
 offset_right = 33.0
 offset_bottom = 11.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="TL_V" type="ColorRect" parent="CornerAccents"]
 offset_left = 9.0
 offset_top = 9.0
 offset_right = 11.0
 offset_bottom = 33.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="TR_H" type="ColorRect" parent="CornerAccents"]
 offset_left = 787.0
 offset_top = 9.0
 offset_right = 811.0
 offset_bottom = 11.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="TR_V" type="ColorRect" parent="CornerAccents"]
 offset_left = 809.0
 offset_top = 9.0
 offset_right = 811.0
 offset_bottom = 33.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="BL_H" type="ColorRect" parent="CornerAccents"]
 offset_left = 9.0
 offset_top = 745.0
 offset_right = 33.0
 offset_bottom = 747.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="BL_V" type="ColorRect" parent="CornerAccents"]
 offset_left = 9.0
 offset_top = 723.0
 offset_right = 11.0
 offset_bottom = 747.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="BR_H" type="ColorRect" parent="CornerAccents"]
 offset_left = 787.0
 offset_top = 745.0
 offset_right = 811.0
 offset_bottom = 747.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
+
 [node name="BR_V" type="ColorRect" parent="CornerAccents"]
 offset_left = 809.0
 offset_top = 723.0
 offset_right = 811.0
 offset_bottom = 747.0
 mouse_filter = 2
-color = Color(1, 0.6, 0.18, 0.3)
+color = Color(1, 1, 1, 0.5294118)
 
 [node name="Atmosphere" type="Node2D" parent="."]
+
 [node name="TopShade" type="ColorRect" parent="Atmosphere"]
 offset_left = 7.0
 offset_top = 7.0
@@ -304,6 +373,7 @@ offset_right = 813.0
 offset_bottom = 38.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0.035)
+
 [node name="BottomShade" type="ColorRect" parent="Atmosphere"]
 offset_left = 7.0
 offset_top = 718.0
@@ -311,6 +381,7 @@ offset_right = 813.0
 offset_bottom = 749.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0.035)
+
 [node name="LeftShade" type="ColorRect" parent="Atmosphere"]
 offset_left = 7.0
 offset_top = 38.0
@@ -318,6 +389,7 @@ offset_right = 30.0
 offset_bottom = 718.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0.025)
+
 [node name="RightShade" type="ColorRect" parent="Atmosphere"]
 offset_left = 790.0
 offset_top = 38.0
