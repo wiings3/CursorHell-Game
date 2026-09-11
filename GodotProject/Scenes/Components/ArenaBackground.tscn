@@ -1,17 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://vetw0ieivkyj"]
+[gd_scene load_steps=3 format=3 uid="uid://vetw0ieivkyj"]
 
-[ext_resource type="Shader" uid="uid://bo40wrr2nlff0" path="res://Shaders/underglow.gdshader" id="1_kyqhp"]
 [ext_resource type="Shader" uid="uid://bn7ugajtfyydq" path="res://Shaders/ArenaBackground.gdshader" id="1_wvnat"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hopsd"]
-shader = ExtResource("1_kyqhp")
-shader_parameter/glow_color = Color(0.18, 0.32, 0.6, 1)
-shader_parameter/rect_size = Vector2(940, 876)
-shader_parameter/padding = 60.0
-shader_parameter/rim_strength = 0.18
-shader_parameter/halo_strength = 0.08
-shader_parameter/rim_size = 5.0
-shader_parameter/halo_size = 42.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kyqhp"]
 shader = ExtResource("1_wvnat")
@@ -30,13 +19,6 @@ shader_parameter/spin_amount = 0.36
 shader_parameter/pixel_filter = 700.0
 
 [node name="ArenaBackground" type="Node2D"]
-
-[node name="Underglow" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_hopsd")
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 822.0
-offset_bottom = 758.0
 
 [node name="Background" type="ColorRect" parent="."]
 offset_right = 820.0

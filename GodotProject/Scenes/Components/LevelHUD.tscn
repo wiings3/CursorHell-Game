@@ -116,15 +116,6 @@ rotation = -0.22
 mouse_filter = 2
 color = Color(0.02, 0.025, 0.04, 0.55)
 
-[node name="LevelRail" type="ColorRect" parent="."]
-offset_left = 62.0
-offset_top = 392.0
-offset_right = 196.0
-offset_bottom = 396.0
-rotation = -0.22
-mouse_filter = 2
-color = Color(1, 0.58, 0.18, 0.5)
-
 [node name="LevelLabel" type="Label" parent="."]
 unique_name_in_owner = true
 offset_left = 22.0
@@ -137,7 +128,8 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 40
-text = "LEVEL 1\nFIRST CONTACT"
+text = "LEVEL 1
+FIRST CONTACT"
 horizontal_alignment = 1
 
 [node name="TutorialBacking" type="ColorRect" parent="."]
@@ -254,14 +246,6 @@ offset_right = 1080.0
 offset_bottom = 876.0
 mouse_filter = 2
 color = Color(0.015, 0.02, 0.03, 0.5)
-
-[node name="FooterRail" type="ColorRect" parent="."]
-offset_left = 720.0
-offset_top = 842.0
-offset_right = 880.0
-offset_bottom = 844.0
-mouse_filter = 2
-color = Color(1, 0.58, 0.18, 0.3)
 
 [node name="HintLabel" type="Label" parent="."]
 offset_left = 390.0
