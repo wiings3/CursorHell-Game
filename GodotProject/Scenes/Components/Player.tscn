@@ -4,3 +4,97 @@
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1_player")
+
+[node name="VisualRoot" type="Node2D" parent="."]
+
+[node name="GlowLarge" type="Polygon2D" parent="VisualRoot"]
+scale = Vector2(1.885, 1.885)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.72, 0.25, 0.085)
+
+[node name="GlowInner" type="Polygon2D" parent="VisualRoot"]
+scale = Vector2(1.42, 1.42)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.95, 0.78, 0.13)
+
+[node name="ReticleRing" type="Node2D" parent="VisualRoot"]
+
+[node name="Arc0" type="Line2D" parent="VisualRoot/ReticleRing"]
+points = PackedVector2Array(20.795, 2.93, 20.494, 4.583, 20.062, 6.206, 19.502, 7.789, 18.817, 9.323, 18.012, 10.797, 17.091, 12.202)
+width = 1.35
+default_color = Color(1, 0.66, 0.2, 0.46)
+antialiased = true
+
+[node name="Arc1" type="Line2D" parent="VisualRoot/ReticleRing"]
+rotation = 1.5707964
+points = PackedVector2Array(20.795, 2.93, 20.494, 4.583, 20.062, 6.206, 19.502, 7.789, 18.817, 9.323, 18.012, 10.797, 17.091, 12.202)
+width = 1.35
+default_color = Color(1, 0.66, 0.2, 0.46)
+antialiased = true
+
+[node name="Arc2" type="Line2D" parent="VisualRoot/ReticleRing"]
+rotation = 3.1415927
+points = PackedVector2Array(20.795, 2.93, 20.494, 4.583, 20.062, 6.206, 19.502, 7.789, 18.817, 9.323, 18.012, 10.797, 17.091, 12.202)
+width = 1.35
+default_color = Color(1, 0.66, 0.2, 0.46)
+antialiased = true
+
+[node name="Arc3" type="Line2D" parent="VisualRoot/ReticleRing"]
+rotation = 4.712389
+points = PackedVector2Array(20.795, 2.93, 20.494, 4.583, 20.062, 6.206, 19.502, 7.789, 18.817, 9.323, 18.012, 10.797, 17.091, 12.202)
+width = 1.35
+default_color = Color(1, 0.66, 0.2, 0.46)
+antialiased = true
+
+[node name="TickRight" type="Line2D" parent="VisualRoot"]
+points = PackedVector2Array(16.5, 0, 19.5, 0)
+width = 1.25
+default_color = Color(0.985, 0.975, 0.92, 0.58)
+antialiased = true
+
+[node name="TickDown" type="Line2D" parent="VisualRoot"]
+rotation = 1.5707964
+points = PackedVector2Array(16.5, 0, 19.5, 0)
+width = 1.25
+default_color = Color(0.985, 0.975, 0.92, 0.58)
+antialiased = true
+
+[node name="TickLeft" type="Line2D" parent="VisualRoot"]
+rotation = 3.1415927
+points = PackedVector2Array(16.5, 0, 19.5, 0)
+width = 1.25
+default_color = Color(0.985, 0.975, 0.92, 0.58)
+antialiased = true
+
+[node name="TickUp" type="Line2D" parent="VisualRoot"]
+rotation = 4.712389
+points = PackedVector2Array(16.5, 0, 19.5, 0)
+width = 1.25
+default_color = Color(0.985, 0.975, 0.92, 0.58)
+antialiased = true
+
+[node name="Body" type="Polygon2D" parent="VisualRoot"]
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(0.985, 0.975, 0.92, 1)
+
+[node name="HitboxRing" type="Line2D" parent="VisualRoot"]
+points = PackedVector2Array(10, 0, 9.808, 1.951, 9.239, 3.827, 8.315, 5.556, 7.071, 7.071, 5.556, 8.315, 3.827, 9.239, 1.951, 9.808, 0, 10, -1.951, 9.808, -3.827, 9.239, -5.556, 8.315, -7.071, 7.071, -8.315, 5.556, -9.239, 3.827, -9.808, 1.951, -10, 0, -9.808, -1.951, -9.239, -3.827, -8.315, -5.556, -7.071, -7.071, -5.556, -8.315, -3.827, -9.239, -1.951, -9.808, 0, -10, 1.951, -9.808, 3.827, -9.239, 5.556, -8.315, 7.071, -7.071, 8.315, -5.556, 9.239, -3.827, 9.808, -1.951)
+width = 1.35
+default_color = Color(1, 0.66, 0.2, 0.92)
+closed = true
+antialiased = true
+
+[node name="CenterDark" type="Polygon2D" parent="VisualRoot"]
+scale = Vector2(0.3846, 0.3846)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(0.055, 0.05, 0.06, 1)
+
+[node name="CenterAccent" type="Polygon2D" parent="VisualRoot"]
+scale = Vector2(0.2231, 0.2231)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(1, 0.66, 0.2, 1)
+
+[node name="Pin" type="Polygon2D" parent="VisualRoot"]
+scale = Vector2(0.0769, 0.0769)
+polygon = PackedVector2Array(13, 0, 12.557, 3.365, 11.258, 6.5, 9.192, 9.192, 6.5, 11.258, 3.365, 12.557, 0, 13, -3.365, 12.557, -6.5, 11.258, -9.192, 9.192, -11.258, 6.5, -12.557, 3.365, -13, 0, -12.557, -3.365, -11.258, -6.5, -9.192, -9.192, -6.5, -11.258, -3.365, -12.557, 0, -13, 3.365, -12.557, 6.5, -11.258, 9.192, -9.192, 11.258, -6.5, 12.557, -3.365)
+color = Color(0.985, 0.975, 0.92, 0.96)
