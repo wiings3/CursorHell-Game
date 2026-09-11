@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/arena_background.gd" id="1_arena"]
+[ext_resource type="Shader" path="res://Shaders/arena_overlay.gdshader" id="2_overlay"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_overlay"]
+shader = ExtResource("2_overlay")
 
 [node name="ArenaBackground" type="Node2D"]
 script = ExtResource("1_arena")
@@ -14,3 +18,10 @@ border_width = 7.0
 corner_color = Color(1, 0.6, 0.18, 0.3)
 corner_length = 24.0
 corner_inset = 9.0
+
+[node name="ArenaOverlay" type="ColorRect" parent="."]
+offset_right = 820.0
+offset_bottom = 756.0
+mouse_filter = 2
+material = SubResource("ShaderMaterial_overlay")
+color = Color(1, 1, 1, 1)
