@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bjsrdys1wsjji"]
+[gd_scene load_steps=14 format=3 uid="uid://bjsrdys1wsjji"]
 
 [ext_resource type="Script" uid="uid://dq2bl62s0mpva" path="res://scripts/levels/level_03.gd" id="1_level"]
 [ext_resource type="PackedScene" uid="uid://vetw0ieivkyj" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
 [ext_resource type="Texture2D" uid="uid://cpud02llijvi8" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_t0ble"]
 [ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_d4xud"]
 noise_type = 3
@@ -68,6 +69,8 @@ offset_bottom = 1080.0
 mouse_filter = 2
 color = Color(0.03529412, 0.039215688, 0.05882353, 1)
 metadata/_edit_use_anchors_ = true
+
+[node name="ArenaDepth" parent="." instance=ExtResource("6_depth")]
 
 [node name="ArenaBackground" parent="." instance=ExtResource("2_arena")]
 position = Vector2(390, 72)
