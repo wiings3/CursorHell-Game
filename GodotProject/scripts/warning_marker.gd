@@ -11,10 +11,15 @@ class_name CursorHellWarningMarker
 
 var base_edge_wide_width: float = 7.0
 var base_edge_core_width: float = 2.0
+var countdown_full_points: PackedVector2Array = PackedVector2Array()
 
 func _ready() -> void:
 	base_edge_wide_width = edge_wide.width
 	base_edge_core_width = edge_core.width
+	# Cache the authored full ring from WarningMarker.tscn. The scene remains the
+	# source of truth for its shape/style; runtime code only reveals less of that
+	# authored line as the warning approaches release.
+	countdown_full_points = PackedVector2Array(countdown_ring.points)
 
 func apply_warning(warning: Dictionary, arena: Rect2) -> void:
 	var side: int = int(warning.get("side", 0))
@@ -65,12 +70,37 @@ func apply_warning(warning: Dictionary, arena: Rect2) -> void:
 	marker_body.scale = Vector2.ONE * marker_scale
 	arrow.modulate.a = clampf(0.66 + 0.28 * pulse + 0.24 * sweep_focus, 0.0, 1.0)
 
-	# The scene contains an authored open ring. Rotating/scaling it gives timing
-	# feedback without constructing the warning art through draw calls.
-	countdown_ring.rotation = (1.0 - progress) * TAU
-	countdown_ring.scale = Vector2.ONE * (0.82 + 0.18 * progress)
+	_update_countdown_ring(progress)
 	countdown_ring.modulate.a = clampf(0.72 + 0.20 * pulse + 0.14 * sweep_focus, 0.0, 1.0)
 
 	sweep_ring.visible = sweep_focus > 0.001
 	sweep_ring.scale = Vector2.ONE * (0.92 + 0.22 * sweep_focus)
 	sweep_ring.modulate.a = 0.42 * sweep_focus
+
+func _update_countdown_ring(progress: float) -> void:
+	# This restores the original countdown behavior: the ring begins full and its
+	# circumference is consumed as release approaches. We never generate its art in
+	# code; we simply show a progressively smaller portion of the points authored in
+	# WarningMarker.tscn.
+	countdown_ring.rotation = 0.0
+	countdown_ring.scale = Vector2.ONE
+
+	var point_count := countdown_full_points.size()
+	if point_count < 2 or progress <= 0.001:
+		countdown_ring.visible = false
+		return
+
+	countdown_ring.visible = true
+	var segment_count := point_count
+	var visible_segments := clampi(int(ceil(float(segment_count) * progress)), 1, segment_count)
+
+	if visible_segments >= segment_count:
+		countdown_ring.points = countdown_full_points
+		countdown_ring.closed = true
+		return
+
+	var visible_points := PackedVector2Array()
+	for index in range(visible_segments + 1):
+		visible_points.append(countdown_full_points[index])
+	countdown_ring.points = visible_points
+	countdown_ring.closed = false
