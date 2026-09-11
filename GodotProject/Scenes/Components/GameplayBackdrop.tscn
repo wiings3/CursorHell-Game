@@ -1,0 +1,274 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="Gradient" id="Gradient_base"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(Color(0.014, 0.016, 0.024, 1), Color(0.028, 0.032, 0.045, 1), Color(0.012, 0.013, 0.02, 1))
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_base"]
+gradient = SubResource("Gradient_base")
+width = 512
+height = 288
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_halo"]
+offsets = PackedFloat32Array(0, 0.42, 0.72, 1)
+colors = PackedColorArray(Color(0.18, 0.28, 0.46, 0.22), Color(0.09, 0.15, 0.27, 0.13), Color(0.035, 0.055, 0.09, 0.04), Color(0, 0, 0, 0))
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_halo"]
+gradient = SubResource("Gradient_halo")
+width = 512
+height = 288
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="GameplayBackdrop" type="Node2D"]
+
+[node name="BaseGradient" type="TextureRect" parent="."]
+offset_right = 1600.0
+offset_bottom = 900.0
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_base")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="ArenaHalo" type="TextureRect" parent="."]
+offset_right = 1600.0
+offset_bottom = 900.0
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_halo")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Atmosphere" type="Node2D" parent="."]
+
+[node name="LeftTopShape" type="Polygon2D" parent="Atmosphere"]
+polygon = PackedVector2Array(0, 0, 318, 0, 202, 104, 82, 208, 0, 246)
+color = Color(0.11, 0.16, 0.27, 0.11)
+
+[node name="LeftBottomShape" type="Polygon2D" parent="Atmosphere"]
+polygon = PackedVector2Array(0, 900, 330, 900, 226, 810, 98, 700, 0, 662)
+color = Color(0.07, 0.11, 0.2, 0.09)
+
+[node name="RightTopShape" type="Polygon2D" parent="Atmosphere"]
+polygon = PackedVector2Array(1600, 0, 1282, 0, 1398, 104, 1518, 208, 1600, 246)
+color = Color(0.11, 0.16, 0.27, 0.11)
+
+[node name="RightBottomShape" type="Polygon2D" parent="Atmosphere"]
+polygon = PackedVector2Array(1600, 900, 1270, 900, 1374, 810, 1502, 700, 1600, 662)
+color = Color(0.07, 0.11, 0.2, 0.09)
+
+[node name="SidePanels" type="Node2D" parent="."]
+
+[node name="LeftPanel" type="ColorRect" parent="SidePanels"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 366.0
+offset_bottom = 882.0
+mouse_filter = 2
+color = Color(0.018, 0.019, 0.027, 0.74)
+
+[node name="RightPanel" type="ColorRect" parent="SidePanels"]
+offset_left = 1234.0
+offset_top = 18.0
+offset_right = 1582.0
+offset_bottom = 882.0
+mouse_filter = 2
+color = Color(0.018, 0.019, 0.027, 0.74)
+
+[node name="LeftInnerRail" type="ColorRect" parent="SidePanels"]
+offset_left = 364.0
+offset_top = 40.0
+offset_right = 366.0
+offset_bottom = 860.0
+mouse_filter = 2
+color = Color(0.24, 0.34, 0.5, 0.18)
+
+[node name="RightInnerRail" type="ColorRect" parent="SidePanels"]
+offset_left = 1234.0
+offset_top = 40.0
+offset_right = 1236.0
+offset_bottom = 860.0
+mouse_filter = 2
+color = Color(0.24, 0.34, 0.5, 0.18)
+
+[node name="LeftAccent" type="ColorRect" parent="SidePanels"]
+offset_left = 40.0
+offset_top = 154.0
+offset_right = 132.0
+offset_bottom = 157.0
+mouse_filter = 2
+color = Color(1, 0.57, 0.16, 0.34)
+
+[node name="RightAccent" type="ColorRect" parent="SidePanels"]
+offset_left = 1468.0
+offset_top = 154.0
+offset_right = 1560.0
+offset_bottom = 157.0
+mouse_filter = 2
+color = Color(1, 0.57, 0.16, 0.34)
+
+[node name="OuterGrid" type="Node2D" parent="."]
+
+[node name="L_V1" type="ColorRect" parent="OuterGrid"]
+offset_left = 74.0
+offset_top = 178.0
+offset_right = 75.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+[node name="L_V2" type="ColorRect" parent="OuterGrid"]
+offset_left = 154.0
+offset_top = 178.0
+offset_right = 155.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+[node name="L_V3" type="ColorRect" parent="OuterGrid"]
+offset_left = 234.0
+offset_top = 178.0
+offset_right = 235.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+[node name="L_V4" type="ColorRect" parent="OuterGrid"]
+offset_left = 314.0
+offset_top = 178.0
+offset_right = 315.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+
+[node name="R_V1" type="ColorRect" parent="OuterGrid"]
+offset_left = 1285.0
+offset_top = 178.0
+offset_right = 1286.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+[node name="R_V2" type="ColorRect" parent="OuterGrid"]
+offset_left = 1365.0
+offset_top = 178.0
+offset_right = 1366.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+[node name="R_V3" type="ColorRect" parent="OuterGrid"]
+offset_left = 1445.0
+offset_top = 178.0
+offset_right = 1446.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+[node name="R_V4" type="ColorRect" parent="OuterGrid"]
+offset_left = 1525.0
+offset_top = 178.0
+offset_right = 1526.0
+offset_bottom = 838.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.045)
+
+[node name="L_H1" type="ColorRect" parent="OuterGrid"]
+offset_left = 38.0
+offset_top = 258.0
+offset_right = 346.0
+offset_bottom = 259.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+[node name="L_H2" type="ColorRect" parent="OuterGrid"]
+offset_left = 38.0
+offset_top = 418.0
+offset_right = 346.0
+offset_bottom = 419.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+[node name="L_H3" type="ColorRect" parent="OuterGrid"]
+offset_left = 38.0
+offset_top = 578.0
+offset_right = 346.0
+offset_bottom = 579.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+[node name="L_H4" type="ColorRect" parent="OuterGrid"]
+offset_left = 38.0
+offset_top = 738.0
+offset_right = 346.0
+offset_bottom = 739.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+
+[node name="R_H1" type="ColorRect" parent="OuterGrid"]
+offset_left = 1254.0
+offset_top = 258.0
+offset_right = 1562.0
+offset_bottom = 259.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+[node name="R_H2" type="ColorRect" parent="OuterGrid"]
+offset_left = 1254.0
+offset_top = 418.0
+offset_right = 1562.0
+offset_bottom = 419.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+[node name="R_H3" type="ColorRect" parent="OuterGrid"]
+offset_left = 1254.0
+offset_top = 578.0
+offset_right = 1562.0
+offset_bottom = 579.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+[node name="R_H4" type="ColorRect" parent="OuterGrid"]
+offset_left = 1254.0
+offset_top = 738.0
+offset_right = 1562.0
+offset_bottom = 739.0
+mouse_filter = 2
+color = Color(0.36, 0.45, 0.62, 0.04)
+
+[node name="ArenaFrame" type="Node2D" parent="."]
+
+[node name="HaloFrame" type="Line2D" parent="ArenaFrame"]
+points = PackedVector2Array(378, 60, 1222, 60, 1222, 840, 378, 840)
+width = 16.0
+default_color = Color(0.16, 0.28, 0.5, 0.055)
+closed = true
+antialiased = true
+
+[node name="OuterFrame" type="Line2D" parent="ArenaFrame"]
+points = PackedVector2Array(382, 64, 1218, 64, 1218, 836, 382, 836)
+width = 1.5
+default_color = Color(0.35, 0.48, 0.69, 0.28)
+closed = true
+antialiased = true
+
+[node name="TopLeftAccent" type="Line2D" parent="ArenaFrame"]
+points = PackedVector2Array(382, 64, 446, 64)
+width = 2.5
+default_color = Color(1, 0.58, 0.18, 0.48)
+antialiased = true
+
+[node name="BottomRightAccent" type="Line2D" parent="ArenaFrame"]
+points = PackedVector2Array(1154, 836, 1218, 836)
+width = 2.5
+default_color = Color(1, 0.58, 0.18, 0.48)
+antialiased = true
+
+[node name="BottomRail" type="Node2D" parent="."]
+
+[node name="Rail" type="ColorRect" parent="BottomRail"]
+offset_left = 390.0
+offset_top = 856.0
+offset_right = 1210.0
+offset_bottom = 858.0
+mouse_filter = 2
+color = Color(0.28, 0.38, 0.54, 0.12)
+
+[node name="RailAccent" type="ColorRect" parent="BottomRail"]
+offset_left = 744.0
+offset_top = 856.0
+offset_right = 856.0
+offset_bottom = 858.0
+mouse_filter = 2
+color = Color(1, 0.58, 0.18, 0.26)
