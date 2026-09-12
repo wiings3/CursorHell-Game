@@ -5,20 +5,19 @@ const BOSS_ROUND_TIME := 60.0
 const BOSS_COMPLETION_BONUS := 8000.0
 const STANDARD_FAST_RADIUS := 7.0
 
-# Boss II was landing a little too far above the intended difficulty curve.
-# These shared tuning multipliers pull the whole fight back by roughly 15% in
-# feel without changing its patterns or removing any of the four tested systems.
-const BOSS_PROJECTILE_SPEED_SCALE := 0.92
-const BOSS_WARNING_TIME_SCALE := 1.06
-const BOSS_SPAWN_INTERVAL_SCALE := 1.08
-const BOSS_PYLON_RADIUS_SCALE := 0.94
-const BOSS_PYLON_ACTIVE_SCALE := 0.94
-const BOSS_PYLON_TRAVEL_SCALE := 1.06
-const BOSS_PYLON_ARM_SCALE := 1.08
+# Boss II still sits above the intended difficulty curve after its first tuning
+# pass. These global multipliers now pull the entire fight back another roughly
+# 10-15% in feel while preserving every established pattern and mechanic.
+const BOSS_PROJECTILE_SPEED_SCALE := 0.84
+const BOSS_WARNING_TIME_SCALE := 1.14
+const BOSS_SPAWN_INTERVAL_SCALE := 1.18
+const BOSS_PYLON_RADIUS_SCALE := 0.88
+const BOSS_PYLON_ACTIVE_SCALE := 0.88
+const BOSS_PYLON_TRAVEL_SCALE := 1.14
+const BOSS_PYLON_ARM_SCALE := 1.17
 
-# The final 15 seconds get one additional light pullback. The structure and
-# pattern density stay intact, but reaction time and usable arena space improve
-# by another roughly 5-10% once the fight reaches its hardest overlap.
+# The final 15 seconds keep their additional light pullback on top of the new
+# global tuning so the hardest overlap still escalates without becoming a wall.
 const LATE_PULLBACK_START := 45.0
 const LATE_PROJECTILE_SPEED_SCALE := 0.96
 const LATE_WARNING_TIME_SCALE := 1.04
