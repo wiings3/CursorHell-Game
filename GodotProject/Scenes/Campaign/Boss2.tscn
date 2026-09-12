@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3]
 
-[ext_resource type="Script" path="res://scripts/levels/campaign/boss_02.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/levels/campaign/boss_02_runtime.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
 [ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_fog"]
 [ext_resource type="Shader" path="res://Shaders/splatter.gdshader" id="3_splatter"]
