@@ -1,8 +1,51 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=15 format=3 uid="uid://b6gfo1nvkr3x1"]
 
-[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://ctfciyhtyahke" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="Shader" uid="uid://cehfqf0m3rj8c" path="res://Shaders/fog.gdshader" id="2_t6w0q"]
+[ext_resource type="Shader" uid="uid://xqc5hgjpxees" path="res://Shaders/splatter.gdshader" id="3_k8um8"]
+[ext_resource type="Texture2D" uid="uid://cpud02llijvi8" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_jex3y"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_744d7"]
+noise_type = 3
+seed = 835
+frequency = 0.1373
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8h4de"]
+width = 1920
+height = 1080
+noise = SubResource("FastNoiseLite_744d7")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kl3t2"]
+shader = ExtResource("2_t6w0q")
+shader_parameter/octaves = 4
+shader_parameter/starting_amplitude = 0.5
+shader_parameter/starting_frequency = 0.065
+shader_parameter/shift = -0.2
+shader_parameter/velocity = Vector2(0.06, 0.06)
+shader_parameter/fog_color = Color(0, 0.008666658, 0.13, 1)
+shader_parameter/noise = SubResource("NoiseTexture2D_8h4de")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ynupv"]
+shader = ExtResource("3_k8um8")
+shader_parameter/g_random_seed = 0.0
+shader_parameter/g_grid_size = Vector2(16, 9)
+shader_parameter/g_cell_offset = Vector2(0, 0)
+shader_parameter/g_speed = Vector2(0.03, 0.03)
+shader_parameter/g_draw_size_min = 0.1
+shader_parameter/g_draw_size_max = 0.4
+shader_parameter/tex_draw = ExtResource("4_jex3y")
+shader_parameter/g_color_a = Color(0.012592455, 0.021168936, 0.034033664, 0.29803923)
+shader_parameter/g_color_b = Color(0.14299999, 0.18200001, 0.26, 0.14509805)
+shader_parameter/g_rot_global_speed = 1.0
+shader_parameter/g_rot_min_speed = 0.1
+shader_parameter/g_rot_max_speed = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_menu_panel"]
+content_margin_left = 52.0
+content_margin_top = 42.0
+content_margin_right = 52.0
+content_margin_bottom = 36.0
 bg_color = Color(0.014, 0.019, 0.03, 0.985)
 border_width_left = 1
 border_width_top = 1
@@ -13,10 +56,6 @@ corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
-content_margin_left = 52.0
-content_margin_top = 42.0
-content_margin_right = 52.0
-content_margin_bottom = 36.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
 bg_color = Color(0.028, 0.036, 0.054, 0.92)
@@ -24,7 +63,19 @@ border_width_left = 2
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.30, 0.38, 0.52, 0.48)
+border_color = Color(0.3, 0.38, 0.52, 0.48)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
+bg_color = Color(0.085, 0.074, 0.065, 1)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.62, 0.2, 1)
 corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
@@ -42,25 +93,13 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
-bg_color = Color(0.085, 0.074, 0.065, 1)
-border_width_left = 5
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.62, 0.20, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-
 [sub_resource type="StyleBoxFlat" id="StyleBox_button_disabled"]
 bg_color = Color(0.022, 0.026, 0.036, 0.72)
 border_width_left = 2
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.20, 0.23, 0.30, 0.30)
+border_color = Color(0.2, 0.23, 0.3, 0.3)
 corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
@@ -79,11 +118,12 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
 [node name="MainMenu" type="CanvasLayer"]
-layer = 80
 process_mode = 3
+layer = 80
 script = ExtResource("1_menu")
 
 [node name="Root" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -91,49 +131,32 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="Background" type="ColorRect" parent="Root"]
+[node name="MenuBackground" type="Control" parent="Root"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Background" type="ColorRect" parent="Root/MenuBackground"]
+material = SubResource("ShaderMaterial_kl3t2")
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
-color = Color(0.005, 0.008, 0.014, 1)
 
-[node name="UpperWash" type="ColorRect" parent="Root/Background"]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 250.0
-grow_horizontal = 2
+[node name="BackgroundPattern" type="ColorRect" parent="Root/MenuBackground"]
+material = SubResource("ShaderMaterial_ynupv")
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
 mouse_filter = 2
-color = Color(0.08, 0.12, 0.20, 0.12)
-
-[node name="LowerWash" type="ColorRect" parent="Root/Background"]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -220.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-color = Color(0.10, 0.05, 0.02, 0.08)
-
-[node name="TopAccent" type="ColorRect" parent="Root/Background"]
-anchor_right = 1.0
-offset_bottom = 3.0
-mouse_filter = 2
-color = Color(1, 0.50, 0.14, 0.92)
-
-[node name="TopAccentFade" type="ColorRect" parent="Root/Background"]
-anchor_right = 0.28
-offset_top = 3.0
-offset_bottom = 5.0
-mouse_filter = 2
-color = Color(0.38, 0.55, 0.82, 0.30)
+color = Color(0.03529412, 0.039215688, 0.05882353, 1)
 
 [node name="GhostFrame" type="Control" parent="Root"]
-anchors_preset = 8
+anchors_preset = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -147,12 +170,14 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="Top" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_right = 1080.0
 offset_bottom = 1.0
 mouse_filter = 2
 color = Color(0.38, 0.52, 0.76, 0.11)
 
 [node name="Bottom" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_top = 699.0
 offset_right = 1080.0
 offset_bottom = 700.0
@@ -160,12 +185,14 @@ mouse_filter = 2
 color = Color(0.38, 0.52, 0.76, 0.08)
 
 [node name="Left" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_right = 1.0
 offset_bottom = 700.0
 mouse_filter = 2
 color = Color(0.38, 0.52, 0.76, 0.09)
 
 [node name="Right" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_left = 1079.0
 offset_right = 1080.0
 offset_bottom = 700.0
@@ -173,6 +200,7 @@ mouse_filter = 2
 color = Color(0.38, 0.52, 0.76, 0.09)
 
 [node name="TL_H" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_left = -1.0
 offset_top = -1.0
 offset_right = 54.0
@@ -181,6 +209,7 @@ mouse_filter = 2
 color = Color(1, 0.52, 0.15, 0.23)
 
 [node name="TL_V" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_left = -1.0
 offset_top = -1.0
 offset_right = 2.0
@@ -189,6 +218,7 @@ mouse_filter = 2
 color = Color(1, 0.52, 0.15, 0.23)
 
 [node name="BR_H" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_left = 1026.0
 offset_top = 698.0
 offset_right = 1081.0
@@ -197,6 +227,7 @@ mouse_filter = 2
 color = Color(1, 0.52, 0.15, 0.18)
 
 [node name="BR_V" type="ColorRect" parent="Root/GhostFrame"]
+layout_mode = 0
 offset_left = 1078.0
 offset_top = 646.0
 offset_right = 1081.0
@@ -205,7 +236,7 @@ mouse_filter = 2
 color = Color(1, 0.52, 0.15, 0.18)
 
 [node name="SideMarkLeft" type="Label" parent="Root"]
-anchors_preset = 4
+layout_mode = 0
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = 42.0
@@ -219,7 +250,7 @@ theme_override_font_sizes/font_size = 13
 text = "SURVIVE // MOVE // READ // REACT"
 
 [node name="PanelGroup" type="Control" parent="Root"]
-anchors_preset = 8
+anchors_preset = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -233,6 +264,7 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="Shadow" type="ColorRect" parent="Root/PanelGroup"]
+layout_mode = 0
 offset_left = 12.0
 offset_top = 14.0
 offset_right = 752.0
@@ -241,14 +273,16 @@ mouse_filter = 2
 color = Color(0, 0, 0, 0.58)
 
 [node name="OuterGlow" type="ColorRect" parent="Root/PanelGroup"]
+layout_mode = 0
 offset_left = -2.0
 offset_top = -2.0
 offset_right = 742.0
 offset_bottom = 602.0
 mouse_filter = 2
-color = Color(0.20, 0.30, 0.50, 0.10)
+color = Color(0.2, 0.3, 0.5, 0.1)
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
+layout_mode = 0
 offset_right = 740.0
 offset_bottom = 600.0
 theme_override_styles/panel = SubResource("StyleBox_menu_panel")
@@ -299,14 +333,14 @@ custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../StartButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.76, 0.4, 1)
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_disabled_color = Color(0.34, 0.36, 0.41, 1)
 theme_override_font_sizes/font_size = 19
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
 theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "CONTINUE"
@@ -318,13 +352,13 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../ContinueButton")
 focus_neighbor_bottom = NodePath("../QuitButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.76, 0.4, 1)
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_font_sizes/font_size = 19
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "START FROM LEVEL 1"
 
@@ -333,14 +367,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 focus_neighbor_top = NodePath("../StartButton")
-theme_override_colors/font_color = Color(0.86, 0.87, 0.90, 1)
-theme_override_colors/font_hover_color = Color(1, 0.48, 0.30, 1)
-theme_override_colors/font_focus_color = Color(1, 0.48, 0.30, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.60, 0.42, 1)
+theme_override_colors/font_color = Color(0.86, 0.87, 0.9, 1)
+theme_override_colors/font_focus_color = Color(1, 0.48, 0.3, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.6, 0.42, 1)
+theme_override_colors/font_hover_color = Color(1, 0.48, 0.3, 1)
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "QUIT"
 
@@ -358,7 +392,7 @@ text = "PROGRESS AND BEST SCORES SAVE AUTOMATICALLY"
 horizontal_alignment = 1
 
 [node name="FooterLeft" type="Label" parent="Root"]
-anchors_preset = 12
+layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0

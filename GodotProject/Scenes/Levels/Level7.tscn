@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
 [ext_resource type="Texture2D" uid="uid://cpud02llijvi8" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_tcs12"]
 [ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
+[ext_resource type="PackedScene" uid="uid://c2wb0b4lcurss" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_rxtma"]
 noise_type = 3
