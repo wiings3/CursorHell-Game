@@ -67,6 +67,7 @@ func show_intro(level_number: int, title: String, subtitle: String, body: String
 	state_label.text = "LEVEL %d" % level_number
 	title_label.text = title
 	subtitle_label.text = subtitle
+	body_label.offset_bottom = 408.0
 	body_label.text = _clean_intro_body(body)
 	score_label.visible = false
 	best_label.visible = false
@@ -80,6 +81,7 @@ func show_failure(level_number: int, title: String, reason: String, run_time: fl
 	state_label.text = "LEVEL FAILED"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  •  IMPACT" % level_number
+	body_label.offset_bottom = 312.0
 	body_label.text = "%s\nTIME  %s / %s" % [reason.to_upper(), _format_time(run_time), _format_time(round_time)]
 	score_label.visible = true
 	best_label.visible = true
@@ -96,6 +98,7 @@ func show_clear(level_number: int, title: String, round_time: float, completion_
 	state_label.text = "LEVEL CLEAR"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  •  SURVIVED" % level_number
+	body_label.offset_bottom = 312.0
 	body_label.text = "%s SURVIVED\nCOMPLETION BONUS  +%s" % [_format_time(round_time), _format_score(completion_bonus)]
 	score_label.visible = true
 	best_label.visible = true
@@ -114,6 +117,7 @@ func hide_immediate() -> void:
 	locked = false
 	mode = ""
 	root.modulate.a = 1.0
+	panel_root.modulate.a = 1.0
 	panel_root.position = panel_home
 	panel_root.scale = Vector2.ONE
 
