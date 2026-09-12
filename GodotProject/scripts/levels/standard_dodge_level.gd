@@ -10,7 +10,7 @@ const CAMP_HOLD_TIME := 6.0
 const CAMP_REGION_RADIUS := 80.0
 const CAMP_COOLDOWN := 4.5
 const CAMP_ZONE_RADIUS := 64.0
-const CAMP_WARNING_TIME := 1.20
+const CAMP_WARNING_TIME := 2.0
 const CAMP_ACTIVE_TIME := 0.70
 
 var camp_hold_time := 0.0
