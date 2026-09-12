@@ -1,0 +1,73 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/displacement_zone.gd" id="1_zone"]
+
+[node name="DisplacementZone" type="Node2D"]
+z_index = 18
+script = ExtResource("1_zone")
+
+[node name="VisualRoot" type="Node2D" parent="."]
+
+[node name="DirectionalRoot" type="Node2D" parent="VisualRoot"]
+
+[node name="SpeedStretch" type="Node2D" parent="VisualRoot/DirectionalRoot"]
+
+[node name="WarningRoot" type="Node2D" parent="VisualRoot"]
+
+[node name="WarningFill" type="Polygon2D" parent="VisualRoot/WarningRoot"]
+polygon = PackedVector2Array(64, 0, 62.77, 12.49, 59.13, 24.49, 53.21, 35.56, 45.25, 45.25, 35.56, 53.21, 24.49, 59.13, 12.49, 62.77, 0, 64, -12.49, 62.77, -24.49, 59.13, -35.56, 53.21, -45.25, 45.25, -53.21, 35.56, -59.13, 24.49, -62.77, 12.49, -64, 0, -62.77, -12.49, -59.13, -24.49, -53.21, -35.56, -45.25, -45.25, -35.56, -53.21, -24.49, -59.13, -12.49, -62.77, 0, -64, 12.49, -62.77, 24.49, -59.13, 35.56, -53.21, 45.25, -45.25, 53.21, -35.56, 59.13, -24.49, 62.77, -12.49)
+color = Color(0.54, 0.22, 0.82, 0.16)
+
+[node name="OuterRing" type="Line2D" parent="VisualRoot/WarningRoot"]
+points = PackedVector2Array(78, 0, 76.5, 15.22, 72.06, 29.85, 64.85, 43.33, 55.15, 55.15, 43.33, 64.85, 29.85, 72.06, 15.22, 76.5, 0, 78, -15.22, 76.5, -29.85, 72.06, -43.33, 64.85, -55.15, 55.15, -64.85, 43.33, -72.06, 29.85, -76.5, 15.22, -78, 0, -76.5, -15.22, -72.06, -29.85, -64.85, -43.33, -55.15, -55.15, -43.33, -64.85, -29.85, -72.06, -15.22, -76.5, 0, -78, 15.22, -76.5, 29.85, -72.06, 43.33, -64.85, 55.15, -55.15, 64.85, -43.33, 72.06, -29.85, 76.5, -15.22, 78, 0)
+width = 2.0
+default_color = Color(0.78, 0.46, 1, 0.76)
+
+[node name="InnerRing" type="Line2D" parent="VisualRoot/WarningRoot"]
+points = PackedVector2Array(64, 0, 62.77, 12.49, 59.13, 24.49, 53.21, 35.56, 45.25, 45.25, 35.56, 53.21, 24.49, 59.13, 12.49, 62.77, 0, 64, -12.49, 62.77, -24.49, 59.13, -35.56, 53.21, -45.25, 45.25, -53.21, 35.56, -59.13, 24.49, -62.77, 12.49, -64, 0, -62.77, -12.49, -59.13, -24.49, -53.21, -35.56, -45.25, -45.25, -35.56, -53.21, -24.49, -59.13, -12.49, -62.77, 0, -64, 12.49, -62.77, 24.49, -59.13, 35.56, -53.21, 45.25, -45.25, 53.21, -35.56, 59.13, -24.49, 62.77, -12.49, 64, 0)
+width = 3.0
+default_color = Color(0.93, 0.58, 1, 0.9)
+
+[node name="CoreRing" type="Line2D" parent="VisualRoot/WarningRoot"]
+points = PackedVector2Array(48, 0, 47.08, 9.36, 44.35, 18.37, 39.91, 26.67, 33.94, 33.94, 26.67, 39.91, 18.37, 44.35, 9.36, 47.08, 0, 48, -9.36, 47.08, -18.37, 44.35, -26.67, 39.91, -33.94, 33.94, -39.91, 26.67, -44.35, 18.37, -47.08, 9.36, -48, 0, -47.08, -9.36, -44.35, -18.37, -39.91, -26.67, -33.94, -33.94, -26.67, -39.91, -18.37, -44.35, -9.36, -47.08, 0, -48, 9.36, -47.08, 18.37, -44.35, 26.67, -39.91, 33.94, -33.94, 39.91, -26.67, 44.35, -18.37, 47.08, -9.36, 48, 0)
+width = 1.5
+default_color = Color(1, 0.76, 1, 0.82)
+
+[node name="Brackets" type="Node2D" parent="VisualRoot/WarningRoot"]
+
+[node name="Top" type="Line2D" parent="VisualRoot/WarningRoot/Brackets"]
+points = PackedVector2Array(-13, -72, 13, -72)
+width = 4.0
+default_color = Color(0.95, 0.6, 1, 0.9)
+
+[node name="Bottom" type="Line2D" parent="VisualRoot/WarningRoot/Brackets"]
+points = PackedVector2Array(-13, 72, 13, 72)
+width = 4.0
+default_color = Color(0.95, 0.6, 1, 0.9)
+
+[node name="Left" type="Line2D" parent="VisualRoot/WarningRoot/Brackets"]
+points = PackedVector2Array(-72, -13, -72, 13)
+width = 4.0
+default_color = Color(0.95, 0.6, 1, 0.9)
+
+[node name="Right" type="Line2D" parent="VisualRoot/WarningRoot/Brackets"]
+points = PackedVector2Array(72, -13, 72, 13)
+width = 4.0
+default_color = Color(0.95, 0.6, 1, 0.9)
+
+[node name="ActiveRoot" type="Node2D" parent="VisualRoot"]
+visible = false
+
+[node name="ActiveFill" type="Polygon2D" parent="VisualRoot/ActiveRoot"]
+polygon = PackedVector2Array(64, 0, 62.77, 12.49, 59.13, 24.49, 53.21, 35.56, 45.25, 45.25, 35.56, 53.21, 24.49, 59.13, 12.49, 62.77, 0, 64, -12.49, 62.77, -24.49, 59.13, -35.56, 53.21, -45.25, 45.25, -53.21, 35.56, -59.13, 24.49, -62.77, 12.49, -64, 0, -62.77, -12.49, -59.13, -24.49, -53.21, -35.56, -45.25, -45.25, -35.56, -53.21, -24.49, -59.13, -12.49, -62.77, 0, -64, 12.49, -62.77, 24.49, -59.13, 35.56, -53.21, 45.25, -45.25, 53.21, -35.56, 59.13, -24.49, 62.77, -12.49)
+color = Color(0.88, 0.14, 0.48, 0.5)
+
+[node name="ActiveRing" type="Line2D" parent="VisualRoot/ActiveRoot"]
+points = PackedVector2Array(64, 0, 62.77, 12.49, 59.13, 24.49, 53.21, 35.56, 45.25, 45.25, 35.56, 53.21, 24.49, 59.13, 12.49, 62.77, 0, 64, -12.49, 62.77, -24.49, 59.13, -35.56, 53.21, -45.25, 45.25, -53.21, 35.56, -59.13, 24.49, -62.77, 12.49, -64, 0, -62.77, -12.49, -59.13, -24.49, -53.21, -35.56, -45.25, -45.25, -35.56, -53.21, -24.49, -59.13, -12.49, -62.77, 0, -64, 12.49, -62.77, 24.49, -59.13, 35.56, -53.21, 45.25, -45.25, 53.21, -35.56, 59.13, -24.49, 62.77, -12.49, 64, 0)
+width = 5.0
+default_color = Color(1, 0.28, 0.58, 1)
+
+[node name="ShockRing" type="Line2D" parent="VisualRoot/ActiveRoot"]
+points = PackedVector2Array(78, 0, 76.5, 15.22, 72.06, 29.85, 64.85, 43.33, 55.15, 55.15, 43.33, 64.85, 29.85, 72.06, 15.22, 76.5, 0, 78, -15.22, 76.5, -29.85, 72.06, -43.33, 64.85, -55.15, 55.15, -64.85, 43.33, -72.06, 29.85, -76.5, 15.22, -78, 0, -76.5, -15.22, -72.06, -29.85, -64.85, -43.33, -55.15, -55.15, -43.33, -64.85, -29.85, -72.06, -15.22, -76.5, 0, -78, 15.22, -76.5, 29.85, -72.06, 43.33, -64.85, 55.15, -55.15, 64.85, -43.33, 72.06, -29.85, 76.5, -15.22, 78, 0)
+width = 3.0
+default_color = Color(1, 0.62, 0.82, 0.95)
