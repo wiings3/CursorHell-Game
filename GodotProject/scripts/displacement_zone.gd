@@ -2,7 +2,7 @@ extends "res://scripts/projectile.gd"
 class_name CursorHellDisplacementZone
 
 @export_category("Timing")
-@export var warning_time: float = 1.20
+@export var warning_time: float = 2.2
 @export var active_time: float = 0.70
 @export var fade_time: float = 0.28
 

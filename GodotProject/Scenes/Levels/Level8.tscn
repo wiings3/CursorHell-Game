@@ -1,14 +1,14 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=14 format=3 uid="uid://df1qghdkdg12j"]
 
-[ext_resource type="Script" path="res://scripts/levels/level_08.gd" id="1_level"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
-[ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_fog"]
-[ext_resource type="Shader" path="res://Shaders/splatter.gdshader" id="3_splatter"]
+[ext_resource type="Script" uid="uid://b8o4lsotyjdbl" path="res://scripts/levels/level_08.gd" id="1_level"]
+[ext_resource type="PackedScene" uid="uid://vetw0ieivkyj" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
+[ext_resource type="Shader" uid="uid://cehfqf0m3rj8c" path="res://Shaders/fog.gdshader" id="2_fog"]
+[ext_resource type="Shader" uid="uid://xqc5hgjpxees" path="res://Shaders/splatter.gdshader" id="3_splatter"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/Player.tscn" id="4_player"]
-[ext_resource type="Texture2D" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_pattern"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
+[ext_resource type="Texture2D" uid="uid://cpud02llijvi8" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_pattern"]
+[ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" uid="uid://c2wb0b4lcurss" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_level8"]
 noise_type = 3
@@ -91,4 +91,5 @@ position = Vector2(800, 472.68)
 
 [node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
 unique_name_in_owner = true
-level_display_text = "LEVEL 8\nDEAD ZONES"
+level_display_text = "LEVEL 8
+DEAD ZONES"
