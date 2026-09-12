@@ -14,9 +14,9 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 content_margin_left = 44.0
-content_margin_top = 38.0
+content_margin_top = 34.0
 content_margin_right = 44.0
-content_margin_bottom = 34.0
+content_margin_bottom = 28.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
 bg_color = Color(0.028, 0.036, 0.054, 0.94)
@@ -175,7 +175,7 @@ theme_override_styles/panel = SubResource("StyleBox_pause_panel")
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 9
 alignment = 1
 
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
@@ -191,7 +191,7 @@ theme_override_colors/font_color = Color(0.98, 0.97, 0.94, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 46
+theme_override_font_sizes/font_size = 42
 text = "PAUSED"
 horizontal_alignment = 1
 
@@ -205,25 +205,25 @@ color = Color(1, 0.53, 0.15, 0.92)
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.66, 0.70, 0.78, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "LEVEL 1"
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 mouse_filter = 2
 
 [node name="ResumeButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../RestartButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
 theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
@@ -232,32 +232,47 @@ text = "RESUME"
 
 [node name="RestartButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ResumeButton")
-focus_neighbor_bottom = NodePath("../MainMenuButton")
+focus_neighbor_bottom = NodePath("../SettingsButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
 theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
 theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "RESTART LEVEL"
 
-[node name="MainMenuButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+[node name="SettingsButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_top = NodePath("../RestartButton")
+focus_neighbor_bottom = NodePath("../MainMenuButton")
+theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "SETTINGS"
+
+[node name="MainMenuButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+focus_neighbor_top = NodePath("../SettingsButton")
 focus_neighbor_bottom = NodePath("../QuitButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
 theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
@@ -266,14 +281,14 @@ text = "MAIN MENU"
 
 [node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_top = NodePath("../MainMenuButton")
 theme_override_colors/font_color = Color(0.86, 0.87, 0.90, 1)
 theme_override_colors/font_hover_color = Color(1, 0.48, 0.30, 1)
 theme_override_colors/font_focus_color = Color(1, 0.48, 0.30, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.60, 0.42, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/hover = SubResource("StyleBox_quit_hover")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
@@ -281,14 +296,14 @@ theme_override_styles/focus = SubResource("StyleBox_quit_focus")
 text = "QUIT"
 
 [node name="SpacerBottom" type="Control" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 4)
+custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 mouse_filter = 2
 
 [node name="Hint" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.47, 0.56, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "ESC = RESUME"
 horizontal_alignment = 1
 
