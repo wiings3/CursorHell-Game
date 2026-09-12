@@ -5,6 +5,17 @@ const BOSS_ROUND_TIME := 60.0
 const BOSS_COMPLETION_BONUS := 8000.0
 const STANDARD_FAST_RADIUS := 7.0
 
+# Boss II was landing a little too far above the intended difficulty curve.
+# These shared tuning multipliers pull the whole fight back by roughly 15% in
+# feel without changing its patterns or removing any of the four tested systems.
+const BOSS_PROJECTILE_SPEED_SCALE := 0.92
+const BOSS_WARNING_TIME_SCALE := 1.06
+const BOSS_SPAWN_INTERVAL_SCALE := 1.08
+const BOSS_PYLON_RADIUS_SCALE := 0.94
+const BOSS_PYLON_ACTIVE_SCALE := 0.94
+const BOSS_PYLON_TRAVEL_SCALE := 1.06
+const BOSS_PYLON_ARM_SCALE := 1.08
+
 var boss_attack_index := 0
 var boss_phase := -1
 var last_flood_side := -1
@@ -167,35 +178,65 @@ func _queue_convergence_combo(finale: bool) -> void:
 		_queue_echo_band(echo_side, clampf(echo_center - 0.055, 0.14, 0.86), 5, 0.047, standard_speed + 12.0, 1.38)
 
 func _queue_axis_pulse(horizontal: bool, lane_count: int, speed: float, delay: float, lane_offset: float) -> void:
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
+	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE
 	var divisor := maxi(lane_count - 1, 1)
 	for index in range(lane_count):
 		var lane := lerpf(0.12, 0.88, float(index) / float(divisor)) + lane_offset
 		lane = clampf(lane, 0.07, 0.93)
 		if horizontal:
-			queue_projectile_warning(0, lane, speed, 8.0, delay)
-			queue_projectile_warning(1, lane, speed, 8.0, delay)
+			queue_projectile_warning(0, lane, tuned_speed, 8.0, tuned_delay)
+			queue_projectile_warning(1, lane, tuned_speed, 8.0, tuned_delay)
 		else:
-			queue_projectile_warning(2, lane, speed, 8.0, delay)
-			queue_projectile_warning(3, lane, speed, 8.0, delay)
+			queue_projectile_warning(2, lane, tuned_speed, 8.0, tuned_delay)
+			queue_projectile_warning(3, lane, tuned_speed, 8.0, tuned_delay)
 
 func _queue_echo_band(side: int, center_lane: float, count: int, spacing: float, speed: float, delay: float) -> void:
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
+	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE
 	var half := int(count / 2)
 	for index in range(count):
 		var lane := clampf(center_lane + float(index - half) * spacing, 0.06, 0.94)
-		queue_projectile_warning(side, lane, speed, STANDARD_FAST_RADIUS, delay)
+		queue_projectile_warning(side, lane, tuned_speed, STANDARD_FAST_RADIUS, tuned_delay)
 
 func _queue_flood_blockers(count: int, speed: float, radius: float, base_delay: float) -> void:
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
+	var tuned_delay := base_delay * BOSS_WARNING_TIME_SCALE
 	for index in range(count):
 		var side := _next_flood_side()
 		var lane := rng.randf_range(0.16, 0.84)
-		queue_projectile_warning(side, lane, speed, radius, base_delay + float(index) * 0.18)
+		queue_projectile_warning(side, lane, tuned_speed, radius, tuned_delay + float(index) * 0.19)
 
 func _queue_targeted_standard_burst(side: int, count: int, speed: float, delay: float, spacing: float) -> void:
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
+	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE
 	var center := _target_lane_for_side(side, 0.025)
 	var half := int(count / 2)
 	for index in range(count):
 		var lane := clampf(center + float(index - half) * spacing, 0.05, 0.95)
-		queue_projectile_warning(side, lane, speed, STANDARD_FAST_RADIUS, delay)
+		queue_projectile_warning(side, lane, tuned_speed, STANDARD_FAST_RADIUS, tuned_delay)
+
+func _queue_targeted_needles(count: int, speed: float, delay: float, spread: float, forced_axis: int = -1) -> void:
+	# Preserve the approved needle group sizes and identity, but give the player a
+	# little more reaction time and slightly reduce their travel speed in Boss II.
+	super._queue_targeted_needles(
+		count,
+		speed * BOSS_PROJECTILE_SPEED_SCALE,
+		delay * BOSS_WARNING_TIME_SCALE,
+		spread,
+		forced_axis
+	)
+
+func _spawn_pylon(max_active: int, radius: float, active_duration: float, travel_duration: float, arm_duration: float) -> void:
+	# The same pylon patterns remain, but each zone steals a little less space and
+	# gives slightly more travel/arming time before becoming lethal.
+	super._spawn_pylon(
+		max_active,
+		radius * BOSS_PYLON_RADIUS_SCALE,
+		active_duration * BOSS_PYLON_ACTIVE_SCALE,
+		travel_duration * BOSS_PYLON_TRAVEL_SCALE,
+		arm_duration * BOSS_PYLON_ARM_SCALE
+	)
 
 func _next_flood_side() -> int:
 	var side := rng.randi_range(0, 3)
@@ -212,15 +253,15 @@ func _perpendicular_side_for_axis(horizontal: bool) -> int:
 func _get_spawn_interval(current_phase: int) -> float:
 	match current_phase:
 		1:
-			return rng.randf_range(2.55, 2.80)
+			return rng.randf_range(2.55, 2.80) * BOSS_SPAWN_INTERVAL_SCALE
 		2:
-			return rng.randf_range(2.25, 2.50)
+			return rng.randf_range(2.25, 2.50) * BOSS_SPAWN_INTERVAL_SCALE
 		3:
-			return rng.randf_range(2.00, 2.22)
+			return rng.randf_range(2.00, 2.22) * BOSS_SPAWN_INTERVAL_SCALE
 		4:
-			return rng.randf_range(1.78, 2.00)
+			return rng.randf_range(1.78, 2.00) * BOSS_SPAWN_INTERVAL_SCALE
 		_:
-			return rng.randf_range(1.55, 1.72)
+			return rng.randf_range(1.55, 1.72) * BOSS_SPAWN_INTERVAL_SCALE
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase > 0
