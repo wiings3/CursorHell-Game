@@ -43,9 +43,9 @@ shader_parameter/g_rot_max_speed = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_menu_panel"]
 content_margin_left = 52.0
-content_margin_top = 42.0
+content_margin_top = 36.0
 content_margin_right = 52.0
-content_margin_bottom = 36.0
+content_margin_bottom = 30.0
 bg_color = Color(0.014, 0.019, 0.03, 0.985)
 border_width_left = 1
 border_width_top = 1
@@ -289,13 +289,13 @@ theme_override_styles/panel = SubResource("StyleBox_menu_panel")
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 9
 alignment = 1
 
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.61, 0.84, 0.88)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 text = "MOUSE-DRIVEN SURVIVAL // NO SAFE CORNERS"
 horizontal_alignment = 1
 
@@ -305,7 +305,7 @@ theme_override_colors/font_color = Color(0.98, 0.97, 0.94, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 58
+theme_override_font_sizes/font_size = 54
 text = "CURSOR HELL"
 horizontal_alignment = 1
 
@@ -318,18 +318,18 @@ color = Color(1, 0.53, 0.15, 0.92)
 [node name="Subtitle" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68, 0.71, 0.78, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "SURVIVE THE BOX."
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 mouse_filter = 2
 
 [node name="ContinueButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../StartButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
@@ -337,7 +337,7 @@ theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.76, 0.4, 1)
 theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_disabled_color = Color(0.34, 0.36, 0.41, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
 theme_override_styles/hover = SubResource("StyleBox_button_hover")
@@ -347,31 +347,63 @@ text = "CONTINUE"
 
 [node name="StartButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ContinueButton")
-focus_neighbor_bottom = NodePath("../QuitButton")
+focus_neighbor_bottom = NodePath("../LevelSelectButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
 theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.76, 0.4, 1)
 theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
 theme_override_styles/hover = SubResource("StyleBox_button_hover")
 theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "START FROM LEVEL 1"
 
-[node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+[node name="LevelSelectButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_neighbor_top = NodePath("../StartButton")
+focus_neighbor_bottom = NodePath("../SettingsButton")
+theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL SELECT"
+
+[node name="SettingsButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_neighbor_top = NodePath("../LevelSelectButton")
+focus_neighbor_bottom = NodePath("../QuitButton")
+theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "SETTINGS"
+
+[node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_neighbor_top = NodePath("../SettingsButton")
 theme_override_colors/font_color = Color(0.86, 0.87, 0.9, 1)
 theme_override_colors/font_focus_color = Color(1, 0.48, 0.3, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.6, 0.42, 1)
 theme_override_colors/font_hover_color = Color(1, 0.48, 0.3, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBox_button_normal")
 theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
 theme_override_styles/hover = SubResource("StyleBox_button_hover")
@@ -379,7 +411,7 @@ theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "QUIT"
 
 [node name="SpacerBottom" type="Control" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 8)
+custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 mouse_filter = 2
 
@@ -387,7 +419,7 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.47, 0.56, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "PROGRESS AND BEST SCORES SAVE AUTOMATICALLY"
 horizontal_alignment = 1
 
