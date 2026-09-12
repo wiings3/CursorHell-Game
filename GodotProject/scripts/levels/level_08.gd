@@ -96,15 +96,15 @@ func _update_level_tutorial() -> void:
 			tutorial_label.text = "PYLON INBOUND\nBlue ring = arming. Red field = lethal."
 		2:
 			if elapsed < 20.0:
-				tutorial_label.text = "NEEDLES\nCyan warning = fast precision shot."
+				tutorial_label.text = "NEEDLES\nCyan warning = fast precision volley."
 			else:
-				tutorial_label.text = "USE THE OPEN SPACE\nThe pylon removes options. Needles test what remains."
+				tutorial_label.text = "USE THE OPEN SPACE\nNeedle volleys punish narrow escape routes."
 		3:
-			tutorial_label.text = "READ THE FLOOR\nTwo large dead zones can overlap. Plan your next pocket early."
+			tutorial_label.text = "NEEDLE STORM\nLarge volleys cross the space the pylons leave behind."
 		4:
-			tutorial_label.text = "THE BOX IS SHRINKING\nThree zones can divide the arena. Keep an exit route."
+			tutorial_label.text = "THE BOX IS SHRINKING\nDead zones divide the arena. Needle walls close the gaps."
 		_:
-			tutorial_label.text = "STAY AHEAD\nZones cycle faster. Needles alternate axes."
+			tutorial_label.text = "STAY AHEAD\nTwo axes. Almost no recovery. Keep moving."
 
 func _schedule_level_projectile(current_phase: int) -> void:
 	if current_phase != dead_zone_phase:
@@ -127,38 +127,60 @@ func _schedule_level_projectile(current_phase: int) -> void:
 			_schedule_final_phase()
 
 func _schedule_phase_two() -> void:
-	# Give the new cyan needle warning a short isolated lesson, then combine it
-	# with persistent territory pressure for the remainder of the phase.
+	# Needles are intentionally much faster than the standard projectile. Even the
+	# teaching volley arrives in pairs so their identity is "small and vicious",
+	# not simply "a smaller normal bullet".
 	if elapsed < 20.0:
-		_queue_targeted_needles(1, 440.0, 0.82, 0.0)
+		_queue_targeted_needles(2, 600.0, 0.68, 0.030)
 		return
 
 	if _live_pylon_count() < 2 and attack_index % 2 == 0:
 		_spawn_pylon(2, 146.0, 5.2, 1.05, 0.95)
-	var needle_count := 2 if attack_index % 3 == 0 else 1
-	_queue_targeted_needles(needle_count, 450.0, 0.78, 0.030)
+	var needle_count := 4 if attack_index % 3 == 0 else 3
+	_queue_targeted_needles(needle_count, 630.0, 0.60, 0.032)
 
 func _schedule_phase_three() -> void:
 	if _live_pylon_count() < 2 and attack_index % 2 == 1:
 		_spawn_pylon(2, 152.0, 5.4, 1.00, 0.90)
-	_queue_targeted_needles(2, 470.0, 0.72, 0.032)
+
+	_queue_targeted_needles(5, 690.0, 0.52, 0.031)
+
+	# Periodic cross-axis bursts stop one clean sidestep from solving every volley.
+	# The second burst warns slightly longer, so it remains readable despite the
+	# much higher needle velocity.
+	if attack_index % 3 == 0:
+		var cross_axis := 0 if final_axis_horizontal else 1
+		final_axis_horizontal = not final_axis_horizontal
+		_queue_targeted_needles(3, 720.0, 0.64, 0.036, cross_axis)
 
 func _schedule_phase_four() -> void:
 	if _live_pylon_count() < 3 and attack_index % 2 == 1:
 		_spawn_pylon(3, 158.0, 5.5, 0.94, 0.84)
-	var needle_count := 3 if attack_index % 2 == 0 else 4
-	_queue_targeted_needles(needle_count, 495.0, 0.66, 0.028)
+
+	var needle_count := 7 if attack_index % 2 == 0 else 6
+	_queue_targeted_needles(needle_count, 760.0, 0.44, 0.030)
+
+	# Every other attack gets a second, perpendicular-feeling burst. The two
+	# warning timings are offset enough to read as a rapid one-two instead of one
+	# giant unreadable flash.
+	if attack_index % 2 == 0:
+		var secondary_axis := 0 if final_axis_horizontal else 1
+		final_axis_horizontal = not final_axis_horizontal
+		_queue_targeted_needles(4, 800.0, 0.56, 0.038, secondary_axis)
 
 func _schedule_final_phase() -> void:
 	# The finale aggressively restores missing pylons. With the larger radius this
-	# keeps the arena partitioned instead of letting dead zones become occasional
-	# decorations between needle volleys.
+	# keeps the arena partitioned while the needle mechanic finally becomes a true
+	# storm: a broad primary volley followed immediately by pressure on the other
+	# axis. Small hitboxes are the only mercy these shots receive.
 	if _live_pylon_count() < 3:
 		_spawn_pylon(3, 165.0, 5.0, 0.82, 0.74)
 
-	var forced_axis := 0 if final_axis_horizontal else 1
+	var primary_axis := 0 if final_axis_horizontal else 1
+	var secondary_axis := 1 if final_axis_horizontal else 0
 	final_axis_horizontal = not final_axis_horizontal
-	_queue_targeted_needles(4, 525.0, 0.58, 0.026, forced_axis)
+	_queue_targeted_needles(8, 850.0, 0.36, 0.028, primary_axis)
+	_queue_targeted_needles(6, 900.0, 0.48, 0.032, secondary_axis)
 
 func _queue_targeted_needles(count: int, speed: float, delay: float, spread: float, forced_axis: int = -1) -> void:
 	var side: int
@@ -338,13 +360,13 @@ func _get_spawn_interval(current_phase: int) -> float:
 		1:
 			return 2.80
 		2:
-			return rng.randf_range(1.55, 1.75)
+			return rng.randf_range(1.20, 1.38)
 		3:
-			return rng.randf_range(1.28, 1.48)
+			return rng.randf_range(0.98, 1.14)
 		4:
-			return rng.randf_range(1.05, 1.22)
+			return rng.randf_range(0.80, 0.94)
 		_:
-			return rng.randf_range(0.88, 1.02)
+			return rng.randf_range(0.62, 0.74)
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase >= 2
@@ -356,7 +378,7 @@ func _get_intro_subtitle() -> String:
 	return "LEVEL 8 — TERRITORY"
 
 func _get_intro_body() -> String:
-	return "The floor is no longer neutral.\n\nPylons enter the arena, arm, and turn large areas lethal.\nNeedles use their own cyan warning and move much faster than standard projectiles.\nRead the floor, protect an exit route, and survive for 60 seconds.\n\nCLICK TO BEGIN"
+	return "The floor is no longer neutral.\n\nPylons enter the arena, arm, and turn large areas lethal.\nNeedles use their own cyan warning, arrive in dense volleys, and move far faster than standard projectiles.\nRead the floor, protect an exit route, and survive for 60 seconds.\n\nCLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
 	return "LEVEL 8 — DEAD ZONES"
