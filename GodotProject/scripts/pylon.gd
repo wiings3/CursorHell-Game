@@ -61,9 +61,9 @@ func _update_arming() -> void:
 	var progress := clampf(phase_time / maxf(arm_time, 0.001), 0.0, 1.0)
 	var pulse := 0.55 + 0.45 * absf(sin(progress * PI * 8.0))
 	arm_ring.scale = Vector2.ONE * lerpf(1.18, 1.0, progress)
-	arm_ring.modulate.a = 0.35 + 0.60 * pulse
-	outer_haze.modulate.a = 0.10 + 0.12 * progress
-	zone_fill.modulate.a = 0.03 + 0.07 * progress
+	arm_ring.modulate.a = 0.42 + 0.58 * pulse
+	outer_haze.modulate.a = 0.16 + 0.18 * progress
+	zone_fill.modulate.a = 0.08 + 0.16 * progress
 	core_hot.modulate.a = 0.55 + 0.40 * pulse
 
 	if progress >= 1.0:
@@ -71,9 +71,9 @@ func _update_arming() -> void:
 
 func _update_active() -> void:
 	var pulse := 0.72 + 0.28 * absf(sin(phase_time * 4.6))
-	active_ring.modulate.a = 0.72 + 0.26 * pulse
-	outer_haze.modulate.a = 0.16 + 0.10 * pulse
-	zone_fill.modulate.a = 0.14 + 0.035 * pulse
+	active_ring.modulate.a = 0.78 + 0.22 * pulse
+	outer_haze.modulate.a = 0.30 + 0.20 * pulse
+	zone_fill.modulate.a = 0.48 + 0.12 * pulse
 	core_glow.modulate.a = 0.72 + 0.24 * pulse
 	core_hot.modulate.a = 0.82 + 0.16 * pulse
 
