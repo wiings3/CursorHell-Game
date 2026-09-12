@@ -11,7 +11,8 @@ const LEVEL_NAMES: PackedStringArray = [
 	"THE GAP",
 	"THE PULSE",
 	"THE FLOOD",
-	"AFTERSHOCK"
+	"AFTERSHOCK",
+	"DEAD ZONES"
 ]
 
 @onready var panel_group: Control = $Root/PanelGroup
@@ -22,7 +23,8 @@ const LEVEL_NAMES: PackedStringArray = [
 	%Level4Button,
 	%Level5Button,
 	%Level6Button,
-	%Level7Button
+	%Level7Button,
+	%Level8Button
 ]
 @onready var back_button: Button = %BackButton
 @onready var progress_label: Label = %ProgressLabel
