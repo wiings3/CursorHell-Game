@@ -1,0 +1,91 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/campaign/level_06.gd" id="1_level"]
+[ext_resource type="PackedScene" uid="uid://vetw0ieivkyj" path="res://Scenes/Components/ArenaBackground.tscn" id="2_arena"]
+[ext_resource type="Shader" uid="uid://cehfqf0m3rj8c" path="res://Shaders/fog.gdshader" id="2_fog"]
+[ext_resource type="Shader" uid="uid://xqc5hgjpxees" path="res://Shaders/splatter.gdshader" id="3_splatter"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
+[ext_resource type="Texture2D" uid="uid://cpud02llijvi8" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_pattern"]
+[ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_level6"]
+noise_type = 3
+seed = 835
+frequency = 0.1373
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_level6"]
+width = 1920
+height = 1080
+noise = SubResource("FastNoiseLite_level6")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog"]
+shader = ExtResource("2_fog")
+shader_parameter/octaves = 4
+shader_parameter/starting_amplitude = 0.5
+shader_parameter/starting_frequency = 0.065
+shader_parameter/shift = -0.2
+shader_parameter/velocity = Vector2(0.06, 0.06)
+shader_parameter/fog_color = Color(0.14509805, 0.16862746, 0.22745098, 1)
+shader_parameter/noise = SubResource("NoiseTexture2D_level6")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_splatter"]
+shader = ExtResource("3_splatter")
+shader_parameter/g_random_seed = 0.0
+shader_parameter/g_grid_size = Vector2(16, 9)
+shader_parameter/g_cell_offset = Vector2(0, 0)
+shader_parameter/g_speed = Vector2(0.03, 0.03)
+shader_parameter/g_draw_size_min = 0.1
+shader_parameter/g_draw_size_max = 0.4
+shader_parameter/tex_draw = ExtResource("4_pattern")
+shader_parameter/g_color_a = Color(0.081599995, 0.09312, 0.12, 0.27450982)
+shader_parameter/g_color_b = Color(0.15359999, 0.17663999, 0.24, 0.23529412)
+shader_parameter/g_rot_global_speed = 1.0
+shader_parameter/g_rot_min_speed = 0.1
+shader_parameter/g_rot_max_speed = 1.0
+
+[node name="Level6" type="Node2D"]
+script = ExtResource("1_level")
+
+[node name="GameplayBackdrop" type="Node2D" parent="."]
+z_index = -10
+
+[node name="Background" type="ColorRect" parent="GameplayBackdrop"]
+material = SubResource("ShaderMaterial_fog")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundPattern" type="ColorRect" parent="GameplayBackdrop"]
+material = SubResource("ShaderMaterial_splatter")
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.03529412, 0.039215688, 0.05882353, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="ArenaDepth" parent="." instance=ExtResource("6_depth")]
+
+[node name="ArenaBackground" parent="." instance=ExtResource("2_arena")]
+position = Vector2(390, 72)
+
+[node name="WarningLayer" parent="." instance=ExtResource("3_warning")]
+unique_name_in_owner = true
+position = Vector2(390, 72)
+
+[node name="Projectiles" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+unique_name_in_owner = true
+position = Vector2(800, 472.68)
+
+[node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
+unique_name_in_owner = true
+level_display_text = "LEVEL 6\nTHE PULSE"
