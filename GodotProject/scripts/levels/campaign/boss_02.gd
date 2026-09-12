@@ -16,6 +16,18 @@ const BOSS_PYLON_ACTIVE_SCALE := 0.94
 const BOSS_PYLON_TRAVEL_SCALE := 1.06
 const BOSS_PYLON_ARM_SCALE := 1.08
 
+# The final 15 seconds get one additional light pullback. The structure and
+# pattern density stay intact, but reaction time and usable arena space improve
+# by another roughly 5-10% once the fight reaches its hardest overlap.
+const LATE_PULLBACK_START := 45.0
+const LATE_PROJECTILE_SPEED_SCALE := 0.96
+const LATE_WARNING_TIME_SCALE := 1.04
+const LATE_SPAWN_INTERVAL_SCALE := 1.06
+const LATE_PYLON_RADIUS_SCALE := 0.96
+const LATE_PYLON_ACTIVE_SCALE := 0.96
+const LATE_PYLON_TRAVEL_SCALE := 1.04
+const LATE_PYLON_ARM_SCALE := 1.05
+
 var boss_attack_index := 0
 var boss_phase := -1
 var last_flood_side := -1
@@ -177,9 +189,14 @@ func _queue_convergence_combo(finale: bool) -> void:
 		_queue_echo_band(echo_side, echo_center, 5, 0.047, standard_speed + 6.0, 1.08)
 		_queue_echo_band(echo_side, clampf(echo_center - 0.055, 0.14, 0.86), 5, 0.047, standard_speed + 12.0, 1.38)
 
+func _late_pullback_active() -> bool:
+	return elapsed >= LATE_PULLBACK_START
+
 func _queue_axis_pulse(horizontal: bool, lane_count: int, speed: float, delay: float, lane_offset: float) -> void:
-	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
-	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE
+	var late_speed := LATE_PROJECTILE_SPEED_SCALE if _late_pullback_active() else 1.0
+	var late_warning := LATE_WARNING_TIME_SCALE if _late_pullback_active() else 1.0
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE * late_speed
+	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE * late_warning
 	var divisor := maxi(lane_count - 1, 1)
 	for index in range(lane_count):
 		var lane := lerpf(0.12, 0.88, float(index) / float(divisor)) + lane_offset
@@ -192,24 +209,30 @@ func _queue_axis_pulse(horizontal: bool, lane_count: int, speed: float, delay: f
 			queue_projectile_warning(3, lane, tuned_speed, 8.0, tuned_delay)
 
 func _queue_echo_band(side: int, center_lane: float, count: int, spacing: float, speed: float, delay: float) -> void:
-	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
-	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE
+	var late_speed := LATE_PROJECTILE_SPEED_SCALE if _late_pullback_active() else 1.0
+	var late_warning := LATE_WARNING_TIME_SCALE if _late_pullback_active() else 1.0
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE * late_speed
+	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE * late_warning
 	var half := int(count / 2)
 	for index in range(count):
 		var lane := clampf(center_lane + float(index - half) * spacing, 0.06, 0.94)
 		queue_projectile_warning(side, lane, tuned_speed, STANDARD_FAST_RADIUS, tuned_delay)
 
 func _queue_flood_blockers(count: int, speed: float, radius: float, base_delay: float) -> void:
-	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
-	var tuned_delay := base_delay * BOSS_WARNING_TIME_SCALE
+	var late_speed := LATE_PROJECTILE_SPEED_SCALE if _late_pullback_active() else 1.0
+	var late_warning := LATE_WARNING_TIME_SCALE if _late_pullback_active() else 1.0
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE * late_speed
+	var tuned_delay := base_delay * BOSS_WARNING_TIME_SCALE * late_warning
 	for index in range(count):
 		var side := _next_flood_side()
 		var lane := rng.randf_range(0.16, 0.84)
 		queue_projectile_warning(side, lane, tuned_speed, radius, tuned_delay + float(index) * 0.19)
 
 func _queue_targeted_standard_burst(side: int, count: int, speed: float, delay: float, spacing: float) -> void:
-	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE
-	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE
+	var late_speed := LATE_PROJECTILE_SPEED_SCALE if _late_pullback_active() else 1.0
+	var late_warning := LATE_WARNING_TIME_SCALE if _late_pullback_active() else 1.0
+	var tuned_speed := speed * BOSS_PROJECTILE_SPEED_SCALE * late_speed
+	var tuned_delay := delay * BOSS_WARNING_TIME_SCALE * late_warning
 	var center := _target_lane_for_side(side, 0.025)
 	var half := int(count / 2)
 	for index in range(count):
@@ -219,10 +242,12 @@ func _queue_targeted_standard_burst(side: int, count: int, speed: float, delay: 
 func _queue_targeted_needles(count: int, speed: float, delay: float, spread: float, forced_axis: int = -1) -> void:
 	# Preserve the approved needle group sizes and identity, but give the player a
 	# little more reaction time and slightly reduce their travel speed in Boss II.
+	var late_speed := LATE_PROJECTILE_SPEED_SCALE if _late_pullback_active() else 1.0
+	var late_warning := LATE_WARNING_TIME_SCALE if _late_pullback_active() else 1.0
 	super._queue_targeted_needles(
 		count,
-		speed * BOSS_PROJECTILE_SPEED_SCALE,
-		delay * BOSS_WARNING_TIME_SCALE,
+		speed * BOSS_PROJECTILE_SPEED_SCALE * late_speed,
+		delay * BOSS_WARNING_TIME_SCALE * late_warning,
 		spread,
 		forced_axis
 	)
@@ -230,12 +255,16 @@ func _queue_targeted_needles(count: int, speed: float, delay: float, spread: flo
 func _spawn_pylon(max_active: int, radius: float, active_duration: float, travel_duration: float, arm_duration: float) -> void:
 	# The same pylon patterns remain, but each zone steals a little less space and
 	# gives slightly more travel/arming time before becoming lethal.
+	var late_radius := LATE_PYLON_RADIUS_SCALE if _late_pullback_active() else 1.0
+	var late_active := LATE_PYLON_ACTIVE_SCALE if _late_pullback_active() else 1.0
+	var late_travel := LATE_PYLON_TRAVEL_SCALE if _late_pullback_active() else 1.0
+	var late_arm := LATE_PYLON_ARM_SCALE if _late_pullback_active() else 1.0
 	super._spawn_pylon(
 		max_active,
-		radius * BOSS_PYLON_RADIUS_SCALE,
-		active_duration * BOSS_PYLON_ACTIVE_SCALE,
-		travel_duration * BOSS_PYLON_TRAVEL_SCALE,
-		arm_duration * BOSS_PYLON_ARM_SCALE
+		radius * BOSS_PYLON_RADIUS_SCALE * late_radius,
+		active_duration * BOSS_PYLON_ACTIVE_SCALE * late_active,
+		travel_duration * BOSS_PYLON_TRAVEL_SCALE * late_travel,
+		arm_duration * BOSS_PYLON_ARM_SCALE * late_arm
 	)
 
 func _next_flood_side() -> int:
@@ -251,17 +280,18 @@ func _perpendicular_side_for_axis(horizontal: bool) -> int:
 	return 0 if rng.randf() < 0.5 else 1
 
 func _get_spawn_interval(current_phase: int) -> float:
+	var late_spawn := LATE_SPAWN_INTERVAL_SCALE if _late_pullback_active() else 1.0
 	match current_phase:
 		1:
-			return rng.randf_range(2.55, 2.80) * BOSS_SPAWN_INTERVAL_SCALE
+			return rng.randf_range(2.55, 2.80) * BOSS_SPAWN_INTERVAL_SCALE * late_spawn
 		2:
-			return rng.randf_range(2.25, 2.50) * BOSS_SPAWN_INTERVAL_SCALE
+			return rng.randf_range(2.25, 2.50) * BOSS_SPAWN_INTERVAL_SCALE * late_spawn
 		3:
-			return rng.randf_range(2.00, 2.22) * BOSS_SPAWN_INTERVAL_SCALE
+			return rng.randf_range(2.00, 2.22) * BOSS_SPAWN_INTERVAL_SCALE * late_spawn
 		4:
-			return rng.randf_range(1.78, 2.00) * BOSS_SPAWN_INTERVAL_SCALE
+			return rng.randf_range(1.78, 2.00) * BOSS_SPAWN_INTERVAL_SCALE * late_spawn
 		_:
-			return rng.randf_range(1.55, 1.72) * BOSS_SPAWN_INTERVAL_SCALE
+			return rng.randf_range(1.55, 1.72) * BOSS_SPAWN_INTERVAL_SCALE * late_spawn
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase > 0
