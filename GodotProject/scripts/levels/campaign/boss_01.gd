@@ -126,26 +126,31 @@ func _queue_synthesis_exam(finale: bool) -> void:
 	if pattern == 0:
 		# Gap wall -> perpendicular crossfire.
 		var side_a := 0 if boss_attack_index % 2 == 1 else 1
-		_queue_gap_wall(side_a, _choose_gap_lane(0.24), 0.070 if finale else 0.078, wall_speed, wall_delay)
+		var gap_width_a := 0.070 if finale else 0.078
+		_queue_gap_wall(side_a, _choose_gap_lane(0.24), gap_width_a, wall_speed, wall_delay)
 		_queue_crossfire_pair(false, pair_min, pair_max, follow_delay, 0.18, 0.28, 0.16)
 	elif pattern == 1:
 		# Sweep -> opposite-axis pair -> ordinary single late in the sequence.
 		var side_b := 2 if boss_attack_index % 2 == 0 else 3
-		_queue_sweep(side_b, boss_attack_index % 2 == 0, 8 if finale else 7, sweep_speed, wall_delay, 0.125 if finale else 0.14, 0.09, 0.91)
+		var sweep_count := 8 if finale else 7
+		var sweep_step := 0.125 if finale else 0.14
+		_queue_sweep(side_b, boss_attack_index % 2 == 0, sweep_count, sweep_speed, wall_delay, sweep_step, 0.09, 0.91)
 		_queue_crossfire_pair(true, pair_min, pair_max, follow_delay + 0.08, 0.18, 0.27, 0.16)
 		queue_projectile_warning(rng.randi_range(0, 3), rng.randf_range(0.14, 0.86), pair_max, 7.5, follow_delay + 0.58)
 	elif pattern == 2:
 		# A vertical wall and horizontal sweep cross at different times. Both have
 		# generous openings/read time; difficulty comes from planning two moves.
 		var side_c := 2 if boss_attack_index % 2 == 1 else 3
-		_queue_gap_wall(side_c, _choose_gap_lane(0.24), 0.070 if finale else 0.078, wall_speed, wall_delay)
+		var gap_width_c := 0.070 if finale else 0.078
+		_queue_gap_wall(side_c, _choose_gap_lane(0.24), gap_width_c, wall_speed, wall_delay)
 		var sweep_side := 0 if boss_attack_index % 2 == 1 else 1
 		_queue_sweep(sweep_side, boss_attack_index % 2 == 1, 7, sweep_speed, follow_delay, 0.13, 0.11, 0.89)
 	else:
 		# Crossfire starts the attack, then a wall forces a committed relocation.
 		_queue_crossfire_pair(boss_attack_index % 2 == 0, pair_min, pair_max, wall_delay, 0.17, 0.27, 0.14)
 		var side_d := rng.randi_range(0, 3)
-		_queue_gap_wall(side_d, _choose_gap_lane(0.25), 0.072 if finale else 0.080, wall_speed, follow_delay)
+		var gap_width_d := 0.072 if finale else 0.080
+		_queue_gap_wall(side_d, _choose_gap_lane(0.25), gap_width_d, wall_speed, follow_delay)
 
 func _queue_crossfire_pair(horizontal: bool, speed_min: float, speed_max: float, delay: float, gap_min: float, gap_max: float, stagger: float = 0.0) -> void:
 	var center := rng.randf_range(0.32, 0.68)
