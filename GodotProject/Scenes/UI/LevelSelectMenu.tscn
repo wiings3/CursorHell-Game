@@ -1,0 +1,352 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_select_menu.gd" id="1_select"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
+bg_color = Color(0.014, 0.019, 0.03, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.36, 0.46, 0.64, 0.42)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 44.0
+content_margin_top = 36.0
+content_margin_right = 44.0
+content_margin_bottom = 32.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
+bg_color = Color(0.028, 0.036, 0.054, 0.94)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.30, 0.38, 0.52, 0.48)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_hover"]
+bg_color = Color(0.055, 0.064, 0.088, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.53, 0.15, 0.92)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
+bg_color = Color(0.085, 0.074, 0.065, 1)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.62, 0.20, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_disabled"]
+bg_color = Color(0.018, 0.022, 0.031, 0.78)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.20, 0.23, 0.30, 0.30)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_focus"]
+bg_color = Color(0.045, 0.052, 0.072, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.53, 0.15, 0.82)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_back"]
+bg_color = Color(0.022, 0.028, 0.042, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.30, 0.38, 0.52, 0.42)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="LevelSelectMenu" type="CanvasLayer"]
+visible = false
+layer = 85
+process_mode = 3
+script = ExtResource("1_select")
+
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Background" type="ColorRect" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.005, 0.008, 0.014, 1)
+
+[node name="UpperWash" type="ColorRect" parent="Root/Background"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 230.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.08, 0.12, 0.20, 0.12)
+
+[node name="TopAccent" type="ColorRect" parent="Root/Background"]
+anchor_right = 1.0
+offset_bottom = 3.0
+mouse_filter = 2
+color = Color(1, 0.50, 0.14, 0.92)
+
+[node name="PanelGroup" type="Control" parent="Root"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -560.0
+offset_top = -350.0
+offset_right = 560.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Shadow" type="ColorRect" parent="Root/PanelGroup"]
+offset_left = 12.0
+offset_top = 14.0
+offset_right = 1132.0
+offset_bottom = 714.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.58)
+
+[node name="OuterGlow" type="ColorRect" parent="Root/PanelGroup"]
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 1122.0
+offset_bottom = 702.0
+mouse_filter = 2
+color = Color(0.20, 0.30, 0.50, 0.10)
+
+[node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
+offset_right = 1120.0
+offset_bottom = 700.0
+theme_override_styles/panel = SubResource("StyleBox_panel")
+
+[node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.61, 0.84, 0.88)
+theme_override_font_sizes/font_size = 12
+text = "SELECT A SURVIVAL TEST"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.97, 0.94, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 44
+text = "LEVEL SELECT"
+horizontal_alignment = 1
+
+[node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.53, 0.15, 0.92)
+
+[node name="ProgressLabel" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.60, 0.66, 0.76, 1)
+theme_override_font_sizes/font_size = 14
+text = "1 / 7 LEVELS UNLOCKED"
+horizontal_alignment = 1
+
+[node name="Grid" type="GridContainer" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 2
+
+[node name="Level1Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 01  //  FIRST CONTACT\nBEST  0"
+
+[node name="Level2Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 02  //  CROSSFIRE\nLOCKED"
+
+[node name="Level3Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 03  //  THE SWEEP\nLOCKED"
+
+[node name="Level4Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 04  //  THE GAP\nLOCKED"
+
+[node name="Level5Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 05  //  THE PULSE\nLOCKED"
+
+[node name="Level6Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 06  //  THE FLOOD\nLOCKED"
+
+[node name="Level7Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(492, 92)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.97, 1)
+theme_override_colors/font_hover_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.70, 0.30, 1)
+theme_override_colors/font_disabled_color = Color(0.34, 0.37, 0.44, 0.76)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "LEVEL 07  //  AFTERSHOCK\nLOCKED"
+
+[node name="EmptyCell" type="Control" parent="Root/PanelGroup/Panel/VBox/Grid"]
+custom_minimum_size = Vector2(492, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.84, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBox_back")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "BACK"
+
+[node name="Footer" type="Label" parent="Root"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -40.0
+offset_right = -28.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.34, 0.39, 0.49, 0.68)
+theme_override_font_sizes/font_size = 11
+text = "LOCKED LEVELS OPEN WHEN THE PREVIOUS LEVEL IS CLEARED    •    ESC = BACK"
+horizontal_alignment = 1
