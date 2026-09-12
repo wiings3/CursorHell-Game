@@ -174,11 +174,11 @@ func _set_mode_style(accent: Color, tint: Color) -> void:
 	mode_tint.color = tint
 
 func _apply_viewport_layout() -> void:
-	var viewport_size := get_viewport_rect().size
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
-	var viewport_scale := minf(viewport_size.x / DESIGN_SIZE.x, viewport_size.y / DESIGN_SIZE.y)
-	var viewport_offset := (viewport_size - DESIGN_SIZE * viewport_scale) * 0.5
+	var viewport_scale: float = minf(viewport_size.x / DESIGN_SIZE.x, viewport_size.y / DESIGN_SIZE.y)
+	var viewport_offset: Vector2 = (viewport_size - DESIGN_SIZE * viewport_scale) * 0.5
 	transform = Transform2D(0.0, Vector2.ONE * viewport_scale, 0.0, viewport_offset)
 
 func _clean_intro_body(body: String) -> String:
