@@ -104,7 +104,7 @@ func _update_level_tutorial() -> void:
 		4:
 			tutorial_label.text = "THE BOX IS SHRINKING\nDead zones divide the arena. Needle walls close the gaps."
 		_:
-			tutorial_label.text = "STAY AHEAD\nTwo axes. Almost no recovery. Keep moving."
+			tutorial_label.text = "STAY AHEAD\nTwo axes. Read the next opening before you commit."
 
 func _schedule_level_projectile(current_phase: int) -> void:
 	if current_phase != dead_zone_phase:
@@ -169,18 +169,19 @@ func _schedule_phase_four() -> void:
 		_queue_targeted_needles(4, 800.0, 0.56, 0.038, secondary_axis)
 
 func _schedule_final_phase() -> void:
-	# The finale aggressively restores missing pylons. With the larger radius this
-	# keeps the arena partitioned while the needle mechanic finally becomes a true
-	# storm: a broad primary volley followed immediately by pressure on the other
-	# axis. Small hitboxes are the only mercy these shots receive.
+	# The final eight seconds remain the hardest section, but the cross-axis followup
+	# now lands every other attack instead of every attack. That keeps the finale
+	# intense without turning the last stretch into an almost continuous wall.
 	if _live_pylon_count() < 3:
 		_spawn_pylon(3, 165.0, 5.0, 0.82, 0.74)
 
 	var primary_axis := 0 if final_axis_horizontal else 1
 	var secondary_axis := 1 if final_axis_horizontal else 0
 	final_axis_horizontal = not final_axis_horizontal
-	_queue_targeted_needles(8, 850.0, 0.36, 0.028, primary_axis)
-	_queue_targeted_needles(6, 900.0, 0.48, 0.032, secondary_axis)
+	_queue_targeted_needles(7, 820.0, 0.40, 0.030, primary_axis)
+
+	if attack_index % 2 == 0:
+		_queue_targeted_needles(5, 860.0, 0.54, 0.034, secondary_axis)
 
 func _queue_targeted_needles(count: int, speed: float, delay: float, spread: float, forced_axis: int = -1) -> void:
 	var side: int
@@ -366,7 +367,7 @@ func _get_spawn_interval(current_phase: int) -> float:
 		4:
 			return rng.randf_range(0.80, 0.94)
 		_:
-			return rng.randf_range(0.62, 0.74)
+			return rng.randf_range(0.72, 0.86)
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase >= 2
