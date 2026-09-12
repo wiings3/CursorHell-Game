@@ -9,6 +9,7 @@ const LEVEL_NAMES: PackedStringArray = [
 	"CROSSFIRE",
 	"THE SWEEP",
 	"THE GAP",
+	"SYNTHESIS // BOSS I",
 	"THE PULSE",
 	"THE FLOOD",
 	"AFTERSHOCK",
@@ -24,7 +25,8 @@ const LEVEL_NAMES: PackedStringArray = [
 	%Level5Button,
 	%Level6Button,
 	%Level7Button,
-	%Level8Button
+	%Level8Button,
+	%Level9Button
 ]
 @onready var back_button: Button = %BackButton
 @onready var progress_label: Label = %ProgressLabel
