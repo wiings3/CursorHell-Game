@@ -2,7 +2,8 @@ extends RefCounted
 class_name CursorHellSaveManager
 
 const SAVE_PATH := "user://cursor_hell_save.json"
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
+const BOSS_INSERT_LEVEL := 5
 
 var data: Dictionary = {}
 var has_existing_save := false
@@ -27,6 +28,12 @@ func load_save(registered_level_count: int) -> void:
 		return
 
 	var loaded: Dictionary = parsed
+	var loaded_version := int(loaded.get("version", 1))
+	var migrated := false
+	if loaded_version < 2:
+		loaded = _migrate_v1_to_v2(loaded)
+		migrated = true
+
 	data["version"] = SAVE_VERSION
 	data["highest_unlocked"] = clampi(int(loaded.get("highest_unlocked", 1)), 1, level_count)
 	data["last_level"] = clampi(int(loaded.get("last_level", 1)), 1, int(data["highest_unlocked"]))
@@ -38,6 +45,8 @@ func load_save(registered_level_count: int) -> void:
 		data["best_scores"] = {}
 
 	has_existing_save = true
+	if migrated:
+		_write_save()
 
 func record_level_started(level_number: int) -> void:
 	var safe_level := clampi(level_number, 1, level_count)
@@ -78,6 +87,31 @@ func _record_best_score(level_number: int, final_score: int) -> void:
 	var key := str(level_number)
 	scores[key] = maxi(int(scores.get(key, 0)), final_score)
 	data["best_scores"] = scores
+
+func _migrate_v1_to_v2(old_data: Dictionary) -> Dictionary:
+	# Save v2 inserts Boss I at campaign Level 5. Preserve every existing unlock,
+	# continuation point and score by shifting the old Levels 5+ forward one slot.
+	var migrated := old_data.duplicate(true)
+	var old_highest := int(old_data.get("highest_unlocked", 1))
+	var old_last := int(old_data.get("last_level", 1))
+
+	migrated["highest_unlocked"] = old_highest + 1 if old_highest >= BOSS_INSERT_LEVEL else old_highest
+	migrated["last_level"] = old_last + 1 if old_last >= BOSS_INSERT_LEVEL else old_last
+
+	var shifted_scores: Dictionary = {}
+	var old_scores = old_data.get("best_scores", {})
+	if typeof(old_scores) == TYPE_DICTIONARY:
+		for raw_key in old_scores.keys():
+			var key_text := str(raw_key)
+			if not key_text.is_valid_int():
+				continue
+			var old_level := int(key_text)
+			var new_level := old_level + 1 if old_level >= BOSS_INSERT_LEVEL else old_level
+			shifted_scores[str(new_level)] = old_scores[raw_key]
+
+	migrated["best_scores"] = shifted_scores
+	migrated["version"] = SAVE_VERSION
+	return migrated
 
 func _write_save() -> void:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
