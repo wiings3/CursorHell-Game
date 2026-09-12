@@ -16,7 +16,8 @@ const PYLON_SLOTS := [
 	Vector2(0.50, 0.78),
 	Vector2(0.78, 0.74),
 	Vector2(0.31, 0.50),
-	Vector2(0.69, 0.50)
+	Vector2(0.69, 0.50),
+	Vector2(0.50, 0.50)
 ]
 
 @onready var pylon_layer: Node2D = %Pylons
@@ -92,14 +93,14 @@ func _update_level_tutorial() -> void:
 		0:
 			tutorial_label.text = "DEAD ZONES\nSpace is about to become the hazard."
 		1:
-			tutorial_label.text = "PYLON INBOUND\nBlue ring = arming. Red ring = lethal."
+			tutorial_label.text = "PYLON INBOUND\nBlue ring = arming. Red field = lethal."
 		2:
-			if elapsed < 21.0:
-				tutorial_label.text = "NEEDLES\nSmall. Fast. Move during the warning."
+			if elapsed < 20.0:
+				tutorial_label.text = "NEEDLES\nCyan warning = fast precision shot."
 			else:
 				tutorial_label.text = "USE THE OPEN SPACE\nThe pylon removes options. Needles test what remains."
 		3:
-			tutorial_label.text = "READ THE FLOOR\nTwo dead zones can coexist. Plan your next pocket early."
+			tutorial_label.text = "READ THE FLOOR\nTwo large dead zones can overlap. Plan your next pocket early."
 		4:
 			tutorial_label.text = "THE BOX IS SHRINKING\nThree zones can divide the arena. Keep an exit route."
 		_:
@@ -113,8 +114,9 @@ func _schedule_level_projectile(current_phase: int) -> void:
 
 	match current_phase:
 		1:
-			if attack_index == 1:
-				_spawn_pylon(1, 96.0, 3.8, 1.25, 1.15)
+			# Keep one large zone cycling through the teaching phase instead of giving
+			# the player a long empty stretch after the first pylon burns out.
+			_spawn_pylon(1, 142.0, 5.0, 1.10, 1.00)
 		2:
 			_schedule_phase_two()
 		3:
@@ -125,34 +127,38 @@ func _schedule_level_projectile(current_phase: int) -> void:
 			_schedule_final_phase()
 
 func _schedule_phase_two() -> void:
-	# First teach the needle by itself. After 21 seconds, bring the pylon back so
-	# the player has a few seconds to understand the fast projectile in isolation.
-	if elapsed < 21.0:
-		_queue_targeted_needles(1, 405.0, 0.92, 0.0)
+	# Give the new cyan needle warning a short isolated lesson, then combine it
+	# with persistent territory pressure for the remainder of the phase.
+	if elapsed < 20.0:
+		_queue_targeted_needles(1, 440.0, 0.82, 0.0)
 		return
 
-	if _live_pylon_count() < 2 and attack_index % 3 == 0:
-		_spawn_pylon(2, 98.0, 4.1, 1.15, 1.05)
-	_queue_targeted_needles(1, 415.0, 0.88, 0.0)
+	if _live_pylon_count() < 2 and attack_index % 2 == 0:
+		_spawn_pylon(2, 146.0, 5.2, 1.05, 0.95)
+	var needle_count := 2 if attack_index % 3 == 0 else 1
+	_queue_targeted_needles(needle_count, 450.0, 0.78, 0.030)
 
 func _schedule_phase_three() -> void:
 	if _live_pylon_count() < 2 and attack_index % 2 == 1:
-		_spawn_pylon(2, 102.0, 4.4, 1.05, 1.00)
-	_queue_targeted_needles(2, 430.0, 0.84, 0.032)
+		_spawn_pylon(2, 152.0, 5.4, 1.00, 0.90)
+	_queue_targeted_needles(2, 470.0, 0.72, 0.032)
 
 func _schedule_phase_four() -> void:
-	if _live_pylon_count() < 3 and attack_index % 3 == 1:
-		_spawn_pylon(3, 106.0, 4.3, 0.98, 0.92)
-	var needle_count := 2 if attack_index % 2 == 0 else 3
-	_queue_targeted_needles(needle_count, 450.0, 0.80, 0.030)
+	if _live_pylon_count() < 3 and attack_index % 2 == 1:
+		_spawn_pylon(3, 158.0, 5.5, 0.94, 0.84)
+	var needle_count := 3 if attack_index % 2 == 0 else 4
+	_queue_targeted_needles(needle_count, 495.0, 0.66, 0.028)
 
 func _schedule_final_phase() -> void:
-	if _live_pylon_count() < 3 and attack_index % 2 == 1:
-		_spawn_pylon(3, 110.0, 3.8, 0.86, 0.82)
+	# The finale aggressively restores missing pylons. With the larger radius this
+	# keeps the arena partitioned instead of letting dead zones become occasional
+	# decorations between needle volleys.
+	if _live_pylon_count() < 3:
+		_spawn_pylon(3, 165.0, 5.0, 0.82, 0.74)
 
 	var forced_axis := 0 if final_axis_horizontal else 1
 	final_axis_horizontal = not final_axis_horizontal
-	_queue_targeted_needles(3, 475.0, 0.74, 0.028, forced_axis)
+	_queue_targeted_needles(4, 525.0, 0.58, 0.026, forced_axis)
 
 func _queue_targeted_needles(count: int, speed: float, delay: float, spread: float, forced_axis: int = -1) -> void:
 	var side: int
@@ -172,6 +178,7 @@ func _queue_targeted_needles(count: int, speed: float, delay: float, spread: flo
 		if warning_index >= 0:
 			var warning: Dictionary = warnings[warning_index]
 			warning["projectile_kind"] = "needle"
+			warning["warning_kind"] = "needle"
 
 func _release_warning(warning: Dictionary) -> void:
 	if str(warning.get("projectile_kind", "")) != "needle":
@@ -247,15 +254,16 @@ func _choose_pylon_target(radius: float) -> Dictionary:
 			ARENA.size.x * PYLON_SLOTS[slot_index].x,
 			ARENA.size.y * PYLON_SLOTS[slot_index].y
 		)
-		if target.distance_to(player.position) < radius + 82.0:
+		# Pylons still never materialize on top of the player, but the safety buffer
+		# is intentionally tighter now. Travel + arming time is the warning window.
+		if target.distance_to(player.position) < radius + 58.0:
 			continue
 		if not _pylon_target_has_space(target, radius):
 			continue
 		return {"slot": slot_index, "position": target}
 
-	# If the player happens to occupy every preferred slot, skip this pylon rather
-	# than forcing a bad placement. Difficulty comes from constrained decisions,
-	# not an unavoidable zone appearing on top of the cursor.
+	# If every authored slot would create an unfair placement, skip this pylon
+	# rather than forcing an unavoidable dead zone.
 	return {}
 
 func _pylon_target_has_space(target: Vector2, radius: float) -> bool:
@@ -263,7 +271,9 @@ func _pylon_target_has_space(target: Vector2, radius: float) -> bool:
 		var pylon := child as CursorHellDeadZonePylon
 		if pylon == null or not is_instance_valid(pylon) or pylon.is_queued_for_deletion():
 			continue
-		var minimum_spacing := radius + pylon.zone_radius + 46.0
+		# Mild overlap is deliberate. Large circles should be able to join into
+		# temporary walls, but their centers cannot stack into one unreadable blob.
+		var minimum_spacing := maxf(radius, pylon.zone_radius) * 1.35 + 34.0
 		if target.distance_to(pylon.target_position) < minimum_spacing:
 			return false
 	return true
@@ -326,15 +336,15 @@ func _target_lane_for_side(side: int, jitter: float) -> float:
 func _get_spawn_interval(current_phase: int) -> float:
 	match current_phase:
 		1:
-			return 3.15
+			return 2.80
 		2:
-			return rng.randf_range(1.80, 2.05)
+			return rng.randf_range(1.55, 1.75)
 		3:
-			return rng.randf_range(1.55, 1.78)
+			return rng.randf_range(1.28, 1.48)
 		4:
-			return rng.randf_range(1.30, 1.50)
+			return rng.randf_range(1.05, 1.22)
 		_:
-			return rng.randf_range(1.10, 1.28)
+			return rng.randf_range(0.88, 1.02)
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase >= 2
@@ -346,13 +356,13 @@ func _get_intro_subtitle() -> String:
 	return "LEVEL 8 — TERRITORY"
 
 func _get_intro_body() -> String:
-	return "The floor is no longer neutral.\n\nPylons enter the arena, arm, and turn nearby space lethal.\nNeedles are smaller and much faster than standard projectiles.\nRead the warning, protect an exit route, and survive for 60 seconds.\n\nCLICK TO BEGIN"
+	return "The floor is no longer neutral.\n\nPylons enter the arena, arm, and turn large areas lethal.\nNeedles use their own cyan warning and move much faster than standard projectiles.\nRead the floor, protect an exit route, and survive for 60 seconds.\n\nCLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
 	return "LEVEL 8 — DEAD ZONES"
 
 func _get_countdown_tutorial_text() -> String:
-	return "GET READY\nBlue arms. Red kills. Keep an exit route."
+	return "GET READY\nBlue arms. Red kills. Cyan means needle."
 
 func _get_countdown_subtitle() -> String:
 	return "DEAD ZONES"
