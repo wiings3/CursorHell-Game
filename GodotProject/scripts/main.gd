@@ -18,6 +18,7 @@ const LEVEL_SCENES: Array[PackedScene] = [
 @export var debug_console_enabled: bool = true
 
 @onready var level_container: Node = %LevelContainer
+@onready var transition_overlay: CursorHellTransitionOverlay = %TransitionOverlay
 @onready var main_menu: CursorHellMainMenu = %MainMenu
 @onready var pause_menu: CursorHellPauseMenu = %PauseMenu
 @onready var debug_console: CursorHellDebugConsole = %DebugConsole
@@ -35,6 +36,10 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	save_manager.load_save(LEVEL_SCENES.size())
+
+	transition_overlay.primary_requested.connect(_on_transition_primary_requested)
+	transition_overlay.replay_requested.connect(_on_transition_replay_requested)
+	transition_overlay.menu_requested.connect(_on_transition_menu_requested)
 
 	main_menu.continue_requested.connect(_on_main_menu_continue_requested)
 	main_menu.start_level_one_requested.connect(_on_main_menu_start_requested)
@@ -73,6 +78,7 @@ func load_level(index: int, record_progress: bool = true) -> void:
 		return
 
 	get_tree().paused = false
+	transition_overlay.hide_immediate()
 	main_menu.hide_menu()
 	pause_menu.hide_menu()
 
@@ -96,6 +102,18 @@ func load_level(index: int, record_progress: bool = true) -> void:
 	current_level.continue_requested.connect(_on_continue_requested)
 	level_container.add_child(level_instance)
 
+	# BaseLevel still owns the trusted gameplay/countdown runtime. While a shared
+	# transition card is visible, temporarily disable the level's own input and
+	# hide its legacy message panel so one click cannot trigger both systems.
+	current_level.set_process_input(false)
+	current_level._hide_message_panel()
+	transition_overlay.show_intro(
+		level_number,
+		current_level._get_intro_title(),
+		current_level._get_intro_subtitle(),
+		current_level._get_intro_body()
+	)
+
 	if record_progress:
 		save_manager.record_level_started(level_number)
 		_refresh_main_menu_save_status()
@@ -114,27 +132,99 @@ func load_next_level() -> bool:
 func _on_level_completed(level_number: int, final_score: int) -> void:
 	last_completed_level = level_number
 	last_completed_score = final_score
+	var previous_best := save_manager.get_best_score(level_number)
+	var is_new_best := final_score > previous_best
+
 	if current_level_records_progress:
 		save_manager.record_level_result(level_number, final_score, true)
 		_refresh_main_menu_save_status()
 
+	if not is_instance_valid(current_level):
+		return
+
+	current_level._hide_message_panel()
+	current_level.set_process_input(false)
+	var best_score := maxi(previous_best, final_score)
+	transition_overlay.show_clear(
+		level_number,
+		current_level._get_intro_title(),
+		current_level._get_round_time(),
+		int(current_level._get_completion_bonus()),
+		final_score,
+		best_score,
+		is_new_best,
+		current_level.has_next_level
+	)
+
 func _on_level_failed(level_number: int, final_score: int) -> void:
+	var previous_best := save_manager.get_best_score(level_number)
+	var is_new_best := final_score > previous_best
+
 	if current_level_records_progress:
 		save_manager.record_level_result(level_number, final_score, false)
 		_refresh_main_menu_save_status()
+
+	if not is_instance_valid(current_level):
+		return
+
+	current_level._hide_message_panel()
+	current_level.set_process_input(false)
+	var best_score := maxi(previous_best, final_score)
+	transition_overlay.show_failure(
+		level_number,
+		current_level._get_intro_title(),
+		current_level.pending_death_reason,
+		current_level.elapsed,
+		current_level._get_round_time(),
+		final_score,
+		best_score,
+		is_new_best
+	)
+
+func _on_transition_primary_requested(mode: String) -> void:
+	if not is_instance_valid(current_level):
+		return
+
+	match mode:
+		"intro":
+			_begin_current_round()
+		"failure":
+			_begin_current_round()
+		"clear":
+			if current_level.has_next_level:
+				# Defer the scene swap so the click that confirmed the clear card cannot
+				# also interact with the next level's intro card in the same event.
+				call_deferred("load_level", current_level_index + 1, current_level_records_progress)
+			else:
+				_begin_current_round()
+
+func _on_transition_replay_requested(_mode: String) -> void:
+	if is_instance_valid(current_level):
+		_begin_current_round()
+
+func _on_transition_menu_requested() -> void:
+	_show_main_menu()
+
+func _begin_current_round() -> void:
+	if not is_instance_valid(current_level):
+		return
+	transition_overlay.hide_immediate()
+	current_level.set_process_input(true)
+	current_level._reset_round(true)
 
 func _on_continue_requested() -> void:
 	var next_index := current_level_index + 1
 	if next_index >= LEVEL_SCENES.size():
 		return
 
-	# Defer the swap so the click used to continue cannot also trigger the intro
-	# screen of the newly loaded level in the same input event. Preserve whether
-	# this run is a real save-tracked run or a debug-only test sequence.
+	# Retained as a compatibility path for BaseLevel. The shared transition layer
+	# normally owns completion input now, so this signal should not fire in the
+	# standard player-facing flow.
 	call_deferred("load_level", next_index, current_level_records_progress)
 
 func _show_main_menu() -> void:
 	get_tree().paused = false
+	transition_overlay.hide_immediate()
 	pause_menu.hide_menu()
 
 	if is_instance_valid(current_level):
@@ -180,6 +270,7 @@ func _on_pause_resume_requested() -> void:
 
 	pause_menu.hide_menu()
 	get_tree().paused = false
+	current_level.set_process_input(true)
 	current_level.state = "playing"
 	current_level._hide_message_panel()
 	current_level._capture_mouse()
