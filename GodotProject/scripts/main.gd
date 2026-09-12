@@ -200,7 +200,9 @@ func _on_transition_primary_requested(mode: String) -> void:
 
 func _on_transition_replay_requested(_mode: String) -> void:
 	if is_instance_valid(current_level):
-		_begin_current_round()
+		# R is handled by both the transition layer and BaseLevel. Restart on the
+		# next frame so the key press cannot hit the freshly re-enabled level too.
+		call_deferred("_begin_current_round")
 
 func _on_transition_menu_requested() -> void:
 	_show_main_menu()
