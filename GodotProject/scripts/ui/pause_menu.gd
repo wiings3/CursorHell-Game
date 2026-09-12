@@ -3,6 +3,7 @@ class_name CursorHellPauseMenu
 
 signal resume_requested
 signal restart_requested
+signal settings_requested
 signal main_menu_requested
 signal quit_requested
 
@@ -11,6 +12,7 @@ signal quit_requested
 @onready var level_label: Label = %LevelLabel
 @onready var resume_button: Button = %ResumeButton
 @onready var restart_button: Button = %RestartButton
+@onready var settings_button: Button = %SettingsButton
 @onready var main_menu_button: Button = %MainMenuButton
 @onready var quit_button: Button = %QuitButton
 
@@ -22,6 +24,7 @@ func _ready() -> void:
 	panel_home = panel_group.position
 	resume_button.pressed.connect(func() -> void: resume_requested.emit())
 	restart_button.pressed.connect(func() -> void: restart_requested.emit())
+	settings_button.pressed.connect(func() -> void: settings_requested.emit())
 	main_menu_button.pressed.connect(func() -> void: main_menu_requested.emit())
 	quit_button.pressed.connect(func() -> void: quit_requested.emit())
 
