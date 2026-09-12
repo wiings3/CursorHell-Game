@@ -6,10 +6,11 @@ const LEVEL_SCENES: Array[PackedScene] = [
 	preload("res://Scenes/Levels/Level2.tscn"),
 	preload("res://Scenes/Levels/Level3.tscn"),
 	preload("res://Scenes/Levels/Level4.tscn"),
-	preload("res://Scenes/Levels/Level5.tscn"),
-	preload("res://Scenes/Levels/Level6.tscn"),
-	preload("res://Scenes/Levels/Level7.tscn"),
-	preload("res://Scenes/Levels/Level8.tscn")
+	preload("res://Scenes/Campaign/Boss1.tscn"),
+	preload("res://Scenes/Campaign/Level6.tscn"),
+	preload("res://Scenes/Campaign/Level7.tscn"),
+	preload("res://Scenes/Campaign/Level8.tscn"),
+	preload("res://Scenes/Campaign/Level9.tscn")
 ]
 
 @export var starting_level_index: int = 0
