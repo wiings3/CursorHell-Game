@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/pylon.gd" id="1_pylon"]
+
+[node name="Pylon" type="Node2D"]
+script = ExtResource("1_pylon")
+
+[node name="ZoneRoot" type="Node2D" parent="."]
+
+[node name="ZoneFill" type="Polygon2D" parent="ZoneRoot"]
+polygon = PackedVector2Array(100, 0, 98.079, 19.509, 92.388, 38.268, 83.147, 55.557, 70.711, 70.711, 55.557, 83.147, 38.268, 92.388, 19.509, 98.079, 0, 100, -19.509, 98.079, -38.268, 92.388, -55.557, 83.147, -70.711, 70.711, -83.147, 55.557, -92.388, 38.268, -98.079, 19.509, -100, 0, -98.079, -19.509, -92.388, -38.268, -83.147, -55.557, -70.711, -70.711, -55.557, -83.147, -38.268, -92.388, -19.509, -98.079, 0, -100, 19.509, -98.079, 38.268, -92.388, 55.557, -83.147, 70.711, -70.711, 83.147, -55.557, 92.388, -38.268, 98.079, -19.509)
+color = Color(0.21, 0.025, 0.045, 0.18)
+
+[node name="OuterHaze" type="Line2D" parent="ZoneRoot"]
+points = PackedVector2Array(100, 0, 98.079, 19.509, 92.388, 38.268, 83.147, 55.557, 70.711, 70.711, 55.557, 83.147, 38.268, 92.388, 19.509, 98.079, 0, 100, -19.509, 98.079, -38.268, 92.388, -55.557, 83.147, -70.711, 70.711, -83.147, 55.557, -92.388, 38.268, -98.079, 19.509, -100, 0, -98.079, -19.509, -92.388, -38.268, -83.147, -55.557, -70.711, -70.711, -55.557, -83.147, -38.268, -92.388, -19.509, -98.079, 0, -100, 19.509, -98.079, 38.268, -92.388, 55.557, -83.147, 70.711, -70.711, 83.147, -55.557, 92.388, -38.268, 98.079, -19.509)
+width = 14.0
+default_color = Color(0.92, 0.16, 0.22, 0.16)
+closed = true
+antialiased = true
+
+[node name="ArmRing" type="Line2D" parent="ZoneRoot"]
+points = PackedVector2Array(100, 0, 98.079, 19.509, 92.388, 38.268, 83.147, 55.557, 70.711, 70.711, 55.557, 83.147, 38.268, 92.388, 19.509, 98.079, 0, 100, -19.509, 98.079, -38.268, 92.388, -55.557, 83.147, -70.711, 70.711, -83.147, 55.557, -92.388, 38.268, -98.079, 19.509, -100, 0, -98.079, -19.509, -92.388, -38.268, -83.147, -55.557, -70.711, -70.711, -55.557, -83.147, -38.268, -92.388, -19.509, -98.079, 0, -100, 19.509, -98.079, 38.268, -92.388, 55.557, -83.147, 70.711, -70.711, 83.147, -55.557, 92.388, -38.268, 98.079, -19.509)
+width = 2.0
+default_color = Color(0.34, 0.72, 1, 0.88)
+closed = true
+antialiased = true
+
+[node name="ActiveRing" type="Line2D" parent="ZoneRoot"]
+visible = false
+points = PackedVector2Array(100, 0, 98.079, 19.509, 92.388, 38.268, 83.147, 55.557, 70.711, 70.711, 55.557, 83.147, 38.268, 92.388, 19.509, 98.079, 0, 100, -19.509, 98.079, -38.268, 92.388, -55.557, 83.147, -70.711, 70.711, -83.147, 55.557, -92.388, 38.268, -98.079, 19.509, -100, 0, -98.079, -19.509, -92.388, -38.268, -83.147, -55.557, -70.711, -70.711, -55.557, -83.147, -38.268, -92.388, -19.509, -98.079, 0, -100, 19.509, -98.079, 38.268, -92.388, 55.557, -83.147, 70.711, -70.711, 83.147, -55.557, 92.388, -38.268, 98.079, -19.509)
+width = 3.0
+default_color = Color(1, 0.24, 0.14, 0.96)
+closed = true
+antialiased = true
+
+[node name="CoreRoot" type="Node2D" parent="."]
+
+[node name="CoreGlow" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(0, -24, 18, 0, 0, 24, -18, 0)
+color = Color(0.20, 0.50, 1, 0.20)
+
+[node name="CoreBody" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(0, -15, 11, 0, 0, 15, -11, 0)
+color = Color(0.10, 0.16, 0.28, 1)
+
+[node name="ArmTop" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(-2, -13, 2, -13, 4, -24, -4, -24)
+color = Color(0.30, 0.62, 1, 0.86)
+
+[node name="ArmRight" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(13, -2, 13, 2, 24, 4, 24, -4)
+color = Color(0.30, 0.62, 1, 0.86)
+
+[node name="ArmBottom" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(-2, 13, 2, 13, 4, 24, -4, 24)
+color = Color(0.30, 0.62, 1, 0.86)
+
+[node name="ArmLeft" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(-13, -2, -13, 2, -24, 4, -24, -4)
+color = Color(0.30, 0.62, 1, 0.86)
+
+[node name="CoreHot" type="Polygon2D" parent="CoreRoot"]
+polygon = PackedVector2Array(0, -7, 6, 0, 0, 7, -6, 0)
+color = Color(0.94, 0.97, 1, 0.96)
