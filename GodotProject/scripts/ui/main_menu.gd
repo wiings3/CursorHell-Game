@@ -3,12 +3,16 @@ class_name CursorHellMainMenu
 
 signal continue_requested
 signal start_level_one_requested
+signal level_select_requested
+signal settings_requested
 signal quit_requested
 
 @onready var panel_group: Control = $Root/PanelGroup
 @onready var ghost_frame: Control = $Root/GhostFrame
 @onready var continue_button: Button = %ContinueButton
 @onready var start_button: Button = %StartButton
+@onready var level_select_button: Button = %LevelSelectButton
+@onready var settings_button: Button = %SettingsButton
 @onready var quit_button: Button = %QuitButton
 @onready var save_status: Label = %SaveStatus
 
@@ -19,6 +23,8 @@ func _ready() -> void:
 	panel_home = panel_group.position
 	continue_button.pressed.connect(func() -> void: continue_requested.emit())
 	start_button.pressed.connect(func() -> void: start_level_one_requested.emit())
+	level_select_button.pressed.connect(func() -> void: level_select_requested.emit())
+	settings_button.pressed.connect(func() -> void: settings_requested.emit())
 	quit_button.pressed.connect(func() -> void: quit_requested.emit())
 
 func configure(has_save: bool, continue_level: int, highest_unlocked: int) -> void:
