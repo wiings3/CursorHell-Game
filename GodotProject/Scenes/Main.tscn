@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://bwxipt41vty3q"]
+[gd_scene load_steps=8 format=3 uid="uid://bwxipt41vty3q"]
 
 [ext_resource type="Script" uid="uid://8o2ugckn5scp" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/MainMenu.tscn" id="2_main_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="3_pause_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/Debug/DebugConsole.tscn" id="4_console"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/TransitionOverlay.tscn" id="5_transition"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/LevelSelectMenu.tscn" id="6_level_select"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/SettingsMenu.tscn" id="7_settings"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -18,7 +20,13 @@ unique_name_in_owner = true
 [node name="MainMenu" parent="." instance=ExtResource("2_main_menu")]
 unique_name_in_owner = true
 
+[node name="LevelSelectMenu" parent="." instance=ExtResource("6_level_select")]
+unique_name_in_owner = true
+
 [node name="PauseMenu" parent="." instance=ExtResource("3_pause_menu")]
+unique_name_in_owner = true
+
+[node name="SettingsMenu" parent="." instance=ExtResource("7_settings")]
 unique_name_in_owner = true
 
 [node name="DebugConsole" parent="." instance=ExtResource("4_console")]
