@@ -1,22 +1,94 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_pause_panel"]
-bg_color = Color(0.025, 0.025, 0.03, 0.985)
+bg_color = Color(0.014, 0.019, 0.03, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.36, 0.46, 0.64, 0.42)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 44.0
+content_margin_top = 38.0
+content_margin_right = 44.0
+content_margin_bottom = 34.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
+bg_color = Color(0.028, 0.036, 0.054, 0.94)
 border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.48, 0.10, 0.9)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-content_margin_left = 38.0
-content_margin_top = 34.0
-content_margin_right = 38.0
-content_margin_bottom = 32.0
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.30, 0.38, 0.52, 0.48)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_hover"]
+bg_color = Color(0.055, 0.064, 0.088, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.53, 0.15, 0.92)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
+bg_color = Color(0.085, 0.074, 0.065, 1)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.62, 0.20, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_focus"]
+bg_color = Color(0.045, 0.052, 0.072, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.53, 0.15, 0.82)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_quit_hover"]
+bg_color = Color(0.078, 0.045, 0.046, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.32, 0.22, 0.90)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_quit_focus"]
+bg_color = Color(0.066, 0.041, 0.043, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.32, 0.22, 0.76)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="PauseMenu" type="CanvasLayer"]
 visible = false
@@ -24,97 +96,214 @@ layer = 90
 process_mode = 3
 script = ExtResource("1_pause")
 
-[node name="Scrim" type="ColorRect" parent="."]
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Scrim" type="ColorRect" parent="Root"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0, 0, 0, 0.72)
+color = Color(0.004, 0.007, 0.014, 0.76)
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="CoolTint" type="ColorRect" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06, 0.10, 0.18, 0.08)
+
+[node name="TopRail" type="ColorRect" parent="Root"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 2.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(1, 0.52, 0.15, 0.72)
+
+[node name="PausedRail" type="ColorRect" parent="Root"]
+anchors_preset = 10
+anchor_right = 0.22
+offset_top = 2.0
+offset_bottom = 4.0
+mouse_filter = 2
+color = Color(0.38, 0.55, 0.82, 0.28)
+
+[node name="PanelGroup" type="Control" parent="Root"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -275.0
-offset_right = 260.0
-offset_bottom = 275.0
+offset_left = -290.0
+offset_top = -305.0
+offset_right = 290.0
+offset_bottom = 305.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
+
+[node name="Shadow" type="ColorRect" parent="Root/PanelGroup"]
+offset_left = 12.0
+offset_top = 14.0
+offset_right = 592.0
+offset_bottom = 624.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.58)
+
+[node name="OuterGlow" type="ColorRect" parent="Root/PanelGroup"]
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 582.0
+offset_bottom = 612.0
+mouse_filter = 2
+color = Color(0.20, 0.30, 0.50, 0.09)
+
+[node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
+offset_right = 580.0
+offset_bottom = 610.0
 theme_override_styles/panel = SubResource("StyleBox_pause_panel")
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 alignment = 1
 
-[node name="Title" type="Label" parent="Panel/VBox"]
+[node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.55, 0.16, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0.48, 0.61, 0.84, 0.88)
+theme_override_font_sizes/font_size = 12
+text = "RUN SUSPENDED // INPUT RELEASED"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.97, 0.94, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 46
 text = "PAUSED"
 horizontal_alignment = 1
 
-[node name="LevelLabel" type="Label" parent="Panel/VBox"]
+[node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.53, 0.15, 0.92)
+
+[node name="LevelLabel" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.65, 0.68, 1)
+theme_override_colors/font_color = Color(0.66, 0.70, 0.78, 1)
 theme_override_font_sizes/font_size = 15
 text = "LEVEL 1"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="Panel/VBox"]
-custom_minimum_size = Vector2(0, 24)
+[node name="Spacer" type="Control" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ResumeButton" type="Button" parent="Panel/VBox"]
+[node name="ResumeButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../RestartButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.62, 0.22, 1)
-theme_override_colors/font_focus_color = Color(1, 0.62, 0.22, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "RESUME"
 
-[node name="RestartButton" type="Button" parent="Panel/VBox"]
+[node name="RestartButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
+focus_neighbor_top = NodePath("../ResumeButton")
+focus_neighbor_bottom = NodePath("../MainMenuButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.62, 0.22, 1)
-theme_override_colors/font_focus_color = Color(1, 0.62, 0.22, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "RESTART LEVEL"
 
-[node name="MainMenuButton" type="Button" parent="Panel/VBox"]
+[node name="MainMenuButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
+focus_neighbor_top = NodePath("../RestartButton")
+focus_neighbor_bottom = NodePath("../QuitButton")
 theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.62, 0.22, 1)
-theme_override_colors/font_focus_color = Color(1, 0.62, 0.22, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.76, 0.40, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
 text = "MAIN MENU"
 
-[node name="QuitButton" type="Button" parent="Panel/VBox"]
+[node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.62, 0.22, 1)
-theme_override_colors/font_focus_color = Color(1, 0.62, 0.22, 1)
-theme_override_font_sizes/font_size = 19
+focus_neighbor_top = NodePath("../MainMenuButton")
+theme_override_colors/font_color = Color(0.86, 0.87, 0.90, 1)
+theme_override_colors/font_hover_color = Color(1, 0.48, 0.30, 1)
+theme_override_colors/font_focus_color = Color(1, 0.48, 0.30, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.60, 0.42, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_quit_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_quit_focus")
 text = "QUIT"
 
-[node name="Hint" type="Label" parent="Panel/VBox"]
+[node name="SpacerBottom" type="Control" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.46, 0.46, 0.50, 1)
+mouse_filter = 2
+
+[node name="Hint" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.47, 0.56, 1)
 theme_override_font_sizes/font_size = 12
 text = "ESC = RESUME"
+horizontal_alignment = 1
+
+[node name="Footer" type="Label" parent="Root"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -40.0
+offset_right = -28.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.34, 0.39, 0.49, 0.68)
+theme_override_font_sizes/font_size = 11
+text = "THE RUN IS FROZEN WHILE THIS MENU IS OPEN"
 horizontal_alignment = 1
