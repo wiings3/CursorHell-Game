@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bwxipt41vty3q"]
+[gd_scene load_steps=9 format=3 uid="uid://bwxipt41vty3q"]
 
 [ext_resource type="Script" uid="uid://8o2ugckn5scp" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/MainMenu.tscn" id="2_main_menu"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/UI/TransitionOverlay.tscn" id="5_transition"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/LevelSelectMenu.tscn" id="6_level_select"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/SettingsMenu.tscn" id="7_settings"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/AntiCampTutorial.tscn" id="8_anti_camp_tutorial"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -27,6 +28,9 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="SettingsMenu" parent="." instance=ExtResource("7_settings")]
+unique_name_in_owner = true
+
+[node name="AntiCampTutorial" parent="." instance=ExtResource("8_anti_camp_tutorial")]
 unique_name_in_owner = true
 
 [node name="DebugConsole" parent="." instance=ExtResource("4_console")]
