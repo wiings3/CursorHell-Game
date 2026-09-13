@@ -5,7 +5,7 @@ signal primary_requested(mode: String)
 signal replay_requested(mode: String)
 signal menu_requested
 
-const DESIGN_SIZE := Vector2(1600.0, 900.0)
+const DESIGN_SIZE := CursorHellMachineShell.DESIGN_SIZE
 const PerformanceRank = preload("res://scripts/performance_rank.gd")
 
 @onready var root: Control = $Root
@@ -30,6 +30,11 @@ const PerformanceRank = preload("res://scripts/performance_rank.gd")
 var mode := ""
 var locked := false
 var panel_home := Vector2.ZERO
+var machine_shell: CursorHellMachineShell
+
+func bind_machine_shell(shell: CursorHellMachineShell) -> void:
+	machine_shell = shell
+	_apply_viewport_layout()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -227,6 +232,12 @@ func _apply_viewport_layout() -> void:
 	var viewport_scale: float = minf(viewport_size.x / DESIGN_SIZE.x, viewport_size.y / DESIGN_SIZE.y)
 	var viewport_offset: Vector2 = (viewport_size - DESIGN_SIZE * viewport_scale) * 0.5
 	transform = Transform2D(0.0, Vector2.ONE * viewport_scale, 0.0, viewport_offset)
+	if is_instance_valid(machine_shell):
+		var screen_rect := machine_shell.get_layout_rect(machine_shell.screen)
+		root.position = screen_rect.position
+		root.size = screen_rect.size
+	panel_home = (root.size - panel_root.size) * 0.5
+	panel_root.position = panel_home
 
 func _clean_intro_body(body: String) -> String:
 	var cleaned := body.replace("\n\nCLICK TO BEGIN", "")

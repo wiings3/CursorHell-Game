@@ -97,11 +97,11 @@ process_mode = 3
 script = ExtResource("1_pause")
 
 [node name="Root" type="Control" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+clip_contents = true
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
 mouse_filter = 1
 
 [node name="Scrim" type="ColorRect" parent="Root"]
@@ -122,21 +122,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.06, 0.10, 0.18, 0.08)
 
-[node name="TopRail" type="ColorRect" parent="Root"]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 2.0
-grow_horizontal = 2
-mouse_filter = 2
-color = Color(1, 0.52, 0.15, 0.72)
 
-[node name="PausedRail" type="ColorRect" parent="Root"]
-anchors_preset = 10
-anchor_right = 0.22
-offset_top = 2.0
-offset_bottom = 4.0
-mouse_filter = 2
-color = Color(0.38, 0.55, 0.82, 0.28)
 
 [node name="PanelGroup" type="Control" parent="Root"]
 anchors_preset = 8
@@ -144,10 +130,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -290.0
-offset_top = -305.0
-offset_right = 290.0
-offset_bottom = 305.0
+offset_left = -266.8
+offset_top = -280.6
+offset_right = 313.2
+offset_bottom = 329.4
+scale = Vector2(0.92, 0.92)
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1

@@ -17,16 +17,37 @@ signal quit_requested
 @onready var quit_button: Button = %QuitButton
 
 var panel_home := Vector2.ZERO
+var machine_shell: CursorHellMachineShell
+
+func bind_machine_shell(shell: CursorHellMachineShell) -> void:
+	machine_shell = shell
+	_apply_viewport_layout()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	panel_home = panel_group.position
+	get_viewport().size_changed.connect(_apply_viewport_layout)
+	_apply_viewport_layout()
 	resume_button.pressed.connect(func() -> void: resume_requested.emit())
 	restart_button.pressed.connect(func() -> void: restart_requested.emit())
 	settings_button.pressed.connect(func() -> void: settings_requested.emit())
 	main_menu_button.pressed.connect(func() -> void: main_menu_requested.emit())
 	quit_button.pressed.connect(func() -> void: quit_requested.emit())
+
+func _apply_viewport_layout() -> void:
+	var viewport_size := get_viewport().get_visible_rect().size
+	var design_size := CursorHellMachineShell.DESIGN_SIZE
+	var viewport_scale := minf(viewport_size.x / design_size.x, viewport_size.y / design_size.y)
+	var viewport_offset := (viewport_size - design_size * viewport_scale) * 0.5
+	transform = Transform2D(0.0, Vector2.ONE * viewport_scale, 0.0, viewport_offset)
+	var root: Control = $Root
+	if is_instance_valid(machine_shell):
+		var screen_rect := machine_shell.get_layout_rect(machine_shell.screen)
+		root.position = screen_rect.position
+		root.size = screen_rect.size
+	panel_home = (root.size - panel_group.size * panel_group.scale) * 0.5
+	panel_group.position = panel_home
 
 func _input(event: InputEvent) -> void:
 	if not visible or not (event is InputEventKey):

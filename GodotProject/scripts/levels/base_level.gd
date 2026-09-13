@@ -8,9 +8,10 @@ signal continue_requested
 const ProjectileScene := preload("res://Scenes/Components/Projectile.tscn")
 const SfxScript = preload("res://scripts/sfx.gd")
 const RunStats = preload("res://scripts/run_stats.gd")
+const MachineShellScript = preload("res://scripts/ui/gameplay_machine_shell.gd")
 
-const DESIGN_SIZE := Vector2(1600.0, 900.0)
-const ARENA := Rect2(390.0, 72.0, 820.0, 756.0)
+const DESIGN_SIZE := MachineShellScript.DESIGN_SIZE
+const ARENA := MachineShellScript.LOGICAL_ARENA
 const PLAYER_RADIUS := 10.0
 const NEAR_RADIUS := 40.0
 const DEATH_FEEDBACK_TIME := 0.42
@@ -55,6 +56,7 @@ var has_next_level: bool = false
 @onready var player: CursorHellPlayer = %Player
 @onready var projectile_layer: Node2D = %Projectiles
 @onready var warning_layer: CursorHellWarningLayer = %WarningLayer
+@onready var machine_shell: CursorHellMachineShell = %GameplayMachineShell
 
 # The complete HUD is now a reusable component scene. BaseLevel talks to the
 # component root instead of reaching through another scene's unique-node scope.
@@ -151,7 +153,8 @@ func _input(event: InputEvent) -> void:
 	if (state == "playing" or state == "countdown") and event is InputEventMouseMotion:
 		var motion := event as InputEventMouseMotion
 		var old_position := player.position
-		var logical_motion := motion.relative / maxf(viewport_scale, 0.001)
+		var canvas_transform := machine_shell.arena_content.get_global_transform_with_canvas()
+		var logical_motion := canvas_transform.affine_inverse().basis_xform(motion.relative)
 		var next_position := player.position + logical_motion
 		next_position.x = clampf(next_position.x, ARENA.position.x + PLAYER_RADIUS, ARENA.end.x - PLAYER_RADIUS)
 		next_position.y = clampf(next_position.y, ARENA.position.y + PLAYER_RADIUS, ARENA.end.y - PLAYER_RADIUS)
@@ -215,7 +218,7 @@ func _process(delta: float) -> void:
 		graze_popup_time = maxf(0.0, graze_popup_time - delta)
 		if graze_popup_label != null:
 			graze_popup_label.visible = graze_popup_time > 0.0
-			graze_popup_label.position = graze_popup_origin + Vector2(-110.0, -58.0 - (0.65 - graze_popup_time) * 18.0)
+			hud.place_arena_popup(graze_popup_label, graze_popup_origin, Vector2(-110.0, -58.0 - (0.65 - graze_popup_time) * 18.0))
 			graze_popup_label.modulate.a = clampf(graze_popup_time / 0.25, 0.0, 1.0)
 	elif graze_popup_label != null:
 		graze_popup_label.visible = false
@@ -233,6 +236,8 @@ func _process(delta: float) -> void:
 		position = viewport_offset + shake_offset * viewport_scale
 	else:
 		position = viewport_offset
+	# The display labels and glass stay aligned with the cabinet during impact.
+	ui_layer.offset = position
 
 func _apply_viewport_layout() -> void:
 	var viewport_size := get_viewport_rect().size
@@ -481,7 +486,7 @@ func _begin_death(reason: String) -> void:
 	death_feedback_left = DEATH_FEEDBACK_TIME
 	hit_flash_alpha = 0.28
 	hit_flash.color = Color(1.0, 0.12, 0.06, hit_flash_alpha)
-	hit_label.position = player.position + Vector2(-80.0, -62.0)
+	hud.place_arena_popup(hit_label, player.position, Vector2(-80.0, -62.0))
 	hit_label.visible = true
 	shake = 7.0
 	SfxScript.play_hit(self)

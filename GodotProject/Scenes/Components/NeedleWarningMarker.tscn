@@ -24,6 +24,7 @@ default_color = Color(0.88, 0.98, 1, 1)
 antialiased = true
 
 [node name="MarkerBody" type="Node2D" parent="."]
+position = Vector2(20, 0)
 
 [node name="Arrow" type="Polygon2D" parent="MarkerBody"]
 polygon = PackedVector2Array(31, 0, 9, -4, -7, -2, -7, 2, 9, 4)

@@ -24,6 +24,7 @@ default_color = Color(1, 0.91, 0.58, 1)
 antialiased = true
 
 [node name="MarkerBody" type="Node2D" parent="."]
+position = Vector2(20, 0)
 
 [node name="Arrow" type="Polygon2D" parent="MarkerBody"]
 color = Color(1, 0.63, 0.12, 1)

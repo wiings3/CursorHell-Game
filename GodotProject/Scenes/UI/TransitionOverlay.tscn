@@ -9,48 +9,37 @@ visible = false
 script = ExtResource("1_transition")
 
 [node name="Root" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 1600.0
-offset_bottom = 900.0
+clip_contents = true
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
 
 [node name="Scrim" type="ColorRect" parent="Root"]
 layout_mode = 0
-offset_right = 1600.0
-offset_bottom = 900.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.006, 0.008, 0.014, 0.78)
 
 [node name="ModeTint" type="ColorRect" parent="Root"]
 layout_mode = 0
-offset_right = 1600.0
-offset_bottom = 900.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 color = Color(0.08, 0.12, 0.2, 0.1)
 
-[node name="TopRail" type="ColorRect" parent="Root"]
-layout_mode = 0
-offset_left = 390.0
-offset_top = 148.0
-offset_right = 1210.0
-offset_bottom = 150.0
-mouse_filter = 2
-color = Color(0.45, 0.55, 0.74, 0.12)
 
-[node name="BottomRail" type="ColorRect" parent="Root"]
-layout_mode = 0
-offset_left = 390.0
-offset_top = 750.0
-offset_right = 1210.0
-offset_bottom = 752.0
-mouse_filter = 2
-color = Color(0.45, 0.55, 0.74, 0.08)
 
 [node name="PanelRoot" type="Control" parent="Root"]
 anchors_preset = 0
-offset_left = 430.0
-offset_top = 180.0
-offset_right = 1170.0
-offset_bottom = 720.0
+offset_left = 38.0
+offset_top = 45.0
+offset_right = 778.0
+offset_bottom = 585.0
 pivot_offset = Vector2(370, 270)
 mouse_filter = 2
 
