@@ -10,7 +10,7 @@ const LEVELS := [
 		"boss_tag": "",
 		"is_boss": false,
 		"round_time": 45.0,
-		"scene": preload("res://Scenes/Levels/Level1.tscn")
+		"scene": preload("res://Scenes/Campaign/Level1.tscn")
 	},
 	{
 		"number": 2,
@@ -18,7 +18,7 @@ const LEVELS := [
 		"boss_tag": "",
 		"is_boss": false,
 		"round_time": 45.0,
-		"scene": preload("res://Scenes/Levels/Level2.tscn")
+		"scene": preload("res://Scenes/Campaign/Level2.tscn")
 	},
 	{
 		"number": 3,
@@ -26,7 +26,7 @@ const LEVELS := [
 		"boss_tag": "",
 		"is_boss": false,
 		"round_time": 45.0,
-		"scene": preload("res://Scenes/Levels/Level3.tscn")
+		"scene": preload("res://Scenes/Campaign/Level3.tscn")
 	},
 	{
 		"number": 4,
@@ -34,7 +34,7 @@ const LEVELS := [
 		"boss_tag": "",
 		"is_boss": false,
 		"round_time": 60.0,
-		"scene": preload("res://Scenes/Levels/Level4.tscn")
+		"scene": preload("res://Scenes/Campaign/Level4.tscn")
 	},
 	{
 		"number": 5,

@@ -3,6 +3,10 @@ extends SceneTree
 
 const Catalog = preload("res://scripts/level_catalog.gd")
 const OBSOLETE_LEVEL_SCENES := [
+	"res://Scenes/Levels/Level1.tscn",
+	"res://Scenes/Levels/Level2.tscn",
+	"res://Scenes/Levels/Level3.tscn",
+	"res://Scenes/Levels/Level4.tscn",
 	"res://Scenes/Levels/Level5.tscn",
 	"res://Scenes/Levels/Level6.tscn",
 	"res://Scenes/Levels/Level7.tscn",
@@ -28,11 +32,12 @@ func _check_catalog_integrity() -> void:
 		var packed_scene: PackedScene = Catalog.get_scene(index)
 		var scene_path := packed_scene.resource_path
 		check(not scene_path.is_empty(), "Catalog scene has no resource path: %d" % index)
+		check(scene_path.begins_with("res://Scenes/Campaign/"), "Campaign scene outside canonical folder: %s" % scene_path)
 		check(not seen_paths.has(scene_path), "Duplicate scene registered in LevelCatalog: %s" % scene_path)
 		seen_paths[scene_path] = true
 
 	for scene_path in OBSOLETE_LEVEL_SCENES:
-		check(not ResourceLoader.exists(scene_path), "Obsolete duplicate level scene still exists: %s" % scene_path)
+		check(not ResourceLoader.exists(scene_path), "Obsolete level scene still exists: %s" % scene_path)
 
 func _run() -> void:
 	_check_catalog_integrity()
