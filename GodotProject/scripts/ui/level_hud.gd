@@ -11,7 +11,9 @@ const STANDARD_BODY_BOTTOM := 403.14
 
 @onready var timer_label: Label = %TimerLabel
 @onready var score_label: Label = %ScoreLabel
-@onready var level_label: Label = %LevelLabel
+@onready var level_number_label: Label = %LevelNumberLabel
+@onready var level_name_label: Label = %LevelNameLabel
+@onready var boss_tag_label: Label = %BossTagLabel
 @onready var tutorial_label: Label = %TutorialLabel
 @onready var combo_label: Label = %ComboLabel
 @onready var message_scrim: ColorRect = %MessageScrim
@@ -28,13 +30,12 @@ const STANDARD_BODY_BOTTOM := 403.14
 @onready var countdown_subtitle: Label = %CountdownSubtitle
 
 func _ready() -> void:
-	level_label.text = level_display_text
+	_apply_level_display_text()
 
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		# Keep the per-level label and intro layout preview live while editing.
-		if level_label != null:
-			level_label.text = level_display_text
+		_apply_level_display_text()
 		if message_body != null:
 			message_body.offset_bottom = INTRO_BODY_BOTTOM
 		if message_prompt != null:
@@ -42,6 +43,28 @@ func _process(_delta: float) -> void:
 		return
 
 	_sync_message_prompt()
+
+func _apply_level_display_text() -> void:
+	if level_number_label == null or level_name_label == null or boss_tag_label == null:
+		return
+
+	var number_text := level_display_text.strip_edges()
+	var title_text := ""
+	var newline_index := level_display_text.find("\n")
+	if newline_index >= 0:
+		number_text = level_display_text.substr(0, newline_index).strip_edges()
+		title_text = level_display_text.substr(newline_index + 1).strip_edges()
+
+	var boss_text := ""
+	var boss_separator := title_text.find(" // BOSS")
+	if boss_separator >= 0:
+		boss_text = title_text.substr(boss_separator + 4).strip_edges()
+		title_text = title_text.substr(0, boss_separator).strip_edges()
+
+	level_number_label.text = number_text
+	level_name_label.text = title_text
+	boss_tag_label.text = boss_text
+	boss_tag_label.visible = not boss_text.is_empty()
 
 func _sync_message_prompt() -> void:
 	if message_body == null or message_prompt == null:
