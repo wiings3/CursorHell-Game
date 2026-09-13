@@ -14,6 +14,12 @@ const LEVEL_SCENES: Array[PackedScene] = [
 	preload("res://Scenes/Campaign/Boss2.tscn")
 ]
 
+const FACTORY_RESET_PATHS: Array[String] = [
+	"user://cursor_hell_save.json",
+	"user://cursor_hell_tutorial_flags.cfg",
+	"user://cursor_hell_settings.cfg"
+]
+
 @export var starting_level_index: int = 0
 @export var show_main_menu_on_launch: bool = true
 
@@ -420,6 +426,8 @@ func _on_debug_command_submitted(command_line: String) -> void:
 				debug_console.write_line("Anti-camp tutorial flag cleared. The next displacement trigger will show the popup again.")
 			else:
 				debug_console.write_line("Failed to clear the anti-camp tutorial flag.")
+		"factoryreset", "resetall", "wipedata":
+			_debug_factory_reset()
 		"clear":
 			debug_console.clear_output()
 		"close", "exit":
@@ -428,6 +436,30 @@ func _on_debug_command_submitted(command_line: String) -> void:
 			_print_debug_help()
 		_:
 			debug_console.write_line("Unknown command: %s  (type 'help')" % command)
+
+func _debug_factory_reset() -> void:
+	# Put live settings back to their shipped defaults first, then delete every
+	# persistent Cursor Hell file so the reloaded scene behaves like a fresh install.
+	settings_menu._reset_defaults()
+
+	var failed_paths := PackedStringArray()
+	for path in FACTORY_RESET_PATHS:
+		if not FileAccess.file_exists(path):
+			continue
+		var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+		if error != OK:
+			failed_paths.append(path)
+
+	if not failed_paths.is_empty():
+		debug_console.write_line("Factory reset incomplete. Could not remove: " + ", ".join(failed_paths))
+		return
+
+	debug_console.write_line("Factory reset complete. Reloading fresh state...")
+	call_deferred("_reload_after_factory_reset")
+
+func _reload_after_factory_reset() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 func _debug_load_level(level_number: int) -> void:
 	var index := level_number - 1
@@ -448,5 +480,6 @@ func _print_debug_help() -> void:
 	debug_console.write_line("  current            Show the current level")
 	debug_console.write_line("  restart            Reload the current level")
 	debug_console.write_line("  resetcamp          Clear first-time anti-camp tutorial flag")
+	debug_console.write_line("  factoryreset       Delete all progression, tutorial flags, and settings")
 	debug_console.write_line("  clear              Clear console output")
 	debug_console.write_line("  close              Close the console")
