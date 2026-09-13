@@ -6,6 +6,7 @@ signal replay_requested(mode: String)
 signal menu_requested
 
 const DESIGN_SIZE := Vector2(1600.0, 900.0)
+const PerformanceRank = preload("res://scripts/performance_rank.gd")
 
 @onready var root: Control = $Root
 @onready var scrim: ColorRect = $Root/Scrim
@@ -17,6 +18,10 @@ const DESIGN_SIZE := Vector2(1600.0, 900.0)
 @onready var title_label: Label = $Root/PanelRoot/Panel/TitleLabel
 @onready var subtitle_label: Label = $Root/PanelRoot/Panel/SubtitleLabel
 @onready var body_label: Label = $Root/PanelRoot/Panel/BodyLabel
+@onready var result_divider: ColorRect = $Root/PanelRoot/Panel/ResultDivider
+@onready var rank_caption: Label = $Root/PanelRoot/Panel/RankCaption
+@onready var rank_label: Label = $Root/PanelRoot/Panel/RankLabel
+@onready var performance_label: Label = $Root/PanelRoot/Panel/PerformanceLabel
 @onready var score_label: Label = $Root/PanelRoot/Panel/ScoreLabel
 @onready var best_label: Label = $Root/PanelRoot/Panel/BestLabel
 @onready var record_label: Label = $Root/PanelRoot/Panel/RecordLabel
@@ -67,45 +72,65 @@ func show_intro(level_number: int, title: String, subtitle: String, body: String
 	state_label.text = "LEVEL %d" % level_number
 	title_label.text = title
 	subtitle_label.text = subtitle
-	body_label.offset_bottom = 408.0
+	body_label.offset_bottom = 454.0
 	body_label.text = _clean_intro_body(body)
-	score_label.visible = false
-	best_label.visible = false
-	record_label.visible = false
+	_set_result_nodes_visible(false)
 	prompt_label.text = "CLICK OR R TO BEGIN    •    ESC = MENU"
 	_show_animated()
 
 func show_failure(level_number: int, title: String, reason: String, run_time: float, round_time: float, final_score: int, best_score: int, is_new_best: bool) -> void:
 	mode = "failure"
+	var performance: Dictionary = PerformanceRank.evaluate(false, run_time, round_time, final_score)
+	var survival_percent := int(performance["survival_percent"])
+	var graze_bonus := int(performance["graze_bonus"])
+
 	_set_mode_style(Color(1.0, 0.24, 0.12, 1.0), Color(0.28, 0.025, 0.018, 0.13))
 	state_label.text = "LEVEL FAILED"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  •  IMPACT" % level_number
-	body_label.offset_bottom = 312.0
-	body_label.text = "%s\nTIME  %s / %s" % [reason.to_upper(), _format_time(run_time), _format_time(round_time)]
-	score_label.visible = true
-	best_label.visible = true
-	record_label.visible = is_new_best
+	body_label.offset_bottom = 300.0
+	body_label.text = "%s\nSURVIVED  %s / %s  •  %d%%\nGRAZE BONUS  +%s" % [
+		reason.to_upper(),
+		_format_time(run_time),
+		_format_time(round_time),
+		survival_percent,
+		_format_score(graze_bonus)
+	]
+	_set_result_nodes_visible(true)
+	rank_caption.text = "ATTEMPT RANK"
+	rank_label.text = str(performance["rank"])
+	performance_label.text = "%d / 100" % int(performance["points"])
 	score_label.text = "SCORE    %s" % _format_score(final_score)
 	best_label.text = "BEST     %s" % _format_score(best_score)
-	record_label.text = "NEW BEST"
+	record_label.visible = is_new_best
+	record_label.text = "NEW BEST SCORE"
 	prompt_label.text = "CLICK OR R TO RETRY    •    ESC = MENU"
 	_show_animated()
 
 func show_clear(level_number: int, title: String, round_time: float, completion_bonus: int, final_score: int, best_score: int, is_new_best: bool, has_next_level: bool) -> void:
 	mode = "clear"
+	var performance: Dictionary = PerformanceRank.evaluate(true, round_time, round_time, final_score, completion_bonus)
+	var graze_bonus := int(performance["graze_bonus"])
+
 	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.20, 0.11, 0.025, 0.10))
 	state_label.text = "LEVEL CLEAR"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  •  SURVIVED" % level_number
-	body_label.offset_bottom = 312.0
-	body_label.text = "%s SURVIVED\nCOMPLETION BONUS  +%s" % [_format_time(round_time), _format_score(completion_bonus)]
-	score_label.visible = true
-	best_label.visible = true
-	record_label.visible = is_new_best
+	body_label.offset_bottom = 300.0
+	body_label.text = "SURVIVED  %s / %s  •  100%%\nGRAZE BONUS  +%s\nCOMPLETION BONUS  +%s" % [
+		_format_time(round_time),
+		_format_time(round_time),
+		_format_score(graze_bonus),
+		_format_score(completion_bonus)
+	]
+	_set_result_nodes_visible(true)
+	rank_caption.text = "PERFORMANCE RANK"
+	rank_label.text = str(performance["rank"])
+	performance_label.text = "%d / 100" % int(performance["points"])
 	score_label.text = "FINAL    %s" % _format_score(final_score)
 	best_label.text = "BEST     %s" % _format_score(best_score)
-	record_label.text = "NEW BEST"
+	record_label.visible = is_new_best
+	record_label.text = "NEW BEST SCORE"
 	if has_next_level:
 		prompt_label.text = "CLICK = CONTINUE    •    R = REPLAY    •    ESC = MENU"
 	else:
@@ -166,10 +191,21 @@ func _show_animated() -> void:
 func _unlock() -> void:
 	locked = false
 
+func _set_result_nodes_visible(result_visible: bool) -> void:
+	result_divider.visible = result_visible
+	rank_caption.visible = result_visible
+	rank_label.visible = result_visible
+	performance_label.visible = result_visible
+	score_label.visible = result_visible
+	best_label.visible = result_visible
+	if not result_visible:
+		record_label.visible = false
+
 func _set_mode_style(accent: Color, tint: Color) -> void:
 	panel_border.color = Color(accent.r, accent.g, accent.b, 0.72)
 	accent_bar.color = accent
 	state_label.add_theme_color_override("font_color", accent)
+	rank_label.add_theme_color_override("font_color", accent)
 	record_label.add_theme_color_override("font_color", accent)
 	mode_tint.color = tint
 
