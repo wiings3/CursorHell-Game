@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3hgqe180x4rw"
-path="res://.godot/imported/ChatGPT Image Sep 13, 2026, 03_52_49 PM (3).png-8eba60bf91ee4549672fc06fed299e9d.ctex"
+uid="uid://nsu41yj8mvl1"
+path="res://.godot/imported/DecayTimer.png-4b4a7b22b85901b665c5ac9d664546c6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/SystemCabinet/ChatGPT Image Sep 13, 2026, 03_52_49 PM (3).png"
-dest_files=["res://.godot/imported/ChatGPT Image Sep 13, 2026, 03_52_49 PM (3).png-8eba60bf91ee4549672fc06fed299e9d.ctex"]
+source_file="res://Assets/SystemCabinet/DecayTimer.png"
+dest_files=["res://.godot/imported/DecayTimer.png-4b4a7b22b85901b665c5ac9d664546c6.ctex"]
 
 [params]
 
