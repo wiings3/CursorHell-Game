@@ -22,8 +22,6 @@ const BOSS_TAGS: PackedStringArray = [
 	"", "", "", "", "BOSS II"
 ]
 
-const PROGRESS_TRACK_WIDTH := 1030.0
-
 @onready var panel_group: Control = $Root/PanelGroup
 @onready var level_buttons: Array[Button] = [
 	%Level1Button,
@@ -40,6 +38,7 @@ const PROGRESS_TRACK_WIDTH := 1030.0
 @onready var back_button: Button = %BackButton
 @onready var progress_label: Label = %ProgressLabel
 @onready var progress_hint: Label = %ProgressHint
+@onready var progress_track: Control = $Root/PanelGroup/Panel/VBox/ProgressTrack
 @onready var progress_fill: ColorRect = %ProgressFill
 
 var panel_home := Vector2.ZERO
@@ -76,7 +75,7 @@ func configure(
 		preferred_focus_index + 1,
 		LEVEL_NAMES[preferred_focus_index]
 	]
-	progress_fill.size.x = PROGRESS_TRACK_WIDTH * (float(safe_highest) / float(level_buttons.size()))
+	progress_fill.size.x = progress_track.size.x * (float(safe_highest) / float(level_buttons.size()))
 
 	for index in range(level_buttons.size()):
 		var level_number := index + 1
