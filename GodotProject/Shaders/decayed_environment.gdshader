@@ -44,7 +44,7 @@ void fragment() {
 	float cold_light = exp(-distance(uv, vec2(0.86, 0.16)) * 6.0) * 0.10;
 	color += vec3(0.08, 0.10, 0.11) * cold_light;
 
-	float vignette = smoothstep(0.82, 0.26, distance(uv, vec2(0.5)));
+	float vignette = 1.0 - smoothstep(0.26, 0.82, distance(uv, vec2(0.5)));
 	color *= mix(0.45, 1.0, vignette);
 
 	COLOR = vec4(color, 1.0);
