@@ -24,18 +24,15 @@ func _ready() -> void:
 func _on_tree_node_added(node: Node) -> void:
 	if _already_explained or visible or _tutorial_pending:
 		return
-	if node is CursorHellDisplacementZone:
-		# Defer until the displacement scene has completely entered the tree. This
-		# freezes the full two-second warning before any of it can tick down.
-		_tutorial_pending = true
-		call_deferred("_show_first_time_notice")
-
-func _show_first_time_notice() -> void:
-	if _already_explained or visible:
-		_tutorial_pending = false
+	if not node is CursorHellDisplacementZone:
 		return
 
+	# Freeze on the exact frame the first displacement zone enters the tree. The
+	# previous deferred popup allowed the warning/gameplay to advance briefly before
+	# the pause took effect, which could make the explanation feel unsafe.
+	_tutorial_pending = true
 	_was_tree_paused = get_tree().paused
+
 	var level := _get_active_level()
 	if level != null:
 		level.set_process_input(false)
@@ -43,6 +40,7 @@ func _show_first_time_notice() -> void:
 	get_tree().paused = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	show()
+	continue_button.grab_focus()
 
 func _on_continue_pressed() -> void:
 	_mark_explained()
@@ -58,6 +56,18 @@ func _on_continue_pressed() -> void:
 		level.set_process_input(true)
 		if level.state == "playing" or level.state == "countdown":
 			level._capture_mouse()
+
+func debug_reset_explained_flag() -> bool:
+	# Developer-only helper used by the debug console so the first-time tutorial
+	# can be tested repeatedly without deleting user data by hand.
+	_already_explained = false
+	_tutorial_pending = false
+	_config.set_value(FLAGS_SECTION, FLAG_KEY, false)
+	var error := _config.save(FLAGS_PATH)
+	if error != OK:
+		push_warning("Cursor Hell: could not reset anti-camp tutorial flag.")
+		return false
+	return true
 
 func _get_active_level() -> CursorHellBaseLevel:
 	var level_container := get_node_or_null("../LevelContainer")
