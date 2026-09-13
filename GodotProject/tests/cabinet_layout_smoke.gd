@@ -10,7 +10,15 @@ const OBSOLETE_LEVEL_SCENES := [
 	"res://Scenes/Levels/Level5.tscn",
 	"res://Scenes/Levels/Level6.tscn",
 	"res://Scenes/Levels/Level7.tscn",
-	"res://Scenes/Levels/Level8.tscn"
+	"res://Scenes/Levels/Level8.tscn",
+	"res://Scenes/Campaign/level_1.tscn",
+	"res://Scenes/Campaign/level_2.tscn",
+	"res://Scenes/Campaign/level_3.tscn",
+	"res://Scenes/Campaign/level_4.tscn",
+	"res://Scenes/Campaign/level_5.tscn",
+	"res://Scenes/Campaign/level_6.tscn",
+	"res://Scenes/Campaign/level_7.tscn",
+	"res://Scenes/Campaign/level_8.tscn"
 ]
 
 var failures: Array[String] = []
