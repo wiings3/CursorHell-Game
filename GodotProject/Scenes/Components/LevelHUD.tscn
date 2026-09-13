@@ -96,9 +96,9 @@ clip_text = true
 
 [node name="LevelIdentity" type="HBoxContainer" parent="."]
 offset_left = 680.0
-offset_top = 917.0
+offset_top = 218.0
 offset_right = 1240.0
-offset_bottom = 951.0
+offset_bottom = 267.0
 mouse_filter = 2
 theme_override_constants/separation = 18
 alignment = 1
@@ -353,10 +353,10 @@ vertical_alignment = 1
 [node name="TutorialLabel" type="Label" parent="."]
 unique_name_in_owner = true
 z_index = 10
-offset_left = 576.0
-offset_top = 145.0
-offset_right = 1352.0
-offset_bottom = 197.0
+offset_left = 660.0
+offset_top = 904.0
+offset_right = 1260.0
+offset_bottom = 962.0
 theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 2
