@@ -1,22 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://vetw0ieivkyj"]
-
-[ext_resource type="Shader" uid="uid://bn7ugajtfyydq" path="res://Shaders/ArenaBackground.gdshader" id="1_wvnat"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kyqhp"]
-shader = ExtResource("1_wvnat")
-shader_parameter/polar_coordinates = false
-shader_parameter/polar_center = Vector2(0.5, 0.5)
-shader_parameter/polar_zoom = 3.12
-shader_parameter/polar_repeat = 8.225
-shader_parameter/spin_rotation = 0.0
-shader_parameter/spin_speed = 2.0
-shader_parameter/offset = Vector2(0, 0)
-shader_parameter/colour_1 = Color(0.40392157, 0.47058824, 0.6509804, 0.6431373)
-shader_parameter/colour_2 = Color(0.012617188, 0.012617188, 0.007205989, 0.6431373)
-shader_parameter/colour_3 = Color(0, 0, 0, 0.60784316)
-shader_parameter/contrast = 2.0
-shader_parameter/spin_amount = 0.36
-shader_parameter/pixel_filter = 700.0
+[gd_scene format=3 uid="uid://vetw0ieivkyj"]
 
 [node name="ArenaBackground" type="Node2D"]
 
@@ -24,11 +6,4 @@ shader_parameter/pixel_filter = 700.0
 offset_right = 820.0
 offset_bottom = 756.0
 mouse_filter = 2
-color = Color(0.088, 0.098, 0.118, 1)
-
-[node name="ColorSwirl" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_kyqhp")
-offset_right = 820.0
-offset_bottom = 756.0
-
-mouse_filter = 2
+color = Color(0.16943479, 0.3268464, 0.19497499, 1)

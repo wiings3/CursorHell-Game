@@ -1,13 +1,38 @@
-[gd_scene load_steps=8 format=3 uid="uid://nrmyvx8v1qyq"]
+[gd_scene load_steps=10 format=3 uid="uid://nrmyvx8v1qyq"]
 
 [ext_resource type="Texture2D" uid="uid://whm35exeetnj" path="res://Assets/SystemCabinet/DecayBackground.png" id="1_xuro4"]
 [ext_resource type="Texture2D" uid="uid://cxn6idmqrnpai" path="res://Assets/SystemCabinet/DecayCabinet.png" id="3_skjlc"]
 [ext_resource type="Texture2D" uid="uid://c1do4yhmmrbh2" path="res://Assets/SystemCabinet/DecayScore.png" id="4_oxh8x"]
+[ext_resource type="Shader" uid="uid://cpoc7fviindjc" path="res://Shaders/crt.gdshader" id="4_tvdcc"]
 [ext_resource type="Texture2D" uid="uid://nsu41yj8mvl1" path="res://Assets/SystemCabinet/DecayTimer.png" id="5_tvdcc"]
 [ext_resource type="Texture2D" uid="uid://5hnqgvv4dyte" path="res://Assets/SystemCabinet/ChatGPT Image Sep 13, 2026, 05_02_34 PM.png" id="7_skjlc"]
-
 [ext_resource type="Script" path="res://scripts/ui/gameplay_machine_shell.gd" id="8_shell"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="9_arena"]
+[ext_resource type="PackedScene" uid="uid://vetw0ieivkyj" path="res://Scenes/Components/ArenaBackground.tscn" id="9_arena"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vxnlb"]
+shader = ExtResource("4_tvdcc")
+shader_parameter/brightness = 1.02
+shader_parameter/contrast = 1.2230000580925
+shader_parameter/saturation = 1.1
+shader_parameter/gamma = 0.84000003338023
+shader_parameter/curvature = 0.0
+shader_parameter/corner_soften = 0.06
+shader_parameter/vignette = 0.38
+shader_parameter/scanline_strength = 0.7650000363375
+shader_parameter/scanline_density = 0.68000000855
+shader_parameter/interlace_strength = 0.2
+shader_parameter/mask_strength = 0.22
+shader_parameter/mask_scale = 1.0
+shader_parameter/chroma_offset_px = 1.6
+shader_parameter/luma_smear_px = 2.2
+shader_parameter/jitter_px = 0.800000038
+shader_parameter/wobble_px = 0.800000038
+shader_parameter/tape_noise = 0.0
+shader_parameter/tape_lines = 0.1150000054625
+shader_parameter/roll_speed = 0.1
+shader_parameter/roll_strength = 0.15
+shader_parameter/glow_strength = 0.4950000235125
+shader_parameter/glow_threshold = 0.170000008075
 
 [node name="GameplayMachineShell" type="Node2D"]
 script = ExtResource("8_shell")
@@ -19,6 +44,8 @@ texture = ExtResource("1_xuro4")
 
 [node name="ScreenClip" type="Control" parent="."]
 clip_contents = true
+layout_mode = 3
+anchors_preset = 0
 offset_left = 556.0
 offset_top = 202.0
 offset_right = 1372.0
@@ -34,9 +61,24 @@ scale = Vector2(0.99512196, 0.8333333)
 z_index = -2
 position = Vector2(390, 72)
 
+[node name="CRTCanvas" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CRTCanvas"]
+material = SubResource("ShaderMaterial_vxnlb")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 545.0
+offset_top = 202.0
+offset_right = -533.0
+offset_bottom = -236.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
 [node name="DecayMonitor" type="Sprite2D" parent="."]
-z_index = 1
 modulate = Color(1, 1, 1, 0.50980395)
+z_index = 1
 position = Vector2(959.00006, 527.5)
 scale = Vector2(0.6625387, 0.58866996)
 texture = ExtResource("7_skjlc")
@@ -55,6 +97,15 @@ texture = ExtResource("4_oxh8x")
 region_enabled = true
 region_rect = Rect2(170.79443, 254.60004, 738.5641, 502.20508)
 
+[node name="ScoreValueArea" type="Control" parent="DecayScore"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -302.77945
+offset_top = -52.025585
+offset_right = 329.2237
+offset_bottom = 223.80528
+mouse_filter = 2
+
 [node name="DecayTimer" type="Sprite2D" parent="."]
 z_index = 3
 position = Vector2(384.5, 285)
@@ -64,34 +115,35 @@ region_enabled = true
 region_rect = Rect2(276.00046, 299.92307, 533.9469, 413.12936)
 
 [node name="TimerValueArea" type="Control" parent="DecayTimer"]
-offset_left = -219.192287
-offset_top = -48.398447
-offset_right = 231.807671
-offset_bottom = 187.140662
-mouse_filter = 2
-
-[node name="ScoreValueArea" type="Control" parent="DecayScore"]
-offset_left = -302.779444
-offset_top = -52.025585
-offset_right = 329.223692
-offset_bottom = 223.805276
+layout_mode = 3
+anchors_preset = 0
+offset_left = -219.19229
+offset_top = -48.398445
+offset_right = 231.80768
+offset_bottom = 187.14066
 mouse_filter = 2
 
 [node name="LevelIdentityArea" type="Control" parent="."]
-offset_left = 680.000000
-offset_top = 922.000000
-offset_right = 1240.000000
-offset_bottom = 971.000000
+layout_mode = 3
+anchors_preset = 0
+offset_left = 680.0
+offset_top = 218.0
+offset_right = 1240.0
+offset_bottom = 267.0
 mouse_filter = 2
 
 [node name="TutorialArea" type="Control" parent="."]
-offset_left = 576.0
-offset_top = 145.0
-offset_right = 1352.0
-offset_bottom = 197.0
+layout_mode = 3
+anchors_preset = 0
+offset_left = 686.0
+offset_top = 926.0
+offset_right = 1238.0
+offset_bottom = 966.0
 mouse_filter = 2
 
 [node name="HintArea" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
 offset_left = 592.0
 offset_top = 838.0
 offset_right = 1336.0
