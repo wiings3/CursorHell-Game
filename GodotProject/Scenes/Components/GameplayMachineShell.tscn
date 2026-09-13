@@ -133,9 +133,9 @@ mouse_filter = 2
 layout_mode = 3
 anchors_preset = 0
 offset_left = 660.0
-offset_top = 904.0
+offset_top = 917.0
 offset_right = 1260.0
-offset_bottom = 962.0
+offset_bottom = 973.0
 mouse_filter = 2
 
 [node name="HintArea" type="Control" parent="."]
