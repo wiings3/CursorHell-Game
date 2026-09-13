@@ -1,0 +1,221 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/anti_camp_tutorial.gd" id="1_tutorial"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
+bg_color = Color(0.014, 0.019, 0.03, 0.99)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.48, 0.66, 0.55)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 46.0
+content_margin_top = 38.0
+content_margin_right = 46.0
+content_margin_bottom = 34.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
+bg_color = Color(0.035, 0.041, 0.061, 0.98)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.34, 0.62, 0.72)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_hover"]
+bg_color = Color(0.075, 0.062, 0.105, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.48, 1, 0.95)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
+bg_color = Color(0.11, 0.075, 0.14, 1)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9, 0.62, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_focus"]
+bg_color = Color(0.065, 0.055, 0.09, 0.99)
+border_width_left = 5
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.48, 1, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="AntiCampTutorial" type="CanvasLayer"]
+visible = false
+layer = 96
+process_mode = 3
+script = ExtResource("1_tutorial")
+
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Scrim" type="ColorRect" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.004, 0.006, 0.012, 0.82)
+
+[node name="PurpleWash" type="ColorRect" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.18, 0.07, 0.28, 0.08)
+
+[node name="TopRail" type="ColorRect" parent="Root"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 3.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.73, 0.39, 1, 0.82)
+
+[node name="PanelGroup" type="Control" parent="Root"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -235.0
+offset_right = 360.0
+offset_bottom = 235.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Shadow" type="ColorRect" parent="Root/PanelGroup"]
+offset_left = 12.0
+offset_top = 14.0
+offset_right = 732.0
+offset_bottom = 484.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="OuterGlow" type="ColorRect" parent="Root/PanelGroup"]
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 723.0
+offset_bottom = 473.0
+mouse_filter = 2
+color = Color(0.46, 0.22, 0.72, 0.12)
+
+[node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
+offset_right = 720.0
+offset_bottom = 470.0
+theme_override_styles/panel = SubResource("StyleBox_panel")
+
+[node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.49, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+text = "SYSTEM NOTICE // RUN PAUSED"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.97, 0.94, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 38
+text = "DISPLACEMENT PRESSURE"
+horizontal_alignment = 1
+
+[node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.73, 0.39, 1, 0.92)
+
+[node name="RuleLabel" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.87, 0.81, 0.96, 1)
+theme_override_font_sizes/font_size = 16
+text = "PURPLE CIRCLE = RELOCATE"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 210)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.9, 0.94, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 17
+text = "You've stayed in one area long enough for the box to push back.\n\nThe purple circle marks a temporary displacement strike. It locks to the position where it appeared — it does not chase you.\n\nMOVE OUT OF THE MARKED AREA before the warning finishes.\n\nStanding still is a valid strategy. You only need to relocate if you remain in the same pocket for too long."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="ContinueButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.96, 0.96, 1)
+theme_override_colors/font_hover_color = Color(0.9, 0.72, 1, 1)
+theme_override_colors/font_focus_color = Color(0.9, 0.72, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.96, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_button_normal")
+theme_override_styles/hover = SubResource("StyleBox_button_hover")
+theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
+theme_override_styles/focus = SubResource("StyleBox_button_focus")
+text = "CONTINUE"
+
+[node name="Footer" type="Label" parent="Root"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -40.0
+offset_right = -28.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.43, 0.39, 0.52, 0.78)
+theme_override_font_sizes/font_size = 11
+text = "THIS EXPLANATION IS ONLY SHOWN ONCE"
+horizontal_alignment = 1
