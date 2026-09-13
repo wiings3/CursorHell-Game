@@ -26,6 +26,7 @@ const LEVEL_SCENES: Array[PackedScene] = [
 @onready var level_select_menu: CursorHellLevelSelectMenu = %LevelSelectMenu
 @onready var pause_menu: CursorHellPauseMenu = %PauseMenu
 @onready var settings_menu: CursorHellSettingsMenu = %SettingsMenu
+@onready var anti_camp_tutorial: CursorHellAntiCampTutorial = %AntiCampTutorial
 @onready var debug_console: CursorHellDebugConsole = %DebugConsole
 
 var save_manager := CursorHellSaveManager.new()
@@ -78,7 +79,7 @@ func _process(_delta: float) -> void:
 	# Promote that lightweight state into a real SceneTree pause on the next frame.
 	if not is_instance_valid(current_level):
 		return
-	if main_menu.visible or level_select_menu.visible or pause_menu.visible or settings_menu.visible or debug_console.is_open:
+	if main_menu.visible or level_select_menu.visible or pause_menu.visible or settings_menu.visible or anti_camp_tutorial.visible or debug_console.is_open:
 		return
 	if current_level.state == "paused":
 		_open_pause_menu()
@@ -356,6 +357,11 @@ func _on_debug_console_opened() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _on_debug_console_closed() -> void:
+	if anti_camp_tutorial.visible:
+		get_tree().paused = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		return
+
 	if pause_menu.visible or (settings_menu.visible and settings_return_to_pause):
 		get_tree().paused = true
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -409,6 +415,11 @@ func _on_debug_command_submitted(command_line: String) -> void:
 			for index in range(LEVEL_SCENES.size()):
 				registered.append("level%d" % (index + 1))
 			debug_console.write_line("Registered levels: " + ", ".join(registered))
+		"resetcamp", "campreset", "resetanticamp":
+			if anti_camp_tutorial.debug_reset_explained_flag():
+				debug_console.write_line("Anti-camp tutorial flag cleared. The next displacement trigger will show the popup again.")
+			else:
+				debug_console.write_line("Failed to clear the anti-camp tutorial flag.")
 		"clear":
 			debug_console.clear_output()
 		"close", "exit":
@@ -436,5 +447,6 @@ func _print_debug_help() -> void:
 	debug_console.write_line("  levels             List registered levels")
 	debug_console.write_line("  current            Show the current level")
 	debug_console.write_line("  restart            Reload the current level")
+	debug_console.write_line("  resetcamp          Clear first-time anti-camp tutorial flag")
 	debug_console.write_line("  clear              Clear console output")
 	debug_console.write_line("  close              Close the console")
