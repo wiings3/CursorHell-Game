@@ -25,4 +25,4 @@ position = Vector2(800, 472.68)
 
 [node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
 unique_name_in_owner = true
-level_display_text = "LEVEL 5\nSYNTHESIS // BOSS"
+level_display_text = "LEVEL 5\nSYNTHESIS // BOSS I"
