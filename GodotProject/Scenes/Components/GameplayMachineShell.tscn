@@ -1,11 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://nrmyvx8v1qyq"]
+[gd_scene load_steps=8 format=3 uid="uid://nrmyvx8v1qyq"]
 
 [ext_resource type="Texture2D" uid="uid://whm35exeetnj" path="res://Assets/SystemCabinet/DecayBackground.png" id="1_xuro4"]
 [ext_resource type="Texture2D" uid="uid://b3hgqe180x4rw" path="res://Assets/SystemCabinet/DecayMonitor.png" id="2_hxxby"]
 [ext_resource type="Texture2D" uid="uid://cxn6idmqrnpai" path="res://Assets/SystemCabinet/DecayCabinet.png" id="3_skjlc"]
 [ext_resource type="Texture2D" uid="uid://c1do4yhmmrbh2" path="res://Assets/SystemCabinet/DecayScore.png" id="4_oxh8x"]
 [ext_resource type="Texture2D" uid="uid://nsu41yj8mvl1" path="res://Assets/SystemCabinet/DecayTimer.png" id="5_tvdcc"]
-[ext_resource type="Script" path="res://scripts/ui/gameplay_machine_shell.gd" id="6_shell"]
+[ext_resource type="Script" uid="uid://cqspupij8fyqa" path="res://scripts/ui/gameplay_machine_shell.gd" id="6_shell"]
+[ext_resource type="Texture2D" uid="uid://5hnqgvv4dyte" path="res://Assets/SystemCabinet/ChatGPT Image Sep 13, 2026, 05_02_34 PM.png" id="7_skjlc"]
 
 [node name="GameplayMachineShell" type="Node2D"]
 script = ExtResource("6_shell")
@@ -60,7 +61,6 @@ offset_left = 304.0
 offset_top = 266.0
 offset_right = 465.0
 offset_bottom = 341.0
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.49, 0.08, 1)
 theme_override_colors/font_outline_color = Color(0.32, 0.06, 0.005, 1)
 theme_override_constants/outline_size = 5
@@ -85,7 +85,6 @@ offset_left = 1466.0
 offset_top = 266.0
 offset_right = 1627.0
 offset_bottom = 341.0
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.49, 0.08, 1)
 theme_override_colors/font_outline_color = Color(0.32, 0.06, 0.005, 1)
 theme_override_constants/outline_size = 5
@@ -101,7 +100,6 @@ offset_left = 1160.0
 offset_top = 865.0
 offset_right = 1400.0
 offset_bottom = 920.0
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.58, 0.14, 0.94)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 2
@@ -109,3 +107,8 @@ theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 25
 horizontal_alignment = 2
 vertical_alignment = 1
+
+[node name="ChatGptImageSep13,2026,050234Pm" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.29411766)
+position = Vector2(1714, 555)
+texture = ExtResource("7_skjlc")

@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Components/WarningLayer.tscn" id="3_warning"]
 [ext_resource type="PackedScene" uid="uid://8ia8xqmcyexk" path="res://Scenes/Components/Player.tscn" id="4_player"]
 [ext_resource type="PackedScene" uid="uid://b2lhdy7vpuc3r" path="res://Scenes/Components/LevelHUD.tscn" id="5_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
+[ext_resource type="PackedScene" uid="uid://c2wb0b4lcurss" path="res://Scenes/Components/ArenaDepth.tscn" id="6_depth"]
 [ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="7_machine"]
 
 [node name="Level1" type="Node2D"]

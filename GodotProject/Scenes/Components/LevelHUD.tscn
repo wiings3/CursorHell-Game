@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ryr65upawi1r" path="res://scripts/ui/level_hud.gd" id="1_hud"]
 
 [node name="LevelHUD" type="CanvasLayer"]
+visible = false
 script = ExtResource("1_hud")
 
 [node name="TimeTitle" type="Label" parent="."]

@@ -1,10 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://bwxipt41vty3q"]
 
 [ext_resource type="Script" uid="uid://8o2ugckn5scp" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/MainMenu.tscn" id="2_main_menu"]
+[ext_resource type="PackedScene" uid="uid://b6gfo1nvkr3x1" path="res://Scenes/UI/MainMenu.tscn" id="2_main_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="3_pause_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/Debug/DebugConsole.tscn" id="4_console"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/TransitionOverlay.tscn" id="5_transition"]
+[ext_resource type="PackedScene" uid="uid://ctoa8qsertkro" path="res://Scenes/UI/TransitionOverlay.tscn" id="5_transition"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/LevelSelectMenu.tscn" id="6_level_select"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/SettingsMenu.tscn" id="7_settings"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/AntiCampTutorial.tscn" id="8_anti_camp_tutorial"]
@@ -13,8 +13,8 @@
 script = ExtResource("1_main")
 
 [node name="LevelContainer" type="Node" parent="."]
-process_mode = 1
 unique_name_in_owner = true
+process_mode = 1
 
 [node name="TransitionOverlay" parent="." instance=ExtResource("5_transition")]
 unique_name_in_owner = true
