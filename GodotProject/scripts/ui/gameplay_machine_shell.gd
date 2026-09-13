@@ -10,6 +10,7 @@ class_name CursorHellGameplayMachineShell
 var _hud: CursorHellLevelHUD
 
 func _ready() -> void:
+	_ignore_control_mouse(self)
 	call_deferred("_bind_hud")
 
 func _process(_delta: float) -> void:
@@ -71,3 +72,11 @@ func _sync_level_identity() -> void:
 
 	level_number.text = number_text
 	level_name.text = title_text
+
+func _ignore_control_mouse(node: Node) -> void:
+	var control := node as Control
+	if control != null:
+		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	for child in node.get_children():
+		_ignore_control_mouse(child)
