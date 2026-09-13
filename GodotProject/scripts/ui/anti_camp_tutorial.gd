@@ -24,7 +24,7 @@ func _ready() -> void:
 func _on_tree_node_added(node: Node) -> void:
 	if _already_explained or visible or _tutorial_pending:
 		return
-	if not node is CursorHellDisplacementZone:
+	if not (node is CursorHellDisplacementZone):
 		return
 
 	# Freeze on the exact frame the first displacement zone enters the tree. The
