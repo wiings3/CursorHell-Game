@@ -14,6 +14,8 @@ const LEVEL_SCENES: Array[PackedScene] = [
 	preload("res://Scenes/Campaign/Boss2.tscn")
 ]
 
+const PerformanceRank = preload("res://scripts/performance_rank.gd")
+
 const FACTORY_RESET_PATHS: Array[String] = [
 	"user://cursor_hell_save.json",
 	"user://cursor_hell_tutorial_flags.cfg",
@@ -155,9 +157,22 @@ func _on_level_completed(level_number: int, final_score: int) -> void:
 	last_completed_score = final_score
 	var previous_best := save_manager.get_best_score(level_number)
 	var is_new_best := final_score > previous_best
+	var survived_time := 0.0
+	var achieved_rank := ""
+
+	if is_instance_valid(current_level):
+		survived_time = current_level._get_round_time()
+		var performance: Dictionary = PerformanceRank.evaluate(
+			true,
+			survived_time,
+			current_level._get_round_time(),
+			final_score,
+			int(current_level._get_completion_bonus())
+		)
+		achieved_rank = str(performance.get("rank", ""))
 
 	if current_level_records_progress:
-		save_manager.record_level_result(level_number, final_score, true)
+		save_manager.record_level_result(level_number, final_score, true, survived_time, achieved_rank)
 		_refresh_main_menu_save_status()
 
 	if not is_instance_valid(current_level):
@@ -180,9 +195,21 @@ func _on_level_completed(level_number: int, final_score: int) -> void:
 func _on_level_failed(level_number: int, final_score: int) -> void:
 	var previous_best := save_manager.get_best_score(level_number)
 	var is_new_best := final_score > previous_best
+	var survived_time := 0.0
+	var achieved_rank := ""
+
+	if is_instance_valid(current_level):
+		survived_time = current_level.elapsed
+		var performance: Dictionary = PerformanceRank.evaluate(
+			false,
+			survived_time,
+			current_level._get_round_time(),
+			final_score
+		)
+		achieved_rank = str(performance.get("rank", ""))
 
 	if current_level_records_progress:
-		save_manager.record_level_result(level_number, final_score, false)
+		save_manager.record_level_result(level_number, final_score, false, survived_time, achieved_rank)
 		_refresh_main_menu_save_status()
 
 	if not is_instance_valid(current_level):
@@ -274,12 +301,18 @@ func _on_main_menu_start_requested() -> void:
 func _on_main_menu_level_select_requested() -> void:
 	main_menu.hide_menu()
 	var best_scores: Array[int] = []
+	var best_times: Array[float] = []
+	var best_ranks: Array[String] = []
 	for level_number in range(1, LEVEL_SCENES.size() + 1):
 		best_scores.append(save_manager.get_best_score(level_number))
+		best_times.append(save_manager.get_best_time(level_number))
+		best_ranks.append(save_manager.get_best_rank(level_number))
 	level_select_menu.configure(
 		save_manager.get_highest_unlocked(),
 		save_manager.get_continue_level(),
-		best_scores
+		best_scores,
+		best_times,
+		best_ranks
 	)
 	level_select_menu.show_menu()
 
