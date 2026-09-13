@@ -9,6 +9,15 @@ class_name CursorHellLevelHUD
 const INTRO_BODY_BOTTOM := 418.0
 const STANDARD_BODY_BOTTOM := 482.0
 
+# Fallbacks make LevelHUD.tscn useful on its own in the editor. At runtime the
+# machine shell remains the source of truth for every cabinet-aligned region.
+const DEFAULT_SCREEN_RECT := Rect2(556.0, 202.0, 816.0, 630.0)
+const DEFAULT_TIMER_RECT := Rect2(315.0, 270.0, 143.0, 73.0)
+const DEFAULT_SCORE_RECT := Rect2(1478.0, 273.0, 143.0, 71.0)
+const DEFAULT_IDENTITY_RECT := Rect2(680.0, 218.0, 560.0, 49.0)
+const DEFAULT_TUTORIAL_RECT := Rect2(660.0, 904.0, 600.0, 58.0)
+const DEFAULT_HINT_RECT := Rect2(592.0, 838.0, 744.0, 38.0)
+
 @onready var screen_ui: Control = $ScreenUI
 @onready var timer_readout: Control = $TimerReadout
 @onready var score_readout: Control = $ScoreReadout
@@ -38,11 +47,19 @@ var last_score_width := -1.0
 @onready var countdown_subtitle: Label = %CountdownSubtitle
 
 func _ready() -> void:
+	# BaseLevel owns the cabinet transform. Run after it so this CanvasLayer can
+	# mirror the machine exactly instead of maintaining a second layout system.
+	process_priority = 100
 	machine_shell = get_parent().get_node_or_null("%GameplayMachineShell") as CursorHellMachineShell
+	_sync_canvas_transform()
 	_apply_cabinet_layout()
-	_apply_level_display_text()
+	if Engine.is_editor_hint():
+		_apply_level_display_text()
+	else:
+		_apply_runtime_level_identity()
 
 func _process(_delta: float) -> void:
+	_sync_canvas_transform()
 	_apply_cabinet_layout()
 	_fit_score_readout()
 	if Engine.is_editor_hint():
@@ -56,8 +73,29 @@ func _process(_delta: float) -> void:
 
 	_sync_message_prompt()
 
+func _sync_canvas_transform() -> void:
+	# CanvasLayer does not inherit the Node2D transform of the level. Mirroring
+	# the shell's transform here keeps every HUD region attached to the cabinet
+	# at all aspect ratios and while the cabinet is shaking.
+	var desired := Transform2D.IDENTITY
+	if is_instance_valid(machine_shell):
+		desired = machine_shell.global_transform
+	else:
+		var level := get_parent() as Node2D
+		if level == null:
+			return
+		desired = level.global_transform
+	if transform != desired:
+		transform = desired
+
 func _apply_cabinet_layout() -> void:
 	if not is_instance_valid(machine_shell) or not machine_shell.is_node_ready():
+		_apply_rect(screen_ui, DEFAULT_SCREEN_RECT)
+		_apply_rect(timer_readout, DEFAULT_TIMER_RECT)
+		_apply_rect(score_readout, DEFAULT_SCORE_RECT)
+		_apply_rect(identity_row, DEFAULT_IDENTITY_RECT)
+		_apply_rect(tutorial_label, DEFAULT_TUTORIAL_RECT)
+		_apply_rect($HintLabel, DEFAULT_HINT_RECT)
 		return
 	_apply_rect(screen_ui, machine_shell.get_layout_rect(machine_shell.screen))
 	_apply_rect(timer_readout, machine_shell.get_layout_rect(machine_shell.timer_area))
@@ -92,10 +130,29 @@ func place_arena_popup(label: Label, logical_position: Vector2, offset: Vector2)
 	var desired := screen_position + offset
 	label.position = desired.clamp(Vector2.ZERO, (screen_ui.size - label.size).max(Vector2.ZERO))
 
-func _apply_level_display_text() -> void:
-	if level_number_label == null or level_name_label == null or boss_tag_label == null:
+func _apply_runtime_level_identity() -> void:
+	var level := get_parent()
+	if level == null or not level.has_method("get_level_number") or not level.has_method("get_level_name"):
+		_apply_level_display_text()
 		return
 
+	var number_text := "LEVEL %d" % int(level.call("get_level_number"))
+	var title_text := str(level.call("get_level_name"))
+	var boss_text := ""
+	if level.has_method("get_boss_tag"):
+		boss_text = str(level.call("get_boss_tag")).strip_edges()
+
+	# Standalone boss scenes do not receive LevelCatalog metadata. Keep the
+	# exported text only as an editor/standalone fallback; Main always wins.
+	if boss_text.is_empty():
+		boss_text = str(_parse_level_display_text()["boss"])
+	_set_level_identity(number_text, title_text, boss_text)
+
+func _apply_level_display_text() -> void:
+	var parsed := _parse_level_display_text()
+	_set_level_identity(str(parsed["number"]), str(parsed["title"]), str(parsed["boss"]))
+
+func _parse_level_display_text() -> Dictionary:
 	var number_text := level_display_text.strip_edges()
 	var title_text := ""
 	var newline_index := level_display_text.find("\n")
@@ -109,6 +166,15 @@ func _apply_level_display_text() -> void:
 		boss_text = title_text.substr(boss_separator + 4).strip_edges()
 		title_text = title_text.substr(0, boss_separator).strip_edges()
 
+	return {
+		"number": number_text,
+		"title": title_text,
+		"boss": boss_text
+	}
+
+func _set_level_identity(number_text: String, title_text: String, boss_text: String) -> void:
+	if level_number_label == null or level_name_label == null or boss_tag_label == null:
+		return
 	level_number_label.text = number_text
 	level_name_label.text = title_text
 	boss_tag_label.text = boss_text

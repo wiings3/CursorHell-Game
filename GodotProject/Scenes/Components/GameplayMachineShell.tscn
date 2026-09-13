@@ -65,15 +65,12 @@ position = Vector2(390, 72)
 
 [node name="ColorRect" type="ColorRect" parent="CRTCanvas"]
 material = SubResource("ShaderMaterial_vxnlb")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 545.0
+layout_mode = 3
+anchors_preset = 0
+offset_left = 556.0
 offset_top = 202.0
-offset_right = -533.0
-offset_bottom = -236.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 1372.0
+offset_bottom = 832.0
 mouse_filter = 2
 
 [node name="DecayMonitor" type="Sprite2D" parent="."]
@@ -135,10 +132,10 @@ mouse_filter = 2
 [node name="TutorialArea" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 686.0
-offset_top = 926.0
-offset_right = 1238.0
-offset_bottom = 966.0
+offset_left = 660.0
+offset_top = 904.0
+offset_right = 1260.0
+offset_bottom = 962.0
 mouse_filter = 2
 
 [node name="HintArea" type="Control" parent="."]
