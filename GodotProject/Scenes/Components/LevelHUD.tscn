@@ -33,14 +33,6 @@ offset_bottom = 142.0
 mouse_filter = 2
 color = Color(0.025, 0.03, 0.045, 0.94)
 
-[node name="TimerAccent" type="ColorRect" parent="."]
-offset_left = 27.0
-offset_top = 58.0
-offset_right = 86.0
-offset_bottom = 61.0
-mouse_filter = 2
-color = Color(1, 0.58, 0.18, 0.8)
-
 [node name="TimerLabel" type="Label" parent="."]
 unique_name_in_owner = true
 offset_left = 27.0
@@ -68,6 +60,90 @@ theme_override_font_sizes/font_size = 25
 text = "SCORE"
 horizontal_alignment = 1
 
+[node name="TimerAccents" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 27.0
+offset_top = 64.0
+offset_right = 67.0
+offset_bottom = 104.0
+
+[node name="TimerAccent" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = -5.0
+offset_right = 13.0
+offset_bottom = -4.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent2" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -5.0
+offset_right = 14.0
+offset_bottom = -4.0
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent3" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 0.99997556
+offset_top = 75.99999
+offset_right = 12.999979
+offset_bottom = 77.00003
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent4" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 1.9999756
+offset_top = 64.99999
+offset_right = 13.999979
+offset_bottom = 66.00003
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent5" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 263.0
+offset_top = 76.0
+offset_right = 275.0
+offset_bottom = 77.00004
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent6" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 275.0
+offset_top = 65.0
+offset_right = 287.0
+offset_bottom = 66.00004
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent7" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 263.0
+offset_top = -5.0
+offset_right = 275.0
+offset_bottom = -3.9999619
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="TimerAccent8" type="ColorRect" parent="TimerAccents"]
+layout_mode = 0
+offset_left = 275.0
+offset_top = -5.0
+offset_right = 287.0
+offset_bottom = -3.9999619
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
 [node name="ScoreBorder" type="ColorRect" parent="."]
 offset_left = 1308.0
 offset_top = 55.0
@@ -84,14 +160,6 @@ offset_bottom = 142.0
 mouse_filter = 2
 color = Color(0.025, 0.03, 0.045, 0.94)
 
-[node name="ScoreAccent" type="ColorRect" parent="."]
-offset_left = 1514.0
-offset_top = 58.0
-offset_right = 1573.0
-offset_bottom = 61.0
-mouse_filter = 2
-color = Color(1, 0.58, 0.18, 0.8)
-
 [node name="ScoreLabel" type="Label" parent="."]
 unique_name_in_owner = true
 offset_left = 1311.0
@@ -107,10 +175,93 @@ theme_override_font_sizes/font_size = 46
 text = "0"
 horizontal_alignment = 1
 
+[node name="ScoreAccents" type="Control" parent="ScoreLabel"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ScoreAccent" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = -5.0
+offset_right = 13.0
+offset_bottom = -4.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent2" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -5.0
+offset_right = 14.0
+offset_bottom = -4.0
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent3" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 0.99997556
+offset_top = 75.99999
+offset_right = 12.999979
+offset_bottom = 77.00003
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent4" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 1.9999756
+offset_top = 64.99999
+offset_right = 13.999979
+offset_bottom = 66.00003
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent5" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 248.99997
+offset_top = 76.0
+offset_right = 260.99997
+offset_bottom = 77.00004
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent6" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 260.99997
+offset_top = 65.0
+offset_right = 272.99997
+offset_bottom = 66.00004
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent7" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 248.99997
+offset_top = -5.0
+offset_right = 260.99997
+offset_bottom = -3.9999619
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
+[node name="ScoreAccent8" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
+layout_mode = 0
+offset_left = 260.99997
+offset_top = -5.0
+offset_right = 272.99997
+offset_bottom = -3.9999619
+rotation = 1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0.8)
+
 [node name="LevelCard" type="Control" parent="."]
-offset_left = 30.0
+layout_mode = 3
+anchors_preset = 0
+offset_left = 13.0
 offset_top = 365.0
-offset_right = 360.0
+offset_right = 343.0
 offset_bottom = 575.0
 rotation = -0.22
 mouse_filter = 2
@@ -170,7 +321,6 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 20
-text = "BOSS I"
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -302,6 +452,7 @@ theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 17
 text = "MOUSE = MOVE    •    ESC = RELEASE MOUSE    •    R = RESTART"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MessageScrim" type="ColorRect" parent="."]
 unique_name_in_owner = true
