@@ -78,11 +78,16 @@ func show_intro(level_number: int, title: String, subtitle: String, body: String
 	prompt_label.text = "CLICK OR R TO BEGIN    •    ESC = MENU"
 	_show_animated()
 
-func show_failure(level_number: int, title: String, reason: String, run_time: float, round_time: float, final_score: int, best_score: int, is_new_best: bool) -> void:
+func show_failure(
+	level_number: int,
+	title: String,
+	stats: CursorHellRunStats,
+	best_score: int,
+	is_new_best: bool
+) -> void:
 	mode = "failure"
-	var performance: Dictionary = PerformanceRank.evaluate(false, run_time, round_time, final_score)
+	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 	var survival_percent := int(performance["survival_percent"])
-	var graze_bonus := int(performance["graze_bonus"])
 
 	_set_mode_style(Color(1.0, 0.24, 0.12, 1.0), Color(0.28, 0.025, 0.018, 0.13))
 	state_label.text = "LEVEL FAILED"
@@ -90,27 +95,33 @@ func show_failure(level_number: int, title: String, reason: String, run_time: fl
 	subtitle_label.text = "LEVEL %d  •  IMPACT" % level_number
 	body_label.offset_bottom = 300.0
 	body_label.text = "%s\nSURVIVED  %s / %s  •  %d%%\nGRAZE BONUS  +%s" % [
-		reason.to_upper(),
-		_format_time(run_time),
-		_format_time(round_time),
+		stats.death_reason.to_upper(),
+		_format_time(stats.time_survived),
+		_format_time(stats.round_time),
 		survival_percent,
-		_format_score(graze_bonus)
+		_format_score(stats.graze_score)
 	]
 	_set_result_nodes_visible(true)
 	rank_caption.text = "ATTEMPT RANK"
 	rank_label.text = str(performance["rank"])
 	performance_label.text = "%d / 100" % int(performance["points"])
-	score_label.text = "SCORE    %s" % _format_score(final_score)
+	score_label.text = "SCORE    %s" % _format_score(stats.final_score)
 	best_label.text = "BEST     %s" % _format_score(best_score)
 	record_label.visible = is_new_best
 	record_label.text = "NEW BEST SCORE"
 	prompt_label.text = "CLICK OR R TO RETRY    •    ESC = MENU"
 	_show_animated()
 
-func show_clear(level_number: int, title: String, round_time: float, completion_bonus: int, final_score: int, best_score: int, is_new_best: bool, has_next_level: bool) -> void:
+func show_clear(
+	level_number: int,
+	title: String,
+	stats: CursorHellRunStats,
+	best_score: int,
+	is_new_best: bool,
+	has_next_level: bool
+) -> void:
 	mode = "clear"
-	var performance: Dictionary = PerformanceRank.evaluate(true, round_time, round_time, final_score, completion_bonus)
-	var graze_bonus := int(performance["graze_bonus"])
+	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 
 	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.20, 0.11, 0.025, 0.10))
 	state_label.text = "LEVEL CLEAR"
@@ -118,16 +129,16 @@ func show_clear(level_number: int, title: String, round_time: float, completion_
 	subtitle_label.text = "LEVEL %d  •  SURVIVED" % level_number
 	body_label.offset_bottom = 300.0
 	body_label.text = "SURVIVED  %s / %s  •  100%%\nGRAZE BONUS  +%s\nCOMPLETION BONUS  +%s" % [
-		_format_time(round_time),
-		_format_time(round_time),
-		_format_score(graze_bonus),
-		_format_score(completion_bonus)
+		_format_time(stats.time_survived),
+		_format_time(stats.round_time),
+		_format_score(stats.graze_score),
+		_format_score(stats.completion_bonus)
 	]
 	_set_result_nodes_visible(true)
 	rank_caption.text = "PERFORMANCE RANK"
 	rank_label.text = str(performance["rank"])
 	performance_label.text = "%d / 100" % int(performance["points"])
-	score_label.text = "FINAL    %s" % _format_score(final_score)
+	score_label.text = "FINAL    %s" % _format_score(stats.final_score)
 	best_label.text = "BEST     %s" % _format_score(best_score)
 	record_label.visible = is_new_best
 	record_label.text = "NEW BEST SCORE"

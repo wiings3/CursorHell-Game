@@ -1,19 +1,7 @@
 extends Node
 class_name CursorHellMain
 
-const LEVEL_SCENES: Array[PackedScene] = [
-	preload("res://Scenes/Levels/Level1.tscn"),
-	preload("res://Scenes/Levels/Level2.tscn"),
-	preload("res://Scenes/Levels/Level3.tscn"),
-	preload("res://Scenes/Levels/Level4.tscn"),
-	preload("res://Scenes/Campaign/Boss1.tscn"),
-	preload("res://Scenes/Campaign/Level6.tscn"),
-	preload("res://Scenes/Campaign/Level7.tscn"),
-	preload("res://Scenes/Campaign/Level8.tscn"),
-	preload("res://Scenes/Campaign/Level9.tscn"),
-	preload("res://Scenes/Campaign/Boss2.tscn")
-]
-
+const LevelCatalog = preload("res://scripts/level_catalog.gd")
 const PerformanceRank = preload("res://scripts/performance_rank.gd")
 
 const FACTORY_RESET_PATHS: Array[String] = [
@@ -50,7 +38,7 @@ func _ready() -> void:
 	# debug-console state and the dedicated pause/settings overlays.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
-	save_manager.load_save(LEVEL_SCENES.size())
+	save_manager.load_save(LevelCatalog.count())
 
 	transition_overlay.primary_requested.connect(_on_transition_primary_requested)
 	transition_overlay.replay_requested.connect(_on_transition_replay_requested)
@@ -93,8 +81,8 @@ func _process(_delta: float) -> void:
 		_open_pause_menu()
 
 func load_level(index: int, record_progress: bool = true) -> void:
-	if index < 0 or index >= LEVEL_SCENES.size():
-		push_error("Cursor Hell: level index %d is not registered in Main." % index)
+	if index < 0 or index >= LevelCatalog.count():
+		push_error("Cursor Hell: level index %d is not registered in LevelCatalog." % index)
 		return
 
 	get_tree().paused = false
@@ -111,15 +99,24 @@ func load_level(index: int, record_progress: bool = true) -> void:
 
 	current_level_index = index
 	current_level_records_progress = record_progress
-	var level_instance := LEVEL_SCENES[index].instantiate()
+	var level_metadata := LevelCatalog.get_level(index)
+	var packed_scene := level_metadata.get("scene") as PackedScene
+	if packed_scene == null:
+		push_error("Cursor Hell: LevelCatalog entry %d has no valid PackedScene." % index)
+		return
+
+	var level_instance := packed_scene.instantiate()
 	current_level = level_instance as CursorHellBaseLevel
 	if current_level == null:
 		push_error("Cursor Hell: loaded level does not extend CursorHellBaseLevel.")
 		return
 
-	var level_number := index + 1
+	# Metadata is injected before add_child(), so BaseLevel._ready() initializes
+	# RunStats and round timing from the same canonical catalog the menus use.
+	current_level.configure_level_metadata(level_metadata)
+	var level_number := current_level.get_level_number()
 	current_level.high_score = save_manager.get_best_score(level_number)
-	current_level.has_next_level = index < LEVEL_SCENES.size() - 1
+	current_level.has_next_level = index < LevelCatalog.count() - 1
 	current_level.level_completed.connect(_on_level_completed)
 	current_level.level_failed.connect(_on_level_failed)
 	current_level.continue_requested.connect(_on_continue_requested)
@@ -132,7 +129,7 @@ func load_level(index: int, record_progress: bool = true) -> void:
 	current_level._hide_message_panel()
 	transition_overlay.show_intro(
 		level_number,
-		current_level._get_intro_title(),
+		current_level.get_level_name(),
 		current_level._get_intro_subtitle(),
 		current_level._get_intro_body()
 	)
@@ -147,7 +144,7 @@ func reload_current_level() -> void:
 
 func load_next_level() -> bool:
 	var next_index := current_level_index + 1
-	if next_index >= LEVEL_SCENES.size():
+	if next_index >= LevelCatalog.count():
 		return false
 	load_level(next_index, current_level_records_progress)
 	return true
@@ -157,36 +154,31 @@ func _on_level_completed(level_number: int, final_score: int) -> void:
 	last_completed_score = final_score
 	var previous_best := save_manager.get_best_score(level_number)
 	var is_new_best := final_score > previous_best
-	var survived_time := 0.0
-	var achieved_rank := ""
-
-	if is_instance_valid(current_level):
-		survived_time = current_level._get_round_time()
-		var performance: Dictionary = PerformanceRank.evaluate(
-			true,
-			survived_time,
-			current_level._get_round_time(),
-			final_score,
-			int(current_level._get_completion_bonus())
-		)
-		achieved_rank = str(performance.get("rank", ""))
-
-	if current_level_records_progress:
-		save_manager.record_level_result(level_number, final_score, true, survived_time, achieved_rank)
-		_refresh_main_menu_save_status()
 
 	if not is_instance_valid(current_level):
 		return
 
+	var stats: CursorHellRunStats = current_level.run_stats
+	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
+	var achieved_rank := str(performance.get("rank", ""))
+
+	if current_level_records_progress:
+		save_manager.record_level_result(
+			level_number,
+			stats.final_score,
+			true,
+			stats.time_survived,
+			achieved_rank
+		)
+		_refresh_main_menu_save_status()
+
 	current_level._hide_message_panel()
 	current_level.set_process_input(false)
-	var best_score := maxi(previous_best, final_score)
+	var best_score := maxi(previous_best, stats.final_score)
 	transition_overlay.show_clear(
 		level_number,
-		current_level._get_intro_title(),
-		current_level._get_round_time(),
-		int(current_level._get_completion_bonus()),
-		final_score,
+		current_level.get_level_name(),
+		stats,
 		best_score,
 		is_new_best,
 		current_level.has_next_level
@@ -195,36 +187,31 @@ func _on_level_completed(level_number: int, final_score: int) -> void:
 func _on_level_failed(level_number: int, final_score: int) -> void:
 	var previous_best := save_manager.get_best_score(level_number)
 	var is_new_best := final_score > previous_best
-	var survived_time := 0.0
-	var achieved_rank := ""
-
-	if is_instance_valid(current_level):
-		survived_time = current_level.elapsed
-		var performance: Dictionary = PerformanceRank.evaluate(
-			false,
-			survived_time,
-			current_level._get_round_time(),
-			final_score
-		)
-		achieved_rank = str(performance.get("rank", ""))
-
-	if current_level_records_progress:
-		save_manager.record_level_result(level_number, final_score, false, survived_time, achieved_rank)
-		_refresh_main_menu_save_status()
 
 	if not is_instance_valid(current_level):
 		return
 
+	var stats: CursorHellRunStats = current_level.run_stats
+	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
+	var achieved_rank := str(performance.get("rank", ""))
+
+	if current_level_records_progress:
+		save_manager.record_level_result(
+			level_number,
+			stats.final_score,
+			false,
+			stats.time_survived,
+			achieved_rank
+		)
+		_refresh_main_menu_save_status()
+
 	current_level._hide_message_panel()
 	current_level.set_process_input(false)
-	var best_score := maxi(previous_best, final_score)
+	var best_score := maxi(previous_best, stats.final_score)
 	transition_overlay.show_failure(
 		level_number,
-		current_level._get_intro_title(),
-		current_level.pending_death_reason,
-		current_level.elapsed,
-		current_level._get_round_time(),
-		final_score,
+		current_level.get_level_name(),
+		stats,
 		best_score,
 		is_new_best
 	)
@@ -260,7 +247,7 @@ func _begin_current_round() -> void:
 
 func _on_continue_requested() -> void:
 	var next_index := current_level_index + 1
-	if next_index >= LEVEL_SCENES.size():
+	if next_index >= LevelCatalog.count():
 		return
 	call_deferred("load_level", next_index, current_level_records_progress)
 
@@ -303,7 +290,7 @@ func _on_main_menu_level_select_requested() -> void:
 	var best_scores: Array[int] = []
 	var best_times: Array[float] = []
 	var best_ranks: Array[String] = []
-	for level_number in range(1, LEVEL_SCENES.size() + 1):
+	for level_number in range(1, LevelCatalog.count() + 1):
 		best_scores.append(save_manager.get_best_score(level_number))
 		best_times.append(save_manager.get_best_time(level_number))
 		best_ranks.append(save_manager.get_best_rank(level_number))
@@ -318,7 +305,7 @@ func _on_main_menu_level_select_requested() -> void:
 
 func _on_level_selected(level_index: int) -> void:
 	var level_number := level_index + 1
-	if level_index < 0 or level_index >= LEVEL_SCENES.size():
+	if level_index < 0 or level_index >= LevelCatalog.count():
 		return
 	if level_number > save_manager.get_highest_unlocked():
 		return
@@ -451,7 +438,7 @@ func _on_debug_command_submitted(command_line: String) -> void:
 				debug_console.write_line("No level is currently loaded.")
 		"levels":
 			var registered := PackedStringArray()
-			for index in range(LEVEL_SCENES.size()):
+			for index in range(LevelCatalog.count()):
 				registered.append("level%d" % (index + 1))
 			debug_console.write_line("Registered levels: " + ", ".join(registered))
 		"resetcamp", "campreset", "resetanticamp":
@@ -496,7 +483,7 @@ func _reload_after_factory_reset() -> void:
 
 func _debug_load_level(level_number: int) -> void:
 	var index := level_number - 1
-	if index < 0 or index >= LEVEL_SCENES.size():
+	if index < 0 or index >= LevelCatalog.count():
 		debug_console.write_line("level%d is not registered. Type 'levels' to see available levels." % level_number)
 		return
 

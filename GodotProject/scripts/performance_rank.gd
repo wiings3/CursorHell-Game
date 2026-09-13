@@ -11,6 +11,19 @@ const GRAZE_WEIGHT := 30.0
 const GRAZE_TARGET_PER_SECOND := 45.0
 const MIN_GRAZE_TARGET := 1000.0
 
+static func evaluate_run(stats) -> Dictionary:
+	if stats == null:
+		return _evaluate_values(false, 0.0, 1.0, 0)
+	return _evaluate_values(
+		stats.completed,
+		stats.time_survived,
+		stats.round_time,
+		stats.graze_score
+	)
+
+# Compatibility path for any older caller that only has aggregate score values.
+# New gameplay/result code should use evaluate_run() so graze performance comes
+# from explicit RunStats instead of reverse-engineering the final score.
 static func evaluate(
 	completed: bool,
 	run_time: float,
@@ -18,17 +31,24 @@ static func evaluate(
 	final_score: int,
 	completion_bonus: int = 0
 ) -> Dictionary:
+	var clamped_time := clampf(run_time, 0.0, maxf(round_time, 0.001))
+	var survival_score := int(floor(clamped_time * 10.0))
+	var clear_bonus := completion_bonus if completed else 0
+	var inferred_graze_score := maxi(0, final_score - survival_score - clear_bonus)
+	return _evaluate_values(completed, run_time, round_time, inferred_graze_score)
+
+static func _evaluate_values(
+	completed: bool,
+	run_time: float,
+	round_time: float,
+	graze_score: int
+) -> Dictionary:
 	var safe_round_time := maxf(round_time, 0.001)
 	var clamped_time := clampf(run_time, 0.0, safe_round_time)
 	var survival_ratio := clampf(clamped_time / safe_round_time, 0.0, 1.0)
-
-	# BaseLevel awards 10 score per second. Everything above survival score and,
-	# on clears, the completion bonus is score earned from grazing.
-	var survival_score := int(floor(clamped_time * 10.0))
-	var clear_bonus := completion_bonus if completed else 0
-	var graze_bonus := maxi(0, final_score - survival_score - clear_bonus)
+	var safe_graze_score := maxi(graze_score, 0)
 	var graze_target := maxf(MIN_GRAZE_TARGET, safe_round_time * GRAZE_TARGET_PER_SECOND)
-	var graze_ratio := clampf(float(graze_bonus) / graze_target, 0.0, 1.0)
+	var graze_ratio := clampf(float(safe_graze_score) / graze_target, 0.0, 1.0)
 
 	var performance_points := roundi(
 		survival_ratio * SURVIVAL_WEIGHT
@@ -40,7 +60,8 @@ static func evaluate(
 		"rank": _rank_for_points(completed, performance_points),
 		"points": performance_points,
 		"survival_percent": clampi(roundi(survival_ratio * 100.0), 0, 100),
-		"graze_bonus": graze_bonus,
+		"graze_bonus": safe_graze_score,
+		"graze_score": safe_graze_score,
 		"graze_target": int(round(graze_target))
 	}
 

@@ -7,6 +7,7 @@ signal continue_requested
 
 const ProjectileScene := preload("res://Scenes/Components/Projectile.tscn")
 const SfxScript = preload("res://scripts/sfx.gd")
+const RunStats = preload("res://scripts/run_stats.gd")
 
 const DESIGN_SIZE := Vector2(1600.0, 900.0)
 const ARENA := Rect2(390.0, 72.0, 820.0, 756.0)
@@ -42,6 +43,11 @@ var countdown_left := 0.0
 var countdown_step := -1
 var last_lane_by_side := [-10.0, -10.0, -10.0, -10.0]
 
+# Main injects canonical campaign metadata before the node enters the tree.
+# Standalone level scenes still fall back to their existing level-specific hooks.
+var level_metadata: Dictionary = {}
+var run_stats = RunStats.new()
+
 # Main sets this when the level is loaded. Levels stay independent of the
 # loader while still being able to present the correct completion action.
 var has_next_level: bool = false
@@ -69,6 +75,30 @@ var has_next_level: bool = false
 @onready var graze_popup_label: Label = hud.graze_popup_label
 @onready var countdown_label: Label = hud.countdown_label
 @onready var countdown_subtitle: Label = hud.countdown_subtitle
+
+func configure_level_metadata(metadata: Dictionary) -> void:
+	level_metadata = metadata.duplicate(true)
+
+func get_level_number() -> int:
+	if level_metadata.has("number"):
+		return int(level_metadata["number"])
+	return _get_level_number()
+
+func get_level_name() -> String:
+	if level_metadata.has("name"):
+		return str(level_metadata["name"])
+	return _get_intro_title()
+
+func get_round_time() -> float:
+	if level_metadata.has("round_time"):
+		return float(level_metadata["round_time"])
+	return _get_round_time()
+
+func get_is_boss() -> bool:
+	return bool(level_metadata.get("is_boss", false))
+
+func get_boss_tag() -> String:
+	return str(level_metadata.get("boss_tag", ""))
 
 func _ready() -> void:
 	rng.randomize()
@@ -145,8 +175,9 @@ func _physics_process(delta: float) -> void:
 		return
 
 	elapsed += delta
-	time_left = maxf(0.0, _get_round_time() - elapsed)
+	time_left = maxf(0.0, get_round_time() - elapsed)
 	score += delta * 10.0
+	run_stats.update_live(elapsed, int(score))
 	combo_time -= delta
 	near_flash = maxf(0.0, near_flash - delta * 2.0)
 	if combo_time <= 0.0:
@@ -299,6 +330,8 @@ func _check_projectiles(current_phase: int) -> void:
 				combo_time = 1.6
 				var bonus := 50 * maxi(combo, 1)
 				score += bonus
+				run_stats.record_graze(bonus, combo)
+				run_stats.update_live(elapsed, int(score))
 				score_punch = 1.0
 				player.flash_near_miss()
 				near_flash = 1.0
@@ -345,7 +378,7 @@ func _reset_round(start_now: bool) -> void:
 	for child in projectile_layer.get_children():
 		child.queue_free()
 	warnings.clear()
-	time_left = _get_round_time()
+	time_left = get_round_time()
 	elapsed = 0.0
 	score = 0.0
 	combo = 0
@@ -362,6 +395,7 @@ func _reset_round(start_now: bool) -> void:
 	countdown_left = 0.0
 	countdown_step = -1
 	last_lane_by_side = [-10.0, -10.0, -10.0, -10.0]
+	run_stats.reset(get_level_number(), get_level_name(), get_round_time())
 	hit_flash.color = Color(1.0, 0.12, 0.06, 0.0)
 	hit_label.visible = false
 	graze_popup_label.visible = false
@@ -443,6 +477,7 @@ func _begin_death(reason: String) -> void:
 
 	state = "dying"
 	pending_death_reason = reason
+	run_stats.finish(false, elapsed, int(score), 0, reason, _get_phase(), player.position)
 	death_feedback_left = DEATH_FEEDBACK_TIME
 	hit_flash_alpha = 0.28
 	hit_flash.color = Color(1.0, 0.12, 0.06, hit_flash_alpha)
@@ -469,15 +504,17 @@ func _show_death_panel() -> void:
 	message_title.text = _get_death_title()
 	message_subtitle.text = _get_death_subtitle()
 	message_body.text = _get_death_body(pending_death_reason, elapsed, final_score, high_score)
-	level_failed.emit(_get_level_number(), final_score)
+	level_failed.emit(get_level_number(), final_score)
 
 func _win() -> void:
 	if state != "playing":
 		return
 
-	score += _get_completion_bonus()
+	var completion_bonus := int(_get_completion_bonus())
+	score += completion_bonus
 	score_punch = 1.0
 	high_score = maxi(high_score, int(score))
+	run_stats.finish(true, elapsed, int(score), completion_bonus, "", _get_phase(), player.position)
 	state = "won"
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	tutorial_label.text = _get_win_tutorial_text()
@@ -487,7 +524,7 @@ func _win() -> void:
 	message_subtitle.text = _get_win_subtitle()
 	message_body.text = _get_win_body(int(score), high_score)
 	_update_ui()
-	level_completed.emit(_get_level_number(), int(score))
+	level_completed.emit(get_level_number(), int(score))
 
 func _show_message_panel(animate: bool) -> void:
 	message_scrim.visible = true

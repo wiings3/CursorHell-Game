@@ -81,3 +81,4 @@ func _spawn_displacement_zone(target_position: Vector2) -> void:
 	zone.warning_time = CAMP_WARNING_TIME
 	zone.active_time = CAMP_ACTIVE_TIME
 	projectile_layer.add_child(zone)
+	run_stats.record_anti_camp_trigger()

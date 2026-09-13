@@ -56,3 +56,4 @@ func _spawn_zone(level: CursorHellBaseLevel, target_position: Vector2) -> void:
 	zone.warning_time = WARNING_TIME
 	zone.active_time = ACTIVE_TIME
 	level.projectile_layer.add_child(zone)
+	level.run_stats.record_anti_camp_trigger()

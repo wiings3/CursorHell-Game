@@ -4,23 +4,7 @@ class_name CursorHellLevelSelectMenu
 signal level_selected(level_index: int)
 signal back_requested
 
-const LEVEL_NAMES: PackedStringArray = [
-	"FIRST CONTACT",
-	"CROSSFIRE",
-	"THE SWEEP",
-	"THE GAP",
-	"SYNTHESIS",
-	"THE PULSE",
-	"THE FLOOD",
-	"AFTERSHOCK",
-	"DEAD ZONES",
-	"CONVERGENCE"
-]
-
-const BOSS_TAGS: PackedStringArray = [
-	"", "", "", "", "BOSS I",
-	"", "", "", "", "BOSS II"
-]
+const LevelCatalog = preload("res://scripts/level_catalog.gd")
 
 @onready var panel_group: Control = $Root/PanelGroup
 @onready var level_buttons: Array[Button] = [
@@ -49,6 +33,9 @@ func _ready() -> void:
 	visible = false
 	panel_home = panel_group.position
 
+	if level_buttons.size() != LevelCatalog.count():
+		push_warning("Cursor Hell: Level Select button count does not match LevelCatalog.")
+
 	for index in range(level_buttons.size()):
 		level_buttons[index].pressed.connect(_on_level_pressed.bind(index))
 	back_button.pressed.connect(func() -> void: back_requested.emit())
@@ -68,24 +55,35 @@ func configure(
 	best_times: Array[float],
 	best_ranks: Array[String]
 ) -> void:
-	var safe_highest := clampi(highest_unlocked, 1, level_buttons.size())
+	var available_count := mini(level_buttons.size(), LevelCatalog.count())
+	var safe_highest := clampi(highest_unlocked, 1, available_count)
 	preferred_focus_index = clampi(preferred_level - 1, 0, safe_highest - 1)
-	progress_label.text = "%02d / %02d TESTS UNLOCKED" % [safe_highest, level_buttons.size()]
+	var preferred_metadata := LevelCatalog.get_level(preferred_focus_index)
+
+	progress_label.text = "%02d / %02d TESTS UNLOCKED" % [safe_highest, available_count]
 	progress_hint.text = "CONTINUE  //  LEVEL %02d  //  %s" % [
-		preferred_focus_index + 1,
-		LEVEL_NAMES[preferred_focus_index]
+		int(preferred_metadata.get("number", preferred_focus_index + 1)),
+		str(preferred_metadata.get("name", "UNKNOWN"))
 	]
-	progress_fill.size.x = progress_track.size.x * (float(safe_highest) / float(level_buttons.size()))
+	progress_fill.size.x = progress_track.size.x * (float(safe_highest) / float(available_count))
 
 	for index in range(level_buttons.size()):
-		var level_number := index + 1
 		var button := level_buttons[index]
+		if index >= LevelCatalog.count():
+			button.disabled = true
+			button.text = "UNREGISTERED LEVEL SLOT"
+			button.tooltip_text = "No LevelCatalog entry"
+			continue
+
+		var metadata := LevelCatalog.get_level(index)
+		var level_number := int(metadata.get("number", index + 1))
+		var level_name := str(metadata.get("name", "UNKNOWN"))
+		var boss_tag := str(metadata.get("boss_tag", ""))
 		var unlocked := level_number <= safe_highest
 		var best_score := best_scores[index] if index < best_scores.size() else 0
 		var best_time := best_times[index] if index < best_times.size() else 0.0
 		var best_rank := best_ranks[index].strip_edges().to_upper() if index < best_ranks.size() else ""
-		var boss_tag := BOSS_TAGS[index]
-		var title := "LEVEL %02d  //  %s" % [level_number, LEVEL_NAMES[index]]
+		var title := "LEVEL %02d  //  %s" % [level_number, level_name]
 		if not boss_tag.is_empty():
 			title += "  [%s]" % boss_tag
 
