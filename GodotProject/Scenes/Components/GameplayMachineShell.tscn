@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://nrmyvx8v1qyq"]
+[gd_scene load_steps=8 format=3 uid="uid://nrmyvx8v1qyq"]
 
 [ext_resource type="Texture2D" uid="uid://whm35exeetnj" path="res://Assets/SystemCabinet/DecayBackground.png" id="1_xuro4"]
 [ext_resource type="Texture2D" uid="uid://cxn6idmqrnpai" path="res://Assets/SystemCabinet/DecayCabinet.png" id="3_skjlc"]
@@ -6,25 +6,49 @@
 [ext_resource type="Texture2D" uid="uid://nsu41yj8mvl1" path="res://Assets/SystemCabinet/DecayTimer.png" id="5_tvdcc"]
 [ext_resource type="Texture2D" uid="uid://5hnqgvv4dyte" path="res://Assets/SystemCabinet/ChatGPT Image Sep 13, 2026, 05_02_34 PM.png" id="7_skjlc"]
 
+[ext_resource type="Script" path="res://scripts/ui/gameplay_machine_shell.gd" id="8_shell"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/ArenaBackground.tscn" id="9_arena"]
+
 [node name="GameplayMachineShell" type="Node2D"]
+script = ExtResource("8_shell")
 
 [node name="DecayBackground" type="Sprite2D" parent="."]
 position = Vector2(959.9999, 540)
 scale = Vector2(1.1483253, 1.1477151)
 texture = ExtResource("1_xuro4")
 
+[node name="ScreenClip" type="Control" parent="."]
+clip_contents = true
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
+mouse_filter = 2
+
+[node name="ArenaContent" type="Node2D" parent="ScreenClip"]
+z_index = 2
+position = Vector2(-388.09756, -60)
+scale = Vector2(0.99512196, 0.8333333)
+
+[node name="ArenaBackground" parent="ScreenClip/ArenaContent" instance=ExtResource("9_arena")]
+z_index = -2
+position = Vector2(390, 72)
+
 [node name="DecayMonitor" type="Sprite2D" parent="."]
+z_index = 1
 modulate = Color(1, 1, 1, 0.50980395)
 position = Vector2(959.00006, 527.5)
 scale = Vector2(0.6625387, 0.58866996)
 texture = ExtResource("7_skjlc")
 
 [node name="DecayCabinet" type="Sprite2D" parent="."]
+z_index = 3
 position = Vector2(960, 568.99994)
 scale = Vector2(1.1483253, 1.1477151)
 texture = ExtResource("3_skjlc")
 
 [node name="DecayScore" type="Sprite2D" parent="."]
+z_index = 3
 position = Vector2(1546.5083, 286.3916)
 scale = Vector2(0.2262647, 0.25740412)
 texture = ExtResource("4_oxh8x")
@@ -32,8 +56,44 @@ region_enabled = true
 region_rect = Rect2(170.79443, 254.60004, 738.5641, 502.20508)
 
 [node name="DecayTimer" type="Sprite2D" parent="."]
+z_index = 3
 position = Vector2(384.5, 285)
 scale = Vector2(0.3170732, 0.3099273)
 texture = ExtResource("5_tvdcc")
 region_enabled = true
 region_rect = Rect2(276.00046, 299.92307, 533.9469, 413.12936)
+
+[node name="TimerValueArea" type="Control" parent="DecayTimer"]
+offset_left = -219.192287
+offset_top = -48.398447
+offset_right = 231.807671
+offset_bottom = 187.140662
+mouse_filter = 2
+
+[node name="ScoreValueArea" type="Control" parent="DecayScore"]
+offset_left = -302.779444
+offset_top = -52.025585
+offset_right = 329.223692
+offset_bottom = 223.805276
+mouse_filter = 2
+
+[node name="LevelIdentityArea" type="Control" parent="."]
+offset_left = 680.000000
+offset_top = 922.000000
+offset_right = 1240.000000
+offset_bottom = 971.000000
+mouse_filter = 2
+
+[node name="TutorialArea" type="Control" parent="."]
+offset_left = 576.0
+offset_top = 145.0
+offset_right = 1352.0
+offset_bottom = 197.0
+mouse_filter = 2
+
+[node name="HintArea" type="Control" parent="."]
+offset_left = 592.0
+offset_top = 838.0
+offset_right = 1336.0
+offset_bottom = 876.0
+mouse_filter = 2

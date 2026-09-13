@@ -1,542 +1,413 @@
-[gd_scene load_steps=2 format=3 uid="uid://b2lhdy7vpuc3r"]
+[gd_scene load_steps=5 format=3 uid="uid://b2lhdy7vpuc3r"]
 
-[ext_resource type="Script" uid="uid://ryr65upawi1r" path="res://scripts/ui/level_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/level_hud.gd" id="1_hud"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/DSEG7Classic-Bold.ttf" id="2_digits"]
+[ext_resource type="Shader" path="res://Shaders/digital_readout.gdshader" id="3_display"]
+
+[sub_resource type="ShaderMaterial" id="ReadoutSurface"]
+shader = ExtResource("3_display")
 
 [node name="LevelHUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
-[node name="TimeTitle" type="Label" parent="."]
-offset_left = 24.0
-offset_top = 18.0
-offset_right = 364.0
-offset_bottom = 58.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 25
-text = "TIME REMAINING"
-
-[node name="TimerBorder" type="ColorRect" parent="."]
-offset_left = 24.0
-offset_top = 55.0
-offset_right = 306.0
-offset_bottom = 145.0
+[node name="TimerReadout" type="Control" parent="."]
+offset_left = 315.0
+offset_top = 270.0
+offset_right = 458.0
+offset_bottom = 343.0
+clip_contents = true
 mouse_filter = 2
-color = Color(0.66, 0.72, 0.82, 0.5)
 
-[node name="TimerBox" type="ColorRect" parent="."]
-offset_left = 27.0
-offset_top = 58.0
-offset_right = 303.0
-offset_bottom = 142.0
+
+[node name="DisplaySurface" type="ColorRect" parent="TimerReadout"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+material = SubResource("ReadoutSurface")
 mouse_filter = 2
-color = Color(0.025, 0.03, 0.045, 0.94)
 
-[node name="TimerLabel" type="Label" parent="."]
+
+[node name="TimerLabel" type="Label" parent="TimerReadout"]
 unique_name_in_owner = true
-offset_left = 27.0
-offset_top = 61.0
-offset_right = 303.0
-offset_bottom = 138.0
-theme_override_colors/font_color = Color(0.97, 0.97, 0.95, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.65)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 6.0
+offset_right = -6.0
+offset_top = 4.0
+offset_bottom = -4.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.61, 0.16, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 46
 text = "0:45"
 horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_fonts/font = ExtResource("2_digits")
+clip_text = true
 
-[node name="ScoreTitle" type="Label" parent="."]
-offset_left = 1260.0
-offset_top = 18.0
-offset_right = 1570.0
-offset_bottom = 58.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 25
-text = "SCORE"
-horizontal_alignment = 1
 
-[node name="TimerAccents" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 27.0
-offset_top = 64.0
-offset_right = 67.0
-offset_bottom = 104.0
-
-[node name="TimerAccent" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 1.0
-offset_top = -5.0
-offset_right = 13.0
-offset_bottom = -4.0
+[node name="ScoreReadout" type="Control" parent="."]
+offset_left = 1478.0
+offset_top = 273.0
+offset_right = 1621.0
+offset_bottom = 344.0
+clip_contents = true
 mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
 
-[node name="TimerAccent2" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = -5.0
-offset_right = 14.0
-offset_bottom = -4.0
-rotation = 1.5707964
+
+[node name="DisplaySurface" type="ColorRect" parent="ScoreReadout"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+material = SubResource("ReadoutSurface")
 mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
 
-[node name="TimerAccent3" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 0.99997556
-offset_top = 75.99999
-offset_right = 12.999979
-offset_bottom = 77.00003
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
 
-[node name="TimerAccent4" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 1.9999756
-offset_top = 64.99999
-offset_right = 13.999979
-offset_bottom = 66.00003
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="TimerAccent5" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 263.0
-offset_top = 76.0
-offset_right = 275.0
-offset_bottom = 77.00004
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="TimerAccent6" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 275.0
-offset_top = 65.0
-offset_right = 287.0
-offset_bottom = 66.00004
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="TimerAccent7" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 263.0
-offset_top = -5.0
-offset_right = 275.0
-offset_bottom = -3.9999619
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="TimerAccent8" type="ColorRect" parent="TimerAccents"]
-layout_mode = 0
-offset_left = 275.0
-offset_top = -5.0
-offset_right = 287.0
-offset_bottom = -3.9999619
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="ScoreBorder" type="ColorRect" parent="."]
-offset_left = 1308.0
-offset_top = 55.0
-offset_right = 1576.0
-offset_bottom = 145.0
-mouse_filter = 2
-color = Color(0.66, 0.72, 0.82, 0.5)
-
-[node name="ScoreBox" type="ColorRect" parent="."]
-offset_left = 1311.0
-offset_top = 58.0
-offset_right = 1573.0
-offset_bottom = 142.0
-mouse_filter = 2
-color = Color(0.025, 0.03, 0.045, 0.94)
-
-[node name="ScoreLabel" type="Label" parent="."]
+[node name="ScoreLabel" type="Label" parent="ScoreReadout"]
 unique_name_in_owner = true
-offset_left = 1311.0
-offset_top = 64.0
-offset_right = 1573.0
-offset_bottom = 134.0
-pivot_offset = Vector2(131, 35)
-theme_override_colors/font_color = Color(0.97, 0.97, 0.95, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.65)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 6.0
+offset_right = -6.0
+offset_top = 4.0
+offset_bottom = -4.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.61, 0.16, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 46
 text = "0"
 horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_fonts/font = ExtResource("2_digits")
+clip_text = true
 
-[node name="ScoreAccents" type="Control" parent="ScoreLabel"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
 
-[node name="ScoreAccent" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 1.0
-offset_top = -5.0
-offset_right = 13.0
-offset_bottom = -4.0
+[node name="LevelIdentity" type="HBoxContainer" parent="."]
+offset_left = 680.0
+offset_top = 922.0
+offset_right = 1240.0
+offset_bottom = 971.0
 mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
+theme_override_constants/separation = 18
+alignment = 1
 
-[node name="ScoreAccent2" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = -5.0
-offset_right = 14.0
-offset_bottom = -4.0
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
 
-[node name="ScoreAccent3" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 0.99997556
-offset_top = 75.99999
-offset_right = 12.999979
-offset_bottom = 77.00003
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="ScoreAccent4" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 1.9999756
-offset_top = 64.99999
-offset_right = 13.999979
-offset_bottom = 66.00003
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="ScoreAccent5" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 248.99997
-offset_top = 76.0
-offset_right = 260.99997
-offset_bottom = 77.00004
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="ScoreAccent6" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 260.99997
-offset_top = 65.0
-offset_right = 272.99997
-offset_bottom = 66.00004
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="ScoreAccent7" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 248.99997
-offset_top = -5.0
-offset_right = 260.99997
-offset_bottom = -3.9999619
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="ScoreAccent8" type="ColorRect" parent="ScoreLabel/ScoreAccents"]
-layout_mode = 0
-offset_left = 260.99997
-offset_top = -5.0
-offset_right = 272.99997
-offset_bottom = -3.9999619
-rotation = 1.5707964
-mouse_filter = 2
-color = Color(1, 1, 1, 0.8)
-
-[node name="LevelCard" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 13.0
-offset_top = 365.0
-offset_right = 343.0
-offset_bottom = 575.0
-rotation = -0.22
-mouse_filter = 2
-
-[node name="LevelBacking" type="ColorRect" parent="LevelCard"]
-layout_mode = 0
-offset_right = 330.0
-offset_bottom = 210.0
-mouse_filter = 2
-color = Color(0.02, 0.025, 0.04, 0.55)
-
-[node name="LevelNumberLabel" type="Label" parent="LevelCard"]
+[node name="LevelNumberLabel" type="Label" parent="LevelIdentity"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 18.0
-offset_top = 18.0
-offset_right = 312.0
-offset_bottom = 60.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.72, 0.67, 0.56, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 29
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
 text = "LEVEL 1"
 horizontal_alignment = 1
 vertical_alignment = 1
-clip_text = true
 
-[node name="LevelNameLabel" type="Label" parent="LevelCard"]
+
+[node name="LevelNameLabel" type="Label" parent="LevelIdentity"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 18.0
-offset_top = 58.0
-offset_right = 312.0
-offset_bottom = 154.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 34
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
 text = "FIRST CONTACT"
 horizontal_alignment = 1
 vertical_alignment = 1
-autowrap_mode = 3
-clip_text = true
 
-[node name="BossTagLabel" type="Label" parent="LevelCard"]
+
+[node name="BossTagLabel" type="Label" parent="LevelIdentity"]
 unique_name_in_owner = true
+layout_mode = 2
 visible = false
-layout_mode = 0
-offset_left = 18.0
-offset_top = 154.0
-offset_right = 312.0
-offset_bottom = 194.0
-theme_override_colors/font_color = Color(1, 0.7, 0.25, 1)
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.25, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 20
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
-clip_text = true
 
-[node name="TutorialBacking" type="ColorRect" parent="."]
-offset_left = 522.0
-offset_top = 92.0
-offset_right = 1078.0
-offset_bottom = 164.0
-mouse_filter = 2
-color = Color(0.015, 0.02, 0.03, 0.42)
 
-[node name="TutorialTopRail" type="ColorRect" parent="."]
-offset_left = 688.0
-offset_top = 92.0
-offset_right = 912.0
-offset_bottom = 94.0
+[node name="ScreenUI" type="Control" parent="."]
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
+clip_contents = true
 mouse_filter = 2
-color = Color(0.72, 0.78, 0.9, 0.22)
+
 
 [node name="TutorialLabel" type="Label" parent="."]
 unique_name_in_owner = true
-offset_left = 440.0
-offset_top = 88.0
-offset_right = 1160.0
-offset_bottom = 170.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
+offset_left = 576.0
+offset_top = 145.0
+offset_right = 1352.0
+offset_bottom = 197.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 22
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="ComboLabel" type="Label" parent="."]
+
+[node name="ComboLabel" type="Label" parent="ScreenUI"]
 unique_name_in_owner = true
-offset_left = 1180.0
-offset_top = 700.0
-offset_right = 1560.0
-offset_bottom = 780.0
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -310.0
+offset_right = -20.0
+offset_top = -79.0
+offset_bottom = -41.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.67, 0.18, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 27
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 21
+text = ""
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="HitFlash" type="ColorRect" parent="."]
+
+[node name="HitFlash" type="ColorRect" parent="ScreenUI"]
 unique_name_in_owner = true
-offset_left = 390.0
-offset_top = 72.0
-offset_right = 1210.0
-offset_bottom = 828.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.12, 0.06, 0)
 
-[node name="HitLabel" type="Label" parent="."]
+
+[node name="HitLabel" type="Label" parent="ScreenUI"]
 unique_name_in_owner = true
 visible = false
+offset_left = 0.0
+offset_top = 0.0
 offset_right = 160.0
 offset_bottom = 44.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.34, 0.18, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 30
 text = "IMPACT"
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="GrazePopupLabel" type="Label" parent="."]
+
+[node name="GrazePopupLabel" type="Label" parent="ScreenUI"]
 unique_name_in_owner = true
 visible = false
+offset_left = 0.0
+offset_top = 0.0
 offset_right = 220.0
 offset_bottom = 40.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.28, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 20
-horizontal_alignment = 1
-
-[node name="CountdownLabel" type="Label" parent="."]
-unique_name_in_owner = true
-visible = false
-offset_left = 590.0
-offset_top = 342.0
-offset_right = 1010.0
-offset_bottom = 446.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 72
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CountdownSubtitle" type="Label" parent="."]
+
+[node name="CountdownLabel" type="Label" parent="ScreenUI"]
 unique_name_in_owner = true
 visible = false
-offset_left = 590.0
-offset_top = 438.0
-offset_right = 1010.0
-offset_bottom = 480.0
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -80.0
+offset_right = 210.0
+offset_bottom = 24.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 72
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+
+
+[node name="CountdownSubtitle" type="Label" parent="ScreenUI"]
+unique_name_in_owner = true
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = 24.0
+offset_right = 350.0
+offset_bottom = 88.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.73, 0.3, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 20
-horizontal_alignment = 1
-
-[node name="FooterStrip" type="ColorRect" parent="."]
-offset_left = 520.0
-offset_top = 842.0
-offset_right = 1080.0
-offset_bottom = 876.0
-mouse_filter = 2
-color = Color(0.015, 0.02, 0.03, 0.5)
-
-[node name="HintLabel" type="Label" parent="."]
-offset_left = 390.0
-offset_top = 842.0
-offset_right = 1210.0
-offset_bottom = 874.0
-theme_override_colors/font_color = Color(0.8, 0.78, 0.75, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 17
-text = "MOUSE = MOVE    •    ESC = RELEASE MOUSE    •    R = RESTART"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MessageScrim" type="ColorRect" parent="."]
-unique_name_in_owner = true
-offset_left = 390.0
-offset_top = 72.0
-offset_right = 1210.0
-offset_bottom = 828.0
-mouse_filter = 2
-color = Color(0, 0, 0, 0.36)
-
-[node name="MessageBorder" type="ColorRect" parent="."]
-unique_name_in_owner = true
-offset_left = 501.0
-offset_top = 256.0
-offset_right = 1099.0
-offset_bottom = 614.0
-mouse_filter = 2
-color = Color(1, 0.57, 0.13, 0.58)
-
-[node name="MessagePanel" type="ColorRect" parent="."]
-unique_name_in_owner = true
-offset_left = 505.0
-offset_top = 260.0
-offset_right = 1095.0
-offset_bottom = 610.0
-color = Color(0.025, 0.02, 0.025, 0.975)
-
-[node name="MessageTitle" type="Label" parent="MessagePanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 20.0
-offset_top = 24.0
-offset_right = 570.0
-offset_bottom = 84.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 42
-text = "FIRST CONTACT"
-horizontal_alignment = 1
-
-[node name="MessageSubtitle" type="Label" parent="MessagePanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_top = 84.0
-offset_right = 590.0
-offset_bottom = 114.0
-theme_override_colors/font_color = Color(1, 0.7, 0.25, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 18
-text = "LEVEL 1"
-horizontal_alignment = 1
-
-[node name="MessageBody" type="Label" parent="MessagePanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 42.0
-offset_top = 112.0
-offset_right = 548.0
-offset_bottom = 274.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 18
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="MessagePrompt" type="Label" parent="MessagePanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 42.0
-offset_top = 353.0
-offset_right = 548.0
-offset_bottom = 407.0
-theme_override_colors/font_color = Color(0.98, 0.97, 0.93, 1)
+
+[node name="HintLabel" type="Label" parent="."]
+offset_left = 592.0
+offset_top = 838.0
+offset_right = 1336.0
+offset_bottom = 876.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.68, 0.66, 0.61, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+text = "MOUSE = MOVE    •    ESC = PAUSE    •    R = RESTART"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+
+[node name="MessageScrim" type="ColorRect" parent="ScreenUI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.5)
+
+
+[node name="MessageBorder" type="ColorRect" parent="ScreenUI"]
+unique_name_in_owner = true
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -332.0
+offset_top = -252.0
+offset_right = 332.0
+offset_bottom = 252.0
+mouse_filter = 2
+color = Color(0.57, 0.37, 0.17, 0.75)
+
+
+[node name="MessagePanel" type="ColorRect" parent="ScreenUI"]
+unique_name_in_owner = true
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -250.0
+offset_right = 330.0
+offset_bottom = 250.0
+mouse_filter = 2
+color = Color(0.025, 0.023, 0.02, 0.96)
+
+
+[node name="MessageTitle" type="Label" parent="ScreenUI/MessagePanel"]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 18.0
+offset_right = 640.0
+offset_bottom = 80.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 36
+text = "FIRST CONTACT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+
+[node name="MessageSubtitle" type="Label" parent="ScreenUI/MessagePanel"]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 78.0
+offset_right = 640.0
+offset_bottom = 108.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.25, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 18
+text = "LEVEL 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+
+[node name="MessageBody" type="Label" parent="ScreenUI/MessagePanel"]
+unique_name_in_owner = true
+offset_left = 28.0
+offset_top = 112.0
+offset_right = 632.0
+offset_bottom = 418.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 19
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+
+[node name="MessagePrompt" type="Label" parent="ScreenUI/MessagePanel"]
+unique_name_in_owner = true
+offset_left = 28.0
+offset_top = 438.0
+offset_right = 632.0
+offset_bottom = 482.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.25, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
 text = "CLICK TO BEGIN"
 horizontal_alignment = 1
 vertical_alignment = 1

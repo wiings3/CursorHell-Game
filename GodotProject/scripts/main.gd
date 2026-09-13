@@ -121,6 +121,8 @@ func load_level(index: int, record_progress: bool = true) -> void:
 	current_level.level_failed.connect(_on_level_failed)
 	current_level.continue_requested.connect(_on_continue_requested)
 	level_container.add_child(level_instance)
+	transition_overlay.bind_machine_shell(current_level.machine_shell)
+	pause_menu.bind_machine_shell(current_level.machine_shell)
 
 	# BaseLevel still owns the trusted gameplay/countdown runtime. While a shared
 	# transition card is visible, temporarily disable the level's own input and
