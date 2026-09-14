@@ -1,17 +1,31 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/level_select_menu.gd" id="1_select"]
 [ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="2_shell"]
-[ext_resource type="Theme" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
-[ext_resource type="Script" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
+[ext_resource type="Theme" uid="uid://dqmmg88ocwudh" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
+[ext_resource type="Script" uid="uid://bffjdpwx3oi82" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
 
 [sub_resource type="StyleBoxFlat" id="ProgressTrackStyle"]
-bg_color = Color(0.04, 0.055, 0.035, 0.9)
+bg_color = Color(0.02, 0.045, 0.026, 0.48)
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.28, 0.11, 0.32)
+
+[sub_resource type="StyleBoxFlat" id="DetailStyle"]
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.004, 0.016, 0.008, 0.34)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.34, 0.27, 0.13, 0.7)
+border_color = Color(0.52, 0.31, 0.10, 0.28)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="LevelSelectMenu" type="CanvasLayer"]
 visible = false
@@ -55,21 +69,21 @@ theme_override_constants/separation = 5
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.70, 0.72, 0.57, 1)
-theme_override_font_sizes/font_size = 11
-text = "A.R.C. PERFORMANCE ARCHIVE  //  AUTHORIZED TEST RECORDS"
+theme_override_font_sizes/font_size = 10
+text = "A.R.C. PERFORMANCE ARCHIVE  //  CAMPAIGN RECORDS"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.70, 0.26, 1)
-theme_override_font_sizes/font_size = 31
-text = "TEST ARCHIVE"
+theme_override_font_sizes/font_size = 30
+text = "LEVEL SELECT"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ProgressRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
 [node name="ProgressLabel" type="Label" parent="Root/PanelGroup/Panel/VBox/ProgressRow"]
@@ -77,7 +91,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.73, 0.75, 0.65, 1)
 theme_override_font_sizes/font_size = 11
-text = "01 / 10 TESTS UNLOCKED"
+text = "01 / 10 LEVELS UNLOCKED"
 
 [node name="Spacer" type="Control" parent="Root/PanelGroup/Panel/VBox/ProgressRow"]
 layout_mode = 2
@@ -88,10 +102,10 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.62, 0.20, 0.95)
 theme_override_font_sizes/font_size = 11
-text = "CONTINUE  //  LEVEL 01"
+text = "CONTINUE  //  01 FIRST CONTACT"
 
 [node name="ProgressTrack" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 10)
+custom_minimum_size = Vector2(0, 7)
 layout_mode = 2
 theme_override_styles/panel = SubResource("ProgressTrackStyle")
 
@@ -102,93 +116,173 @@ anchor_bottom = 1.0
 offset_right = 70.0
 grow_vertical = 2
 mouse_filter = 2
-color = Color(1, 0.54, 0.14, 0.88)
+color = Color(1, 0.54, 0.14, 0.9)
 
-[node name="LevelGrid" type="GridContainer" parent="Root/PanelGroup/Panel/VBox"]
+[node name="Content" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 402)
 layout_mode = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 6
-columns = 2
+theme_override_constants/separation = 12
 
-[node name="Level1Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="LevelList" type="VBoxContainer" parent="Root/PanelGroup/Panel/VBox/Content"]
+custom_minimum_size = Vector2(326, 0)
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Level1Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 01  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "01  FIRST CONTACT"
 
-[node name="Level2Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level2Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 02  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "02  CROSSFIRE"
 
-[node name="Level3Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level3Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 03  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "03  THE SWEEP"
 
-[node name="Level4Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level4Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 04  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "04  THE GAP"
 
-[node name="Level5Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level5Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 05  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "05  SYNTHESIS"
 
-[node name="Level6Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level6Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 06  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "06  THE PULSE"
 
-[node name="Level7Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level7Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 07  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "07  THE FLOOD"
 
-[node name="Level8Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level8Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 08  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "08  AFTERSHOCK"
 
-[node name="Level9Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level9Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 09  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "09  DEAD ZONES"
 
-[node name="Level10Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
+[node name="Level10Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Content/LevelList"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(352, 68)
+custom_minimum_size = Vector2(326, 35)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 alignment = 0
-text = "TEST 10  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
+text = "10  CONVERGENCE"
+
+[node name="DetailPanel" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("DetailStyle")
+
+[node name="DetailVBox" type="VBoxContainer" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="DetailStatus" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.62, 0.20, 1)
+theme_override_font_sizes/font_size = 11
+text = "AVAILABLE"
+
+[node name="DetailLevel" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.68, 0.58, 1)
+theme_override_font_sizes/font_size = 12
+text = "LEVEL 01"
+
+[node name="DetailName" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.97, 0.94, 0.84, 1)
+theme_override_font_sizes/font_size = 27
+text = "FIRST CONTACT"
+autowrap_mode = 3
+
+[node name="DetailBossTag" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.46, 0.16, 1)
+theme_override_font_sizes/font_size = 12
+text = "BOSS I"
+
+[node name="DetailDivider" type="ColorRect" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.77, 0.59, 0.25, 0.25)
+
+[node name="DetailScore" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "BEST SCORE    0"
+
+[node name="DetailTime" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "LONGEST       --:--.-"
+
+[node name="DetailRank" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.68, 0.28, 1)
+theme_override_font_sizes/font_size = 21
+text = "BEST RANK     --"
+
+[node name="DetailSpacer" type="Control" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DetailHint" type="Label" parent="Root/PanelGroup/Panel/VBox/Content/DetailPanel/DetailVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.65, 0.54, 1)
+theme_override_font_sizes/font_size = 11
+text = "ENTER / CLICK TO BEGIN"
+autowrap_mode = 3
 
 [node name="FooterRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
@@ -196,15 +290,15 @@ theme_override_constants/separation = 10
 
 [node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox/FooterRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(170, 40)
+custom_minimum_size = Vector2(150, 38)
 layout_mode = 2
-text = "< RETURN TO TERMINAL"
+text = "< BACK"
 
 [node name="FooterHint" type="Label" parent="Root/PanelGroup/Panel/VBox/FooterRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.49, 0.52, 0.44, 1)
+theme_override_colors/font_color = Color(0.52, 0.55, 0.46, 1)
 theme_override_font_sizes/font_size = 10
-text = "SELECT A TEST RECORD TO BEGIN"
+text = "SELECT A LEVEL TO VIEW ITS RECORD"
 horizontal_alignment = 2
 vertical_alignment = 1

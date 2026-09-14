@@ -73,14 +73,14 @@ func _input(event: InputEvent) -> void:
 
 func show_intro(level_number: int, title: String, subtitle: String, body: String) -> void:
 	mode = "intro"
-	_set_mode_style(Color(1.0, 0.58, 0.16, 1.0), Color(0.025, 0.09, 0.04, 0.12))
+	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.03, 0.08, 0.035, 0.08))
 	state_label.text = "LEVEL %d" % level_number
 	title_label.text = title
 	subtitle_label.text = subtitle
-	body_label.offset_bottom = 454.0
+	body_label.offset_bottom = 430.0
 	body_label.text = _clean_intro_body(body)
 	_set_result_nodes_visible(false)
-	prompt_label.text = "CLICK OR R TO BEGIN    •    ESC = MENU"
+	prompt_label.text = "CLICK OR R TO BEGIN    //    ESC = MENU"
 	_show_animated()
 
 func show_failure(
@@ -94,12 +94,12 @@ func show_failure(
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 	var survival_percent := int(performance["survival_percent"])
 
-	_set_mode_style(Color(1.0, 0.24, 0.12, 1.0), Color(0.28, 0.025, 0.018, 0.13))
+	_set_mode_style(Color(1.0, 0.24, 0.12, 1.0), Color(0.28, 0.025, 0.018, 0.10))
 	state_label.text = "LEVEL FAILED"
 	title_label.text = title
-	subtitle_label.text = "LEVEL %d  •  IMPACT" % level_number
-	body_label.offset_bottom = 300.0
-	body_label.text = "%s\nSURVIVED  %s / %s  •  %d%%\nGRAZE BONUS  +%s" % [
+	subtitle_label.text = "LEVEL %d  //  IMPACT" % level_number
+	body_label.offset_bottom = 270.0
+	body_label.text = "%s\nSURVIVED  %s / %s  //  %d%%\nGRAZE BONUS  +%s" % [
 		stats.death_reason.to_upper(),
 		_format_time(stats.time_survived),
 		_format_time(stats.round_time),
@@ -114,7 +114,7 @@ func show_failure(
 	best_label.text = "BEST     %s" % _format_score(best_score)
 	record_label.visible = is_new_best
 	record_label.text = "NEW BEST SCORE"
-	prompt_label.text = "CLICK OR R TO RETRY    •    ESC = MENU"
+	prompt_label.text = "CLICK OR R TO RETRY    //    ESC = MENU"
 	_show_animated()
 
 func show_clear(
@@ -128,12 +128,12 @@ func show_clear(
 	mode = "clear"
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 
-	_set_mode_style(Color(1.0, 0.68, 0.22, 1.0), Color(0.20, 0.11, 0.025, 0.10))
-	state_label.text = "TEST COMPLETE"
+	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.20, 0.11, 0.025, 0.08))
+	state_label.text = "LEVEL CLEAR"
 	title_label.text = title
-	subtitle_label.text = "LEVEL %d  •  SURVIVED" % level_number
-	body_label.offset_bottom = 300.0
-	body_label.text = "SURVIVED  %s / %s  •  100%%\nGRAZE BONUS  +%s\nCOMPLETION BONUS  +%s" % [
+	subtitle_label.text = "LEVEL %d  //  SURVIVED" % level_number
+	body_label.offset_bottom = 270.0
+	body_label.text = "SURVIVED  %s / %s  //  100%%\nGRAZE BONUS  +%s\nCOMPLETION BONUS  +%s" % [
 		_format_time(stats.time_survived),
 		_format_time(stats.round_time),
 		_format_score(stats.graze_score),
@@ -148,9 +148,9 @@ func show_clear(
 	record_label.visible = is_new_best
 	record_label.text = "NEW BEST SCORE"
 	if has_next_level:
-		prompt_label.text = "CLICK = CONTINUE    •    R = REPLAY    •    ESC = MENU"
+		prompt_label.text = "CLICK = CONTINUE    //    R = REPLAY    //    ESC = MENU"
 	else:
-		prompt_label.text = "CLICK OR R = PLAY AGAIN    •    ESC = MENU"
+		prompt_label.text = "CLICK OR R = PLAY AGAIN    //    ESC = MENU"
 	_show_animated()
 
 func hide_immediate() -> void:
@@ -193,15 +193,15 @@ func _show_animated() -> void:
 	locked = true
 	root.modulate.a = 0.0
 	panel_root.modulate.a = 0.0
-	panel_root.position = panel_home + Vector2(0.0, 18.0)
-	panel_root.scale = Vector2(0.97, 0.97)
+	panel_root.position = panel_home + Vector2(0.0, 14.0)
+	panel_root.scale = Vector2(0.98, 0.98)
 
 	var tween := create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(root, "modulate:a", 1.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel_root, "modulate:a", 1.0, 0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel_root, "position", panel_home, 0.24).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel_root, "scale", Vector2.ONE, 0.24).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(root, "modulate:a", 1.0, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel_root, "modulate:a", 1.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel_root, "position", panel_home, 0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel_root, "scale", Vector2.ONE, 0.20).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.finished.connect(_unlock)
 
 func _unlock() -> void:
@@ -218,7 +218,7 @@ func _set_result_nodes_visible(result_visible: bool) -> void:
 		record_label.visible = false
 
 func _set_mode_style(accent: Color, tint: Color) -> void:
-	panel_border.color = Color(accent.r, accent.g, accent.b, 0.72)
+	panel_border.color = Color(accent.r, accent.g, accent.b, 0.0)
 	accent_bar.color = accent
 	state_label.add_theme_color_override("font_color", accent)
 	rank_label.add_theme_color_override("font_color", accent)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
-[ext_resource type="Theme" path="res://Assets/UI/CabinetUITheme.tres" id="2_theme"]
+[ext_resource type="Theme" uid="uid://dqmmg88ocwudh" path="res://Assets/UI/CabinetUITheme.tres" id="2_theme"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 visible = false
@@ -25,15 +25,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.002, 0.012, 0.006, 0.80)
+color = Color(0.002, 0.012, 0.006, 0.58)
 
 [node name="StatusRail" type="ColorRect" parent="Root"]
-offset_left = 52.0
-offset_top = 45.0
-offset_right = 764.0
-offset_bottom = 47.0
+offset_left = 82.0
+offset_top = 64.0
+offset_right = 734.0
+offset_bottom = 66.0
 mouse_filter = 2
-color = Color(1, 0.54, 0.14, 0.75)
+color = Color(1, 0.54, 0.14, 0.68)
 
 [node name="PanelGroup" type="Control" parent="Root"]
 anchors_preset = 8
@@ -41,17 +41,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -270.0
-offset_top = -260.0
-offset_right = 270.0
-offset_bottom = 260.0
+offset_left = -250.0
+offset_top = -240.0
+offset_right = 250.0
+offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
-offset_right = 540.0
-offset_bottom = 520.0
+offset_right = 500.0
+offset_bottom = 480.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
@@ -69,7 +69,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.69, 0.25, 1)
 theme_override_font_sizes/font_size = 38
-text = "SYSTEM PAUSED"
+text = "PAUSED"
 horizontal_alignment = 1
 
 [node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
@@ -93,50 +93,50 @@ mouse_filter = 2
 
 [node name="ResumeButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../RestartButton")
 alignment = 0
-text = "RESUME RUN"
+text = "RESUME"
 
 [node name="RestartButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ResumeButton")
 focus_neighbor_bottom = NodePath("../SettingsButton")
 alignment = 0
-text = "RESTART TEST"
+text = "RESTART LEVEL"
 
 [node name="SettingsButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../RestartButton")
 focus_neighbor_bottom = NodePath("../MainMenuButton")
 alignment = 0
-text = "SYSTEM CONFIGURATION"
+text = "SETTINGS"
 
 [node name="MainMenuButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../SettingsButton")
 focus_neighbor_bottom = NodePath("../QuitButton")
 alignment = 0
-text = "RETURN TO TERMINAL"
+text = "MAIN MENU"
 
 [node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../MainMenuButton")
 alignment = 0
-text = "POWER DOWN"
+text = "QUIT"
 
 [node name="Hint" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.51, 0.43, 1)
+theme_override_colors/font_color = Color(0.52, 0.55, 0.46, 1)
 theme_override_font_sizes/font_size = 10
-text = "ESC = RESUME  //  RUN STATE HELD IN MEMORY"
+text = "ESC = RESUME"
 horizontal_alignment = 1

@@ -2,25 +2,25 @@
 
 [ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="1_settings"]
 [ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="2_shell"]
-[ext_resource type="Theme" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
-[ext_resource type="Script" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
+[ext_resource type="Theme" uid="uid://dqmmg88ocwudh" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
+[ext_resource type="Script" uid="uid://bffjdpwx3oi82" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
 
 [sub_resource type="StyleBoxFlat" id="RowStyle"]
 content_margin_left = 18.0
 content_margin_top = 12.0
 content_margin_right = 18.0
 content_margin_bottom = 12.0
-bg_color = Color(0.016, 0.031, 0.020, 0.78)
-border_width_left = 2
+bg_color = Color(0.016, 0.031, 0.020, 0.42)
+border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.37, 0.27, 0.12, 0.5)
+border_color = Color(0.37, 0.27, 0.12, 0.28)
 
 [sub_resource type="StyleBoxFlat" id="SliderStyle"]
 content_margin_top = 3.0
 content_margin_bottom = 3.0
-bg_color = Color(0.08, 0.075, 0.045, 1)
+bg_color = Color(0.08, 0.075, 0.045, 0.72)
 corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
@@ -58,21 +58,21 @@ color = Color(0.004, 0.014, 0.008, 0.62)
 [node name="PanelGroup" type="Control" parent="Root"]
 z_index = 2
 layout_mode = 0
-offset_left = 622.0
-offset_top = 257.0
-offset_right = 1306.0
-offset_bottom = 777.0
+offset_left = 640.0
+offset_top = 274.0
+offset_right = 1288.0
+offset_bottom = 760.0
 mouse_filter = 1
 theme = ExtResource("3_theme")
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
 layout_mode = 0
-offset_right = 684.0
-offset_bottom = 520.0
+offset_right = 648.0
+offset_bottom = 486.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 11
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
@@ -86,7 +86,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.70, 0.26, 1)
 theme_override_font_sizes/font_size = 34
-text = "SYSTEM CONFIGURATION"
+text = "SETTINGS"
 horizontal_alignment = 1
 
 [node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
@@ -96,7 +96,7 @@ mouse_filter = 2
 color = Color(1, 0.54, 0.14, 0.9)
 
 [node name="VolumeRow" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 82)
+custom_minimum_size = Vector2(0, 78)
 layout_mode = 2
 theme_override_styles/panel = SubResource("RowStyle")
 
@@ -105,15 +105,15 @@ layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="Label" type="Label" parent="Root/PanelGroup/Panel/VBox/VolumeRow/Row"]
-custom_minimum_size = Vector2(170, 0)
+custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "MASTER OUTPUT"
+text = "MASTER VOLUME"
 vertical_alignment = 1
 
 [node name="VolumeSlider" type="HSlider" parent="Root/PanelGroup/Panel/VBox/VolumeRow/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(330, 0)
+custom_minimum_size = Vector2(310, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/slider = SubResource("SliderStyle")
@@ -135,31 +135,31 @@ horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="FullscreenRow" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 66)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_styles/panel = SubResource("RowStyle")
 
 [node name="FullscreenToggle" type="CheckButton" parent="Root/PanelGroup/Panel/VBox/FullscreenRow"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "FULLSCREEN DISPLAY"
+text = "FULLSCREEN"
 
 [node name="VSyncRow" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 66)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_styles/panel = SubResource("RowStyle")
 
 [node name="VSyncToggle" type="CheckButton" parent="Root/PanelGroup/Panel/VBox/VSyncRow"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "VERTICAL SYNC"
+text = "V-SYNC"
 button_pressed = true
 
 [node name="Hint" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.50, 0.53, 0.45, 1)
+theme_override_colors/font_color = Color(0.52, 0.55, 0.46, 1)
 theme_override_font_sizes/font_size = 11
-text = "CHANGES ARE WRITTEN TO LOCAL SYSTEM MEMORY AUTOMATICALLY"
+text = "SETTINGS SAVE AUTOMATICALLY"
 horizontal_alignment = 1
 
 [node name="ButtonRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
@@ -171,11 +171,11 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "RESTORE DEFAULTS"
+text = "RESET DEFAULTS"
 
 [node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox/ButtonRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "< RETURN"
+text = "< BACK"

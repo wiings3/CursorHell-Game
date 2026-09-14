@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[node name="MenuSideReadouts" type="Node2D"]
+z_index = 4
+
+[node name="TimerIdle" type="ColorRect" parent="."]
+offset_left = 315.0
+offset_top = 270.0
+offset_right = 458.0
+offset_bottom = 343.0
+mouse_filter = 2
+color = Color(0.018, 0.006, 0.0015, 0.97)
+
+[node name="ScoreIdle" type="ColorRect" parent="."]
+offset_left = 1478.0
+offset_top = 273.0
+offset_right = 1621.0
+offset_bottom = 344.0
+mouse_filter = 2
+color = Color(0.018, 0.006, 0.0015, 0.97)

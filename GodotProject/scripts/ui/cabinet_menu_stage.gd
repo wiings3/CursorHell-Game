@@ -2,6 +2,7 @@ extends Node2D
 class_name CursorHellCabinetMenuStage
 
 const DESIGN_SIZE := CursorHellMachineShell.DESIGN_SIZE
+const MenuSideReadoutsScene := preload("res://Scenes/UI/MenuSideReadouts.tscn")
 
 @onready var machine_shell: CursorHellMachineShell = $GameplayMachineShell
 
@@ -17,6 +18,14 @@ func _ready() -> void:
 	# must not add another darkening pass on top of it.
 	if is_instance_valid(screen_wash):
 		screen_wash.visible = false
+
+	# The TIME/SCORE art contains gameplay-looking sample digits. Cover only the
+	# value windows while this shell is being used as a menu cabinet so the machine
+	# reads as idle. The reusable scene keeps this presentation authored, not drawn
+	# procedurally, and gameplay's cabinet/HUD remain untouched.
+	if get_node_or_null("MenuSideReadouts") == null:
+		var idle_readouts := MenuSideReadoutsScene.instantiate()
+		add_child(idle_readouts)
 
 	get_viewport().size_changed.connect(_apply_viewport_layout)
 	_apply_viewport_layout()
