@@ -2,6 +2,7 @@
 extends SceneTree
 
 const EndlessScene := preload("res://Scenes/Modes/EndlessMode.tscn")
+const ScoreTargetScene := preload("res://Scenes/Components/ScoreTarget.tscn")
 
 var failures: Array[String] = []
 
@@ -20,6 +21,7 @@ func _run() -> void:
 
 	check(endless is CursorHellBaseLevel, "Endless Mode must reuse CursorHellBaseLevel.")
 	check(endless.get_node("LevelHUD/ScreenUI/EndlessPhaseHUD") != null, "Endless phase HUD is missing.")
+	check(endless.get_node("TargetRuntime") is CursorHellEndlessTargetRuntime, "Endless score target runtime is missing.")
 	check(str(endless._timeline_at(0.0)["kind"]) == "prepare", "0:00 must begin in PREPARE.")
 	check(str(endless._timeline_at(4.99)["kind"]) == "prepare", "First five seconds must remain downtime.")
 	check(str(endless._timeline_at(5.0)["kind"]) == "normal" and int(endless._timeline_at(5.0)["phase"]) == 1, "Phase 1 must begin at 0:05.")
@@ -36,6 +38,16 @@ func _run() -> void:
 	endless.elapsed = 5.0
 	check(endless._get_spawn_interval(1) <= 1.40, "Opening Endless cadence must not use the old slow spawn rate.")
 	endless.elapsed = 0.0
+
+	var target := ScoreTargetScene.instantiate() as CursorHellScoreTarget
+	check(target != null, "ScoreTarget.tscn must use CursorHellScoreTarget.")
+	if target != null:
+		root.add_child(target)
+		await process_frame
+		check(target.score_bonus > 0, "Score targets must award a score bonus.")
+		check(target.purge_radius > target.hit_radius, "Score target purge radius must be larger than its click radius.")
+		root.remove_child(target)
+		target.queue_free()
 
 	endless._reset_round(true)
 	check(endless.state == "playing", "Endless must start its 0:00 prepare window without the campaign countdown.")
