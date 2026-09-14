@@ -33,7 +33,9 @@ func _run() -> void:
 	check(endless._pattern_pool_for_tier(2).size() >= 5, "Tier 2 must replace the opening pool with broader pressure patterns.")
 	check(endless._pattern_pool_for_tier(4).has("TIGHT WARNING"), "High tiers must retain advanced pressure patterns.")
 	check(endless._normal_speed(1, 1) >= 165.0, "Phase 1 must begin at meaningful Endless pressure.")
+	endless.elapsed = 5.0
 	check(endless._get_spawn_interval(1) <= 1.40, "Opening Endless cadence must not use the old slow spawn rate.")
+	endless.elapsed = 0.0
 
 	endless._reset_round(true)
 	check(endless.state == "playing", "Endless must start its 0:00 prepare window without the campaign countdown.")
