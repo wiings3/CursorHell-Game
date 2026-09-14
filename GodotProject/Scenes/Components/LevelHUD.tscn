@@ -149,6 +149,56 @@ offset_right = 1372.0
 offset_bottom = 832.0
 mouse_filter = 2
 
+[node name="EndlessPhaseHUD" type="Control" parent="ScreenUI"]
+visible = false
+layout_mode = 0
+offset_left = 28.0
+offset_top = 18.0
+offset_right = 788.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="PhaseLabel" type="Label" parent="ScreenUI/EndlessPhaseHUD"]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0.98, 0.93, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 16
+text = "PHASE 01"
+vertical_alignment = 1
+
+[node name="TierLabel" type="Label" parent="ScreenUI/EndlessPhaseHUD"]
+layout_mode = 0
+offset_left = 320.0
+offset_right = 760.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0.76, 0.72, 0.64, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 13
+text = "TIER 1"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ProgressTrack" type="ColorRect" parent="ScreenUI/EndlessPhaseHUD"]
+layout_mode = 0
+offset_top = 30.0
+offset_right = 760.0
+offset_bottom = 42.0
+mouse_filter = 2
+color = Color(0.03, 0.022, 0.015, 0.84)
+
+[node name="ProgressFill" type="ColorRect" parent="ScreenUI/EndlessPhaseHUD/ProgressTrack"]
+layout_mode = 0
+offset_right = 1.0
+offset_bottom = 12.0
+mouse_filter = 2
+color = Color(1, 0.61, 0.16, 0.92)
+
 [node name="ComboLabel" type="Label" parent="ScreenUI"]
 unique_name_in_owner = true
 layout_mode = 0

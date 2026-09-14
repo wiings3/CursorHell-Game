@@ -2,7 +2,7 @@ extends RefCounted
 class_name CursorHellSaveManager
 
 const SAVE_PATH := "user://cursor_hell_save.json"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 const BOSS_INSERT_LEVEL := 5
 
 const RANK_VALUES := {
@@ -49,6 +49,10 @@ func load_save(registered_level_count: int) -> void:
 		loaded = _migrate_v2_to_v3(loaded)
 		loaded_version = 3
 		migrated = true
+	if loaded_version < 4:
+		loaded = _migrate_v3_to_v4(loaded)
+		loaded_version = 4
+		migrated = true
 
 	data["version"] = SAVE_VERSION
 	data["highest_unlocked"] = clampi(int(loaded.get("highest_unlocked", 1)), 1, level_count)
@@ -56,6 +60,7 @@ func load_save(registered_level_count: int) -> void:
 	data["best_scores"] = _safe_dictionary_copy(loaded.get("best_scores", {}))
 	data["best_times"] = _safe_dictionary_copy(loaded.get("best_times", {}))
 	data["best_ranks"] = _safe_dictionary_copy(loaded.get("best_ranks", {}))
+	data["endless"] = _safe_endless_copy(loaded.get("endless", {}))
 
 	has_existing_save = true
 	if migrated:
@@ -90,6 +95,21 @@ func record_level_result(
 	has_existing_save = true
 	_write_save()
 
+func record_endless_result(summary: Dictionary) -> void:
+	var endless := _safe_endless_copy(data.get("endless", {}))
+	endless["best_score"] = maxi(int(endless.get("best_score", 0)), int(summary.get("score", 0)))
+	endless["best_time"] = maxf(float(endless.get("best_time", 0.0)), float(summary.get("time", 0.0)))
+	endless["best_phase"] = maxi(int(endless.get("best_phase", 0)), int(summary.get("phase", 0)))
+	endless["best_bosses"] = maxi(int(endless.get("best_bosses", 0)), int(summary.get("bosses", 0)))
+	endless["best_combo"] = maxi(int(endless.get("best_combo", 0)), int(summary.get("max_combo", 0)))
+	var rank := str(summary.get("rank", "")).strip_edges().to_upper()
+	var previous_rank := str(endless.get("best_rank", "")).strip_edges().to_upper()
+	if int(RANK_VALUES.get(rank, 0)) > int(RANK_VALUES.get(previous_rank, 0)):
+		endless["best_rank"] = rank
+	data["endless"] = endless
+	has_existing_save = true
+	_write_save()
+
 func get_continue_level() -> int:
 	var highest := clampi(int(data.get("highest_unlocked", 1)), 1, level_count)
 	return clampi(int(data.get("last_level", 1)), 1, highest)
@@ -116,6 +136,22 @@ func get_best_rank(level_number: int) -> String:
 	var rank := str(ranks.get(str(level_number), "")).to_upper()
 	return rank if RANK_VALUES.has(rank) else ""
 
+func get_endless_best_score() -> int:
+	return maxi(0, int(_safe_endless_copy(data.get("endless", {})).get("best_score", 0)))
+
+func get_endless_best_time() -> float:
+	return maxf(0.0, float(_safe_endless_copy(data.get("endless", {})).get("best_time", 0.0)))
+
+func get_endless_best_phase() -> int:
+	return maxi(0, int(_safe_endless_copy(data.get("endless", {})).get("best_phase", 0)))
+
+func get_endless_best_bosses() -> int:
+	return maxi(0, int(_safe_endless_copy(data.get("endless", {})).get("best_bosses", 0)))
+
+func get_endless_best_rank() -> String:
+	var rank := str(_safe_endless_copy(data.get("endless", {})).get("best_rank", "")).to_upper()
+	return rank if RANK_VALUES.has(rank) else ""
+
 func _record_best_score(level_number: int, final_score: int) -> void:
 	var scores: Dictionary = data.get("best_scores", {})
 	var key := str(level_number)
@@ -140,15 +176,11 @@ func _record_best_rank(level_number: int, rank: String) -> void:
 	data["best_ranks"] = ranks
 
 func _migrate_v1_to_v2(old_data: Dictionary) -> Dictionary:
-	# Save v2 inserts Boss I at campaign Level 5. Preserve every existing unlock,
-	# continuation point and score by shifting the old Levels 5+ forward one slot.
 	var migrated := old_data.duplicate(true)
 	var old_highest := int(old_data.get("highest_unlocked", 1))
 	var old_last := int(old_data.get("last_level", 1))
-
 	migrated["highest_unlocked"] = old_highest + 1 if old_highest >= BOSS_INSERT_LEVEL else old_highest
 	migrated["last_level"] = old_last + 1 if old_last >= BOSS_INSERT_LEVEL else old_last
-
 	var shifted_scores: Dictionary = {}
 	var old_scores = old_data.get("best_scores", {})
 	if typeof(old_scores) == TYPE_DICTIONARY:
@@ -159,25 +191,37 @@ func _migrate_v1_to_v2(old_data: Dictionary) -> Dictionary:
 			var old_level := int(key_text)
 			var new_level := old_level + 1 if old_level >= BOSS_INSERT_LEVEL else old_level
 			shifted_scores[str(new_level)] = old_scores[raw_key]
-
 	migrated["best_scores"] = shifted_scores
 	migrated["version"] = 2
 	return migrated
 
 func _migrate_v2_to_v3(old_data: Dictionary) -> Dictionary:
-	# v3 begins tracking survival time and performance rank. Older saves did not
-	# contain enough information to reconstruct those stats reliably, so existing
-	# scores/progression are preserved and the new records start empty.
 	var migrated := old_data.duplicate(true)
 	migrated["best_times"] = {}
 	migrated["best_ranks"] = {}
 	migrated["version"] = 3
 	return migrated
 
+func _migrate_v3_to_v4(old_data: Dictionary) -> Dictionary:
+	var migrated := old_data.duplicate(true)
+	migrated["endless"] = _default_endless_data()
+	migrated["version"] = 4
+	return migrated
+
 func _safe_dictionary_copy(value) -> Dictionary:
 	if typeof(value) == TYPE_DICTIONARY:
 		return value.duplicate(true)
 	return {}
+
+func _safe_endless_copy(value) -> Dictionary:
+	var result := _default_endless_data()
+	if typeof(value) != TYPE_DICTIONARY:
+		return result
+	var source: Dictionary = value
+	for key in result.keys():
+		if source.has(key):
+			result[key] = source[key]
+	return result
 
 func _write_save() -> void:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -186,6 +230,16 @@ func _write_save() -> void:
 		return
 	file.store_string(JSON.stringify(data, "\t"))
 
+func _default_endless_data() -> Dictionary:
+	return {
+		"best_score": 0,
+		"best_time": 0.0,
+		"best_phase": 0,
+		"best_bosses": 0,
+		"best_combo": 0,
+		"best_rank": ""
+	}
+
 func _default_data() -> Dictionary:
 	return {
 		"version": SAVE_VERSION,
@@ -193,5 +247,6 @@ func _default_data() -> Dictionary:
 		"last_level": 1,
 		"best_scores": {},
 		"best_times": {},
-		"best_ranks": {}
+		"best_ranks": {},
+		"endless": _default_endless_data()
 	}

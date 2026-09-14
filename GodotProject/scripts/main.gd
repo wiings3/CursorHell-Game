@@ -3,6 +3,7 @@ class_name CursorHellMain
 
 const LevelCatalog = preload("res://scripts/level_catalog.gd")
 const PerformanceRank = preload("res://scripts/performance_rank.gd")
+const EndlessScene := preload("res://Scenes/Modes/EndlessMode.tscn")
 
 const FACTORY_RESET_PATHS: Array[String] = [
 	"user://cursor_hell_save.json",
@@ -29,15 +30,13 @@ var save_manager := CursorHellSaveManager.new()
 var current_level_index: int = -1
 var current_level: CursorHellBaseLevel
 var current_level_records_progress := true
+var current_mode := "none"
 var last_completed_level: int = 0
 var last_completed_score: int = 0
 var settings_return_to_pause := false
 
 func _ready() -> void:
-	# Main must keep running while the SceneTree is paused so it can coordinate
-	# debug-console state and the dedicated pause/settings overlays.
 	process_mode = Node.PROCESS_MODE_ALWAYS
-
 	save_manager.load_save(LevelCatalog.count())
 
 	transition_overlay.primary_requested.connect(_on_transition_primary_requested)
@@ -47,6 +46,7 @@ func _ready() -> void:
 	main_menu.continue_requested.connect(_on_main_menu_continue_requested)
 	main_menu.start_level_one_requested.connect(_on_main_menu_start_requested)
 	main_menu.level_select_requested.connect(_on_main_menu_level_select_requested)
+	main_menu.endless_requested.connect(_on_main_menu_endless_requested)
 	main_menu.settings_requested.connect(_on_main_menu_settings_requested)
 	main_menu.quit_requested.connect(_quit_game)
 
@@ -71,8 +71,6 @@ func _ready() -> void:
 		load_level(starting_level_index, false)
 
 func _process(_delta: float) -> void:
-	# BaseLevel's existing Escape behavior changes its local state to "paused".
-	# Promote that lightweight state into a real SceneTree pause on the next frame.
 	if not is_instance_valid(current_level):
 		return
 	if main_menu.visible or level_select_menu.visible or pause_menu.visible or settings_menu.visible or anti_camp_tutorial.visible or debug_console.is_open:
@@ -80,11 +78,7 @@ func _process(_delta: float) -> void:
 	if current_level.state == "paused":
 		_open_pause_menu()
 
-func load_level(index: int, record_progress: bool = true) -> void:
-	if index < 0 or index >= LevelCatalog.count():
-		push_error("Cursor Hell: level index %d is not registered in LevelCatalog." % index)
-		return
-
+func _prepare_level_change() -> void:
 	get_tree().paused = false
 	settings_return_to_pause = false
 	transition_overlay.hide_immediate()
@@ -92,11 +86,17 @@ func load_level(index: int, record_progress: bool = true) -> void:
 	level_select_menu.hide_menu()
 	pause_menu.hide_menu()
 	settings_menu.hide_menu()
-
 	if is_instance_valid(current_level):
 		current_level.queue_free()
 		current_level = null
 
+func load_level(index: int, record_progress: bool = true) -> void:
+	if index < 0 or index >= LevelCatalog.count():
+		push_error("Cursor Hell: level index %d is not registered in LevelCatalog." % index)
+		return
+
+	_prepare_level_change()
+	current_mode = "campaign"
 	current_level_index = index
 	current_level_records_progress = record_progress
 	var level_metadata := LevelCatalog.get_level(index)
@@ -111,8 +111,6 @@ func load_level(index: int, record_progress: bool = true) -> void:
 		push_error("Cursor Hell: loaded level does not extend CursorHellBaseLevel.")
 		return
 
-	# Metadata is injected before add_child(), so BaseLevel._ready() initializes
-	# RunStats and round timing from the same canonical catalog the menus use.
 	current_level.configure_level_metadata(level_metadata)
 	var level_number := current_level.get_level_number()
 	current_level.high_score = save_manager.get_best_score(level_number)
@@ -123,28 +121,44 @@ func load_level(index: int, record_progress: bool = true) -> void:
 	level_container.add_child(level_instance)
 	transition_overlay.bind_machine_shell(current_level.machine_shell)
 	pause_menu.bind_machine_shell(current_level.machine_shell)
-
-	# BaseLevel still owns the trusted gameplay/countdown runtime. While a shared
-	# transition card is visible, temporarily disable the level's own input and
-	# hide its legacy message panel so one click cannot trigger both systems.
 	current_level.set_process_input(false)
 	current_level._hide_message_panel()
-	transition_overlay.show_intro(
-		level_number,
-		current_level.get_level_name(),
-		current_level._get_intro_subtitle(),
-		current_level._get_intro_body()
-	)
+	transition_overlay.show_intro(level_number, current_level.get_level_name(), current_level._get_intro_subtitle(), current_level._get_intro_body())
 
 	if record_progress:
 		save_manager.record_level_started(level_number)
 		_refresh_main_menu_save_status()
 
+func load_endless_mode() -> void:
+	_prepare_level_change()
+	current_mode = "endless"
+	current_level_index = -1
+	current_level_records_progress = false
+	var level_instance := EndlessScene.instantiate()
+	current_level = level_instance as CursorHellBaseLevel
+	if current_level == null:
+		push_error("Cursor Hell: EndlessMode.tscn must extend CursorHellBaseLevel.")
+		return
+
+	current_level.high_score = save_manager.get_endless_best_score()
+	current_level.has_next_level = false
+	current_level.level_failed.connect(_on_level_failed)
+	level_container.add_child(level_instance)
+	transition_overlay.bind_machine_shell(current_level.machine_shell)
+	pause_menu.bind_machine_shell(current_level.machine_shell)
+	current_level.set_process_input(false)
+	current_level._hide_message_panel()
+	transition_overlay.show_endless_intro(current_level._get_intro_title(), current_level._get_intro_subtitle(), current_level._get_intro_body())
+
 func reload_current_level() -> void:
-	if current_level_index >= 0:
+	if current_mode == "endless":
+		load_endless_mode()
+	elif current_level_index >= 0:
 		load_level(current_level_index, current_level_records_progress)
 
 func load_next_level() -> bool:
+	if current_mode != "campaign":
+		return false
 	var next_index := current_level_index + 1
 	if next_index >= LevelCatalog.count():
 		return false
@@ -152,80 +166,64 @@ func load_next_level() -> bool:
 	return true
 
 func _on_level_completed(level_number: int, final_score: int) -> void:
+	if current_mode != "campaign":
+		return
 	last_completed_level = level_number
 	last_completed_score = final_score
 	var previous_best := save_manager.get_best_score(level_number)
 	var is_new_best := final_score > previous_best
-
 	if not is_instance_valid(current_level):
 		return
-
 	var stats: CursorHellRunStats = current_level.run_stats
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 	var achieved_rank := str(performance.get("rank", ""))
-
 	if current_level_records_progress:
-		save_manager.record_level_result(
-			level_number,
-			stats.final_score,
-			true,
-			stats.time_survived,
-			achieved_rank
-		)
+		save_manager.record_level_result(level_number, stats.final_score, true, stats.time_survived, achieved_rank)
 		_refresh_main_menu_save_status()
-
 	current_level._hide_message_panel()
 	current_level.set_process_input(false)
 	var best_score := maxi(previous_best, stats.final_score)
-	transition_overlay.show_clear(
-		level_number,
-		current_level.get_level_name(),
-		stats,
-		best_score,
-		is_new_best,
-		current_level.has_next_level
-	)
+	transition_overlay.show_clear(level_number, current_level.get_level_name(), stats, best_score, is_new_best, current_level.has_next_level)
 
 func _on_level_failed(level_number: int, final_score: int) -> void:
-	var previous_best := save_manager.get_best_score(level_number)
-	var is_new_best := final_score > previous_best
-
 	if not is_instance_valid(current_level):
 		return
+	if current_mode == "endless":
+		_on_endless_failed()
+		return
 
+	var previous_best := save_manager.get_best_score(level_number)
+	var is_new_best := final_score > previous_best
 	var stats: CursorHellRunStats = current_level.run_stats
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 	var achieved_rank := str(performance.get("rank", ""))
-
 	if current_level_records_progress:
-		save_manager.record_level_result(
-			level_number,
-			stats.final_score,
-			false,
-			stats.time_survived,
-			achieved_rank
-		)
+		save_manager.record_level_result(level_number, stats.final_score, false, stats.time_survived, achieved_rank)
 		_refresh_main_menu_save_status()
-
 	current_level._hide_message_panel()
 	current_level.set_process_input(false)
 	var best_score := maxi(previous_best, stats.final_score)
-	transition_overlay.show_failure(
-		level_number,
-		current_level.get_level_name(),
-		stats,
-		best_score,
-		is_new_best
-	)
+	transition_overlay.show_failure(level_number, current_level.get_level_name(), stats, best_score, is_new_best)
+
+func _on_endless_failed() -> void:
+	if not is_instance_valid(current_level) or not current_level.has_method("get_endless_summary"):
+		return
+	var summary: Dictionary = current_level.call("get_endless_summary")
+	var previous_score := save_manager.get_endless_best_score()
+	var previous_time := save_manager.get_endless_best_time()
+	var is_new_score := int(summary.get("score", 0)) > previous_score
+	var is_new_time := float(summary.get("time", 0.0)) > previous_time
+	save_manager.record_endless_result(summary)
+	_refresh_main_menu_save_status()
+	current_level._hide_message_panel()
+	current_level.set_process_input(false)
+	transition_overlay.show_endless_failure(summary, previous_score, previous_time, is_new_score, is_new_time)
 
 func _on_transition_primary_requested(mode: String) -> void:
 	if not is_instance_valid(current_level):
 		return
-
 	match mode:
-		"intro":
-			_begin_current_round()
-		"failure":
+		"intro", "failure", "endless_intro", "endless_failure":
 			_begin_current_round()
 		"clear":
 			if current_level.has_next_level:
@@ -248,6 +246,8 @@ func _begin_current_round() -> void:
 	current_level._reset_round(true)
 
 func _on_continue_requested() -> void:
+	if current_mode != "campaign":
+		return
 	var next_index := current_level_index + 1
 	if next_index >= LevelCatalog.count():
 		return
@@ -260,32 +260,28 @@ func _show_main_menu() -> void:
 	level_select_menu.hide_menu()
 	pause_menu.hide_menu()
 	settings_menu.hide_menu()
-
 	if is_instance_valid(current_level):
 		current_level.queue_free()
 	current_level = null
 	current_level_index = -1
 	current_level_records_progress = true
-
+	current_mode = "none"
 	_refresh_main_menu_save_status()
 	main_menu.show_menu()
 
 func _refresh_main_menu_save_status() -> void:
 	if not is_instance_valid(main_menu):
 		return
-	main_menu.configure(
-		save_manager.has_existing_save,
-		save_manager.get_continue_level(),
-		save_manager.get_highest_unlocked()
-	)
+	main_menu.configure(save_manager.has_existing_save, save_manager.get_continue_level(), save_manager.get_highest_unlocked(), save_manager.get_endless_best_time())
 
 func _on_main_menu_continue_requested() -> void:
 	load_level(save_manager.get_continue_level() - 1)
 
 func _on_main_menu_start_requested() -> void:
-	# Starting from Level 1 does not erase unlocks or best scores. It simply starts
-	# a fresh run from the beginning and updates the saved continuation point.
 	load_level(0)
+
+func _on_main_menu_endless_requested() -> void:
+	load_endless_mode()
 
 func _on_main_menu_level_select_requested() -> void:
 	main_menu.hide_menu()
@@ -296,13 +292,7 @@ func _on_main_menu_level_select_requested() -> void:
 		best_scores.append(save_manager.get_best_score(level_number))
 		best_times.append(save_manager.get_best_time(level_number))
 		best_ranks.append(save_manager.get_best_rank(level_number))
-	level_select_menu.configure(
-		save_manager.get_highest_unlocked(),
-		save_manager.get_continue_level(),
-		best_scores,
-		best_times,
-		best_ranks
-	)
+	level_select_menu.configure(save_manager.get_highest_unlocked(), save_manager.get_continue_level(), best_scores, best_times, best_ranks)
 	level_select_menu.show_menu()
 
 func _on_level_selected(level_index: int) -> void:
@@ -329,13 +319,15 @@ func _open_pause_menu() -> void:
 		return
 	current_level._hide_message_panel()
 	get_tree().paused = true
-	pause_menu.show_for_level(current_level_index + 1)
+	if current_mode == "endless":
+		pause_menu.show_for_mode("ENDLESS MODE")
+	else:
+		pause_menu.show_for_level(current_level_index + 1)
 
 func _on_pause_resume_requested() -> void:
 	if not is_instance_valid(current_level):
 		_show_main_menu()
 		return
-
 	pause_menu.hide_menu()
 	get_tree().paused = false
 	current_level.set_process_input(true)
@@ -344,13 +336,12 @@ func _on_pause_resume_requested() -> void:
 	current_level._capture_mouse()
 
 func _on_pause_restart_requested() -> void:
-	if current_level_index < 0:
+	if not is_instance_valid(current_level):
 		_show_main_menu()
 		return
-
 	get_tree().paused = false
 	pause_menu.hide_menu()
-	load_level(current_level_index, current_level_records_progress)
+	reload_current_level()
 
 func _on_pause_settings_requested() -> void:
 	if not is_instance_valid(current_level):
@@ -364,9 +355,11 @@ func _on_settings_back_requested() -> void:
 	if settings_return_to_pause and is_instance_valid(current_level):
 		settings_return_to_pause = false
 		get_tree().paused = true
-		pause_menu.show_for_level(current_level_index + 1)
+		if current_mode == "endless":
+			pause_menu.show_for_mode("ENDLESS MODE")
+		else:
+			pause_menu.show_for_level(current_level_index + 1)
 		return
-
 	settings_return_to_pause = false
 	get_tree().paused = false
 	_refresh_main_menu_save_status()
@@ -389,18 +382,14 @@ func _on_debug_console_closed() -> void:
 		get_tree().paused = true
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
-
 	if pause_menu.visible or (settings_menu.visible and settings_return_to_pause):
 		get_tree().paused = true
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
-
 	get_tree().paused = false
-
 	if main_menu.visible or level_select_menu.visible or settings_menu.visible:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
-
 	if is_instance_valid(current_level) and (current_level.state == "playing" or current_level.state == "countdown"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else:
@@ -410,31 +399,34 @@ func _on_debug_command_submitted(command_line: String) -> void:
 	var normalized := command_line.strip_edges().to_lower()
 	if normalized.is_empty():
 		return
-
 	var parts := normalized.split(" ", false)
 	var command := parts[0]
-
 	if command.begins_with("level") and command.length() > 5:
 		var level_suffix := command.substr(5)
 		if level_suffix.is_valid_int():
 			_debug_load_level(int(level_suffix))
 			return
-
 	match command:
 		"level":
 			if parts.size() < 2 or not parts[1].is_valid_int():
 				debug_console.write_line("Usage: level <number>  (example: level 2)")
 				return
 			_debug_load_level(int(parts[1]))
+		"endless":
+			load_endless_mode()
+			debug_console.write_line("Loaded Endless Mode.")
+			debug_console.close_console()
 		"restart":
-			if current_level_index < 0:
+			if not is_instance_valid(current_level):
 				debug_console.write_line("No level is currently loaded.")
 				return
 			reload_current_level()
-			debug_console.write_line("Reloaded level%d." % (current_level_index + 1))
+			debug_console.write_line("Reloaded current mode.")
 			debug_console.close_console()
 		"current":
-			if current_level_index >= 0:
+			if current_mode == "endless":
+				debug_console.write_line("Current mode: endless")
+			elif current_level_index >= 0:
 				debug_console.write_line("Current level: level%d" % (current_level_index + 1))
 			else:
 				debug_console.write_line("No level is currently loaded.")
@@ -460,10 +452,7 @@ func _on_debug_command_submitted(command_line: String) -> void:
 			debug_console.write_line("Unknown command: %s  (type 'help')" % command)
 
 func _debug_factory_reset() -> void:
-	# Put live settings back to their shipped defaults first, then delete every
-	# persistent Cursor Hell file so the reloaded scene behaves like a fresh install.
 	settings_menu._reset_defaults()
-
 	var failed_paths := PackedStringArray()
 	for path in FACTORY_RESET_PATHS:
 		if not FileAccess.file_exists(path):
@@ -471,11 +460,9 @@ func _debug_factory_reset() -> void:
 		var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 		if error != OK:
 			failed_paths.append(path)
-
 	if not failed_paths.is_empty():
 		debug_console.write_line("Factory reset incomplete. Could not remove: " + ", ".join(failed_paths))
 		return
-
 	debug_console.write_line("Factory reset complete. Reloading fresh state...")
 	call_deferred("_reload_after_factory_reset")
 
@@ -488,9 +475,6 @@ func _debug_load_level(level_number: int) -> void:
 	if index < 0 or index >= LevelCatalog.count():
 		debug_console.write_line("level%d is not registered. Type 'levels' to see available levels." % level_number)
 		return
-
-	# Debug jumping and any retries/continuations from that debug run must not
-	# unlock levels or overwrite the player's real continuation/high scores.
 	load_level(index, false)
 	debug_console.write_line("Loaded level%d." % level_number)
 	debug_console.close_console()
@@ -498,9 +482,10 @@ func _debug_load_level(level_number: int) -> void:
 func _print_debug_help() -> void:
 	debug_console.write_line("Commands:")
 	debug_console.write_line("  level2 / level 2   Jump directly to a registered level")
+	debug_console.write_line("  endless            Jump directly to Endless Mode")
 	debug_console.write_line("  levels             List registered levels")
-	debug_console.write_line("  current            Show the current level")
-	debug_console.write_line("  restart            Reload the current level")
+	debug_console.write_line("  current            Show the current level/mode")
+	debug_console.write_line("  restart            Reload the current level/mode")
 	debug_console.write_line("  resetcamp          Clear first-time anti-camp tutorial flag")
 	debug_console.write_line("  factoryreset       Delete all progression, tutorial flags, and settings")
 	debug_console.write_line("  clear              Clear console output")

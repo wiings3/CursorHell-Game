@@ -54,16 +54,16 @@ z_index = 2
 layout_mode = 3
 anchors_preset = 0
 offset_left = 676.0
-offset_top = 270.0
+offset_top = 248.0
 offset_right = 1252.0
-offset_bottom = 764.0
+offset_bottom = 796.0
 mouse_filter = 1
 theme = ExtResource("3_theme")
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
 layout_mode = 0
 offset_right = 576.0
-offset_bottom = 494.0
+offset_bottom = 548.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
@@ -127,15 +127,24 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../StartButton")
-focus_neighbor_bottom = NodePath("../SettingsButton")
+focus_neighbor_bottom = NodePath("../EndlessButton")
 text = "LEVEL SELECT"
+alignment = 0
+
+[node name="EndlessButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+focus_neighbor_top = NodePath("../LevelSelectButton")
+focus_neighbor_bottom = NodePath("../SettingsButton")
+text = "ENDLESS MODE"
 alignment = 0
 
 [node name="SettingsButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-focus_neighbor_top = NodePath("../LevelSelectButton")
+focus_neighbor_top = NodePath("../EndlessButton")
 focus_neighbor_bottom = NodePath("../QuitButton")
 text = "SETTINGS"
 alignment = 0

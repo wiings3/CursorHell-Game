@@ -46,26 +46,22 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible or locked:
 		return
-
 	if event is InputEventMouseButton:
 		var mouse_button := event as InputEventMouseButton
 		if mouse_button.button_index == MOUSE_BUTTON_LEFT and mouse_button.pressed:
 			_activate_primary()
 			get_viewport().set_input_as_handled()
 			return
-
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		if not key_event.pressed or key_event.echo:
 			return
-
 		if key_event.keycode == KEY_ESCAPE:
 			menu_requested.emit()
 			get_viewport().set_input_as_handled()
 			return
-
 		if key_event.physical_keycode == KEY_R:
-			if mode == "intro":
+			if mode == "intro" or mode == "endless_intro":
 				_activate_primary()
 			else:
 				replay_requested.emit(mode)
@@ -83,29 +79,28 @@ func show_intro(level_number: int, title: String, subtitle: String, body: String
 	prompt_label.text = "CLICK OR R TO BEGIN    //    ESC = MENU"
 	_show_animated()
 
-func show_failure(
-	level_number: int,
-	title: String,
-	stats: CursorHellRunStats,
-	best_score: int,
-	is_new_best: bool
-) -> void:
+func show_endless_intro(title: String, subtitle: String, body: String) -> void:
+	mode = "endless_intro"
+	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.03, 0.08, 0.035, 0.08))
+	state_label.text = "ENDLESS MODE"
+	title_label.text = title
+	subtitle_label.text = subtitle
+	body_label.offset_bottom = 430.0
+	body_label.text = body.strip_edges()
+	_set_result_nodes_visible(false)
+	prompt_label.text = "CLICK OR R TO BEGIN    //    ESC = MENU"
+	_show_animated()
+
+func show_failure(level_number: int, title: String, stats: CursorHellRunStats, best_score: int, is_new_best: bool) -> void:
 	mode = "failure"
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 	var survival_percent := int(performance["survival_percent"])
-
 	_set_mode_style(Color(1.0, 0.24, 0.12, 1.0), Color(0.28, 0.025, 0.018, 0.10))
 	state_label.text = "LEVEL FAILED"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  //  IMPACT" % level_number
 	body_label.offset_bottom = 270.0
-	body_label.text = "%s\nSURVIVED  %s / %s  //  %d%%\nGRAZE BONUS  +%s" % [
-		stats.death_reason.to_upper(),
-		_format_time(stats.time_survived),
-		_format_time(stats.round_time),
-		survival_percent,
-		_format_score(stats.graze_score)
-	]
+	body_label.text = "%s\nSURVIVED  %s / %s  //  %d%%\nGRAZE BONUS  +%s" % [stats.death_reason.to_upper(), _format_time(stats.time_survived), _format_time(stats.round_time), survival_percent, _format_score(stats.graze_score)]
 	_set_result_nodes_visible(true)
 	rank_caption.text = "ATTEMPT RANK"
 	rank_label.text = str(performance["rank"])
@@ -117,28 +112,44 @@ func show_failure(
 	prompt_label.text = "CLICK OR R TO RETRY    //    ESC = MENU"
 	_show_animated()
 
-func show_clear(
-	level_number: int,
-	title: String,
-	stats: CursorHellRunStats,
-	best_score: int,
-	is_new_best: bool,
-	has_next_level: bool
-) -> void:
+func show_endless_failure(summary: Dictionary, best_score: int, best_time: float, is_new_score: bool, is_new_time: bool) -> void:
+	mode = "endless_failure"
+	_set_mode_style(Color(1.0, 0.24, 0.12, 1.0), Color(0.28, 0.025, 0.018, 0.10))
+	state_label.text = "RUN ENDED"
+	title_label.text = "ENDLESS"
+	subtitle_label.text = "PHASE %02d  //  BOSSES %d" % [int(summary.get("phase", 0)), int(summary.get("bosses", 0))]
+	body_label.offset_bottom = 270.0
+	body_label.text = "SURVIVED    %s\nBEST TIME   %s\nBOSSES      %d\nBEST COMBO  x%d" % [
+		_format_time(float(summary.get("time", 0.0))),
+		_format_time(maxf(best_time, float(summary.get("time", 0.0)))),
+		int(summary.get("bosses", 0)),
+		int(summary.get("max_combo", 0))
+	]
+	_set_result_nodes_visible(true)
+	rank_caption.text = "ENDLESS RANK"
+	rank_label.text = str(summary.get("rank", "F"))
+	performance_label.text = "THREAT INDEX  %d" % int(summary.get("points", 0))
+	score_label.text = "SCORE    %s" % _format_score(int(summary.get("score", 0)))
+	best_label.text = "BEST     %s" % _format_score(maxi(best_score, int(summary.get("score", 0))))
+	record_label.visible = is_new_score or is_new_time
+	if is_new_score and is_new_time:
+		record_label.text = "NEW SCORE + SURVIVAL RECORD"
+	elif is_new_time:
+		record_label.text = "NEW SURVIVAL RECORD"
+	else:
+		record_label.text = "NEW BEST SCORE"
+	prompt_label.text = "CLICK OR R TO RETRY    //    ESC = MENU"
+	_show_animated()
+
+func show_clear(level_number: int, title: String, stats: CursorHellRunStats, best_score: int, is_new_best: bool, has_next_level: bool) -> void:
 	mode = "clear"
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
-
 	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.20, 0.11, 0.025, 0.08))
 	state_label.text = "LEVEL CLEAR"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  //  SURVIVED" % level_number
 	body_label.offset_bottom = 270.0
-	body_label.text = "SURVIVED  %s / %s  //  100%%\nGRAZE BONUS  +%s\nCOMPLETION BONUS  +%s" % [
-		_format_time(stats.time_survived),
-		_format_time(stats.round_time),
-		_format_score(stats.graze_score),
-		_format_score(stats.completion_bonus)
-	]
+	body_label.text = "SURVIVED  %s / %s  //  100%%\nGRAZE BONUS  +%s\nCOMPLETION BONUS  +%s" % [_format_time(stats.time_survived), _format_time(stats.round_time), _format_score(stats.graze_score), _format_score(stats.completion_bonus)]
 	_set_result_nodes_visible(true)
 	rank_caption.text = "PERFORMANCE RANK"
 	rank_label.text = str(performance["rank"])
@@ -163,7 +174,7 @@ func hide_immediate() -> void:
 	panel_root.scale = Vector2.ONE
 
 func _activate_primary() -> void:
-	if mode == "intro":
+	if mode == "intro" or mode == "endless_intro":
 		_dismiss_intro()
 	else:
 		primary_requested.emit(mode)
@@ -195,7 +206,6 @@ func _show_animated() -> void:
 	panel_root.modulate.a = 0.0
 	panel_root.position = panel_home + Vector2(0.0, 14.0)
 	panel_root.scale = Vector2(0.98, 0.98)
-
 	var tween := create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(root, "modulate:a", 1.0, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -245,7 +255,7 @@ func _clean_intro_body(body: String) -> String:
 	return cleaned.strip_edges()
 
 func _format_time(seconds: float) -> String:
-	var whole := int(floor(seconds))
+	var whole := maxi(0, int(floor(seconds)))
 	return "%d:%02d" % [int(whole / 60), whole % 60]
 
 func _format_score(value: int) -> String:

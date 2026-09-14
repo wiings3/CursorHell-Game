@@ -52,14 +52,16 @@ func _apply_viewport_layout() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible or not (event is InputEventKey):
 		return
-
 	var key_event := event as InputEventKey
 	if key_event.pressed and not key_event.echo and key_event.keycode == KEY_ESCAPE:
 		resume_requested.emit()
 		get_viewport().set_input_as_handled()
 
 func show_for_level(level_number: int) -> void:
-	level_label.text = "LEVEL %d" % level_number
+	show_for_mode("LEVEL %d" % level_number)
+
+func show_for_mode(label_text: String) -> void:
+	level_label.text = label_text
 	visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_animate_open()
@@ -75,7 +77,6 @@ func _animate_open() -> void:
 	scrim.modulate.a = 0.0
 	panel_group.modulate.a = 0.0
 	panel_group.position = panel_home + Vector2(0.0, 14.0)
-
 	var tween := create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(scrim, "modulate:a", 1.0, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
