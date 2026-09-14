@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://ctfciyhtyahke" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="2_shell"]
-[ext_resource type="Theme" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
-[ext_resource type="Script" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
+[ext_resource type="Theme" uid="uid://dqmmg88ocwudh" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
+[ext_resource type="Script" uid="uid://bffjdpwx3oi82" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
 
 [node name="MainMenu" type="CanvasLayer"]
 process_mode = 3
@@ -14,10 +14,10 @@ script = ExtResource("1_menu")
 script = ExtResource("4_stage")
 
 [node name="GameplayMachineShell" parent="Root" instance=ExtResource("2_shell")]
+process_priority = 50
 
 [node name="ScreenWash" type="ColorRect" parent="Root"]
 z_index = 2
-layout_mode = 0
 offset_left = 556.0
 offset_top = 202.0
 offset_right = 1372.0
@@ -27,7 +27,8 @@ color = Color(0.006, 0.017, 0.009, 0.52)
 
 [node name="GhostFrame" type="Control" parent="Root"]
 z_index = 2
-layout_mode = 0
+layout_mode = 3
+anchors_preset = 0
 offset_left = 580.0
 offset_top = 222.0
 offset_right = 1348.0
@@ -39,7 +40,7 @@ layout_mode = 0
 offset_right = 768.0
 offset_bottom = 1.0
 mouse_filter = 2
-color = Color(0.98, 0.58, 0.18, 0.20)
+color = Color(0.98, 0.58, 0.18, 0.2)
 
 [node name="Bottom" type="ColorRect" parent="Root/GhostFrame"]
 layout_mode = 0
@@ -54,7 +55,7 @@ layout_mode = 0
 offset_right = 1.0
 offset_bottom = 590.0
 mouse_filter = 2
-color = Color(0.98, 0.58, 0.18, 0.10)
+color = Color(0.98, 0.58, 0.18, 0.1)
 
 [node name="Right" type="ColorRect" parent="Root/GhostFrame"]
 layout_mode = 0
@@ -62,11 +63,12 @@ offset_left = 767.0
 offset_right = 768.0
 offset_bottom = 590.0
 mouse_filter = 2
-color = Color(0.98, 0.58, 0.18, 0.10)
+color = Color(0.98, 0.58, 0.18, 0.1)
 
 [node name="PanelGroup" type="Control" parent="Root"]
 z_index = 2
-layout_mode = 0
+layout_mode = 3
+anchors_preset = 0
 offset_left = 664.0
 offset_top = 259.0
 offset_right = 1264.0
@@ -124,8 +126,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../StartButton")
-alignment = 0
 text = "CONTINUE"
+alignment = 0
 
 [node name="StartButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
@@ -133,8 +135,8 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ContinueButton")
 focus_neighbor_bottom = NodePath("../LevelSelectButton")
-alignment = 0
 text = "START NEW RUN"
+alignment = 0
 
 [node name="LevelSelectButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
@@ -142,8 +144,8 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../StartButton")
 focus_neighbor_bottom = NodePath("../SettingsButton")
-alignment = 0
 text = "TEST ARCHIVE"
+alignment = 0
 
 [node name="SettingsButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
@@ -151,16 +153,16 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../LevelSelectButton")
 focus_neighbor_bottom = NodePath("../QuitButton")
-alignment = 0
 text = "SYSTEM CONFIGURATION"
+alignment = 0
 
 [node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_neighbor_top = NodePath("../SettingsButton")
-alignment = 0
 text = "POWER DOWN"
+alignment = 0
 
 [node name="SpacerBottom" type="Control" parent="Root/PanelGroup/Panel/VBox"]
 custom_minimum_size = Vector2(0, 5)
