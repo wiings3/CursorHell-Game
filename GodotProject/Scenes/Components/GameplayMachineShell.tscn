@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://nrmyvx8v1qyq"]
+[gd_scene load_steps=14 format=3 uid="uid://nrmyvx8v1qyq"]
 
 [ext_resource type="Texture2D" uid="uid://whm35exeetnj" path="res://Assets/SystemCabinet/DecayBackground.png" id="1_xuro4"]
 [ext_resource type="Texture2D" uid="uid://cxn6idmqrnpai" path="res://Assets/SystemCabinet/DecayCabinet.png" id="3_skjlc"]
@@ -8,6 +8,10 @@
 [ext_resource type="Texture2D" uid="uid://5hnqgvv4dyte" path="res://Assets/SystemCabinet/ChatGPT Image Sep 13, 2026, 05_02_34 PM.png" id="7_skjlc"]
 [ext_resource type="Script" uid="uid://d4dcbdmdkntye" path="res://scripts/ui/gameplay_machine_shell.gd" id="8_shell"]
 [ext_resource type="PackedScene" uid="uid://vetw0ieivkyj" path="res://Scenes/Components/ArenaBackground.tscn" id="9_arena"]
+[ext_resource type="Texture2D" uid="uid://headtbjut8o6" path="res://Assets/Textures/LightPath.png" id="9_vxnlb"]
+[ext_resource type="Script" uid="uid://c1eu8djikj0q5" path="res://scripts/objects/light_beam.gd" id="10_oofic"]
+[ext_resource type="Texture2D" uid="uid://b4jqvvcgmnitj" path="res://Assets/Textures/WhiteCircle.png" id="11_oofic"]
+[ext_resource type="Script" uid="uid://c8d137k578cdu" path="res://scripts/objects/orange_circle.gd" id="12_lhhns"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vxnlb"]
 shader = ExtResource("4_tvdcc")
@@ -145,3 +149,28 @@ offset_top = 838.0
 offset_right = 1336.0
 offset_bottom = 876.0
 mouse_filter = 2
+
+[node name="LightBeam" type="PointLight2D" parent="."]
+position = Vector2(1823.0001, 353)
+scale = Vector2(3.1199996, 2.87)
+texture = ExtResource("9_vxnlb")
+script = ExtResource("10_oofic")
+
+[node name="LightBeam2" type="PointLight2D" parent="."]
+position = Vector2(186.00002, 413)
+scale = Vector2(7.7799997, 7.1125016)
+energy = 1.4
+range_z_min = -1
+range_z_max = 0
+texture = ExtResource("9_vxnlb")
+
+[node name="OrangeCircle" type="TextureRect" parent="."]
+modulate = Color(18.326208, 12.176933, 0, 1)
+z_index = 4
+offset_left = 598.0
+offset_top = 940.0
+offset_right = 614.0
+offset_bottom = 956.0
+texture = ExtResource("11_oofic")
+expand_mode = 1
+script = ExtResource("12_lhhns")
