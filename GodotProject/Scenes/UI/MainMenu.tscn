@@ -14,7 +14,6 @@ script = ExtResource("1_menu")
 script = ExtResource("4_stage")
 
 [node name="GameplayMachineShell" parent="Root" instance=ExtResource("2_shell")]
-process_priority = 50
 
 [node name="ScreenWash" type="ColorRect" parent="Root"]
 z_index = 2
