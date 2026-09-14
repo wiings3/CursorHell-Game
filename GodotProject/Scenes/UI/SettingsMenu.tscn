@@ -1,82 +1,35 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="1_settings"]
+[ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="2_shell"]
+[ext_resource type="Theme" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
+[ext_resource type="Script" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
-bg_color = Color(0.014, 0.019, 0.03, 0.985)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.36, 0.46, 0.64, 0.42)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-content_margin_left = 46.0
-content_margin_top = 38.0
-content_margin_right = 46.0
-content_margin_bottom = 34.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_row"]
-bg_color = Color(0.026, 0.034, 0.052, 0.82)
-border_width_left = 2
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.28, 0.36, 0.50, 0.40)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
+[sub_resource type="StyleBoxFlat" id="RowStyle"]
 content_margin_left = 18.0
-content_margin_top = 14.0
+content_margin_top = 12.0
 content_margin_right = 18.0
-content_margin_bottom = 14.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
-bg_color = Color(0.028, 0.036, 0.054, 0.94)
+content_margin_bottom = 12.0
+bg_color = Color(0.016, 0.031, 0.020, 0.78)
 border_width_left = 2
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.30, 0.38, 0.52, 0.48)
+border_color = Color(0.37, 0.27, 0.12, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="SliderStyle"]
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color(0.08, 0.075, 0.045, 1)
 corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_hover"]
-bg_color = Color(0.055, 0.064, 0.088, 0.99)
-border_width_left = 5
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.53, 0.15, 0.92)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
-bg_color = Color(0.085, 0.074, 0.065, 1)
-border_width_left = 5
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.62, 0.20, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_focus"]
-bg_color = Color(0.045, 0.052, 0.072, 0.99)
-border_width_left = 5
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.53, 0.15, 0.82)
+[sub_resource type="StyleBoxFlat" id="SliderFill"]
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color(0.95, 0.48, 0.08, 1)
 corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
@@ -88,122 +41,84 @@ layer = 100
 process_mode = 3
 script = ExtResource("1_settings")
 
-[node name="Root" type="Control" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
+[node name="Root" type="Node2D" parent="."]
+script = ExtResource("4_stage")
 
-[node name="Background" type="ColorRect" parent="Root"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-color = Color(0.005, 0.008, 0.014, 0.96)
+[node name="GameplayMachineShell" parent="Root" instance=ExtResource("2_shell")]
 
-[node name="UpperWash" type="ColorRect" parent="Root/Background"]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 230.0
-grow_horizontal = 2
+[node name="ScreenWash" type="ColorRect" parent="Root"]
+z_index = 2
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
 mouse_filter = 2
-color = Color(0.08, 0.12, 0.20, 0.12)
-
-[node name="TopAccent" type="ColorRect" parent="Root/Background"]
-anchor_right = 1.0
-offset_bottom = 3.0
-mouse_filter = 2
-color = Color(1, 0.50, 0.14, 0.92)
+color = Color(0.004, 0.014, 0.008, 0.62)
 
 [node name="PanelGroup" type="Control" parent="Root"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -390.0
-offset_top = -310.0
-offset_right = 390.0
-offset_bottom = 310.0
-grow_horizontal = 2
-grow_vertical = 2
+z_index = 2
+layout_mode = 0
+offset_left = 622.0
+offset_top = 257.0
+offset_right = 1306.0
+offset_bottom = 777.0
 mouse_filter = 1
-
-[node name="Shadow" type="ColorRect" parent="Root/PanelGroup"]
-offset_left = 12.0
-offset_top = 14.0
-offset_right = 792.0
-offset_bottom = 634.0
-mouse_filter = 2
-color = Color(0, 0, 0, 0.58)
-
-[node name="OuterGlow" type="ColorRect" parent="Root/PanelGroup"]
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 782.0
-offset_bottom = 622.0
-mouse_filter = 2
-color = Color(0.20, 0.30, 0.50, 0.10)
+theme = ExtResource("3_theme")
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
-offset_right = 780.0
-offset_bottom = 620.0
-theme_override_styles/panel = SubResource("StyleBox_panel")
+layout_mode = 0
+offset_right = 684.0
+offset_bottom = 520.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 11
 alignment = 1
 
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.61, 0.84, 0.88)
-theme_override_font_sizes/font_size = 12
-text = "DISPLAY // AUDIO"
+theme_override_colors/font_color = Color(0.70, 0.72, 0.57, 1)
+theme_override_font_sizes/font_size = 11
+text = "A.R.C. MAINTENANCE TERMINAL  //  LOCAL CONFIGURATION"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.97, 0.94, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 44
-text = "SETTINGS"
+theme_override_colors/font_color = Color(1, 0.70, 0.26, 1)
+theme_override_font_sizes/font_size = 34
+text = "SYSTEM CONFIGURATION"
 horizontal_alignment = 1
 
 [node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 3)
+custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 mouse_filter = 2
-color = Color(1, 0.53, 0.15, 0.92)
+color = Color(1, 0.54, 0.14, 0.9)
 
 [node name="VolumeRow" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 92)
+custom_minimum_size = Vector2(0, 82)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBox_row")
+theme_override_styles/panel = SubResource("RowStyle")
 
 [node name="Row" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox/VolumeRow"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 16
 
 [node name="Label" type="Label" parent="Root/PanelGroup/Panel/VBox/VolumeRow/Row"]
-custom_minimum_size = Vector2(190, 0)
+custom_minimum_size = Vector2(170, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.90, 0.91, 0.94, 1)
-theme_override_font_sizes/font_size = 17
-text = "MASTER VOLUME"
+theme_override_font_sizes/font_size = 15
+text = "MASTER OUTPUT"
 vertical_alignment = 1
 
 [node name="VolumeSlider" type="HSlider" parent="Root/PanelGroup/Panel/VBox/VolumeRow/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(390, 0)
+custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/slider = SubResource("SliderStyle")
+theme_override_styles/grabber_area = SubResource("SliderFill")
+theme_override_styles/grabber_area_highlight = SubResource("SliderFill")
 min_value = 0.0
 max_value = 100.0
 step = 1.0
@@ -211,96 +126,56 @@ value = 100.0
 
 [node name="VolumeValue" type="Label" parent="Root/PanelGroup/Panel/VBox/VolumeRow/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(70, 0)
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.65, 0.23, 1)
+theme_override_font_sizes/font_size = 15
 text = "100%"
 horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="FullscreenRow" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 78)
+custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBox_row")
+theme_override_styles/panel = SubResource("RowStyle")
 
 [node name="FullscreenToggle" type="CheckButton" parent="Root/PanelGroup/Panel/VBox/FullscreenRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.90, 0.91, 0.94, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 17
-text = "FULLSCREEN"
+text = "FULLSCREEN DISPLAY"
 
 [node name="VSyncRow" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 78)
+custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBox_row")
+theme_override_styles/panel = SubResource("RowStyle")
 
 [node name="VSyncToggle" type="CheckButton" parent="Root/PanelGroup/Panel/VBox/VSyncRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.90, 0.91, 0.94, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 17
-text = "V-SYNC"
+text = "VERTICAL SYNC"
 button_pressed = true
 
 [node name="Hint" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.52, 0.61, 1)
-theme_override_font_sizes/font_size = 12
-text = "SETTINGS ARE SAVED AUTOMATICALLY"
+theme_override_colors/font_color = Color(0.50, 0.53, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "CHANGES ARE WRITTEN TO LOCAL SYSTEM MEMORY AUTOMATICALLY"
 horizontal_alignment = 1
 
 [node name="ButtonRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="ResetButton" type="Button" parent="Root/PanelGroup/Panel/VBox/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.82, 0.84, 0.88, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "RESET DEFAULTS"
+text = "RESTORE DEFAULTS"
 
 [node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.92, 0.93, 0.96, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "BACK"
-
-[node name="Footer" type="Label" parent="Root"]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -40.0
-offset_right = -28.0
-offset_bottom = -18.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.34, 0.39, 0.49, 0.68)
-theme_override_font_sizes/font_size = 11
-text = "ESC = BACK"
-horizontal_alignment = 1
+text = "< RETURN"

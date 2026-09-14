@@ -73,7 +73,7 @@ func _input(event: InputEvent) -> void:
 
 func show_intro(level_number: int, title: String, subtitle: String, body: String) -> void:
 	mode = "intro"
-	_set_mode_style(Color(0.38, 0.54, 0.82, 1.0), Color(0.08, 0.12, 0.20, 0.10))
+	_set_mode_style(Color(1.0, 0.58, 0.16, 1.0), Color(0.025, 0.09, 0.04, 0.12))
 	state_label.text = "LEVEL %d" % level_number
 	title_label.text = title
 	subtitle_label.text = subtitle
@@ -128,8 +128,8 @@ func show_clear(
 	mode = "clear"
 	var performance: Dictionary = PerformanceRank.evaluate_run(stats)
 
-	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.20, 0.11, 0.025, 0.10))
-	state_label.text = "LEVEL CLEAR"
+	_set_mode_style(Color(1.0, 0.68, 0.22, 1.0), Color(0.20, 0.11, 0.025, 0.10))
+	state_label.text = "TEST COMPLETE"
 	title_label.text = title
 	subtitle_label.text = "LEVEL %d  •  SURVIVED" % level_number
 	body_label.offset_bottom = 300.0

@@ -1,157 +1,17 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/level_select_menu.gd" id="1_select"]
-[ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_fog"]
-[ext_resource type="Shader" path="res://Shaders/splatter.gdshader" id="3_splatter"]
-[ext_resource type="Texture2D" path="res://Assets/Patterns/Untitled design - 2026-09-11T141618.056.png" id="4_pattern"]
+[ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="2_shell"]
+[ext_resource type="Theme" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
+[ext_resource type="Script" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_select"]
-noise_type = 3
-seed = 1142
-frequency = 0.1373
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_select"]
-width = 1920
-height = 1080
-noise = SubResource("FastNoiseLite_select")
-seamless = true
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog"]
-shader = ExtResource("2_fog")
-shader_parameter/octaves = 4
-shader_parameter/starting_amplitude = 0.5
-shader_parameter/starting_frequency = 0.065
-shader_parameter/shift = -0.2
-shader_parameter/velocity = Vector2(0.045, 0.055)
-shader_parameter/fog_color = Color(0.015, 0.035, 0.12, 1)
-shader_parameter/noise = SubResource("NoiseTexture2D_select")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_splatter"]
-shader = ExtResource("3_splatter")
-shader_parameter/g_random_seed = 0.0
-shader_parameter/g_grid_size = Vector2(16, 9)
-shader_parameter/g_cell_offset = Vector2(0, 0)
-shader_parameter/g_speed = Vector2(0.018, 0.024)
-shader_parameter/g_draw_size_min = 0.08
-shader_parameter/g_draw_size_max = 0.32
-shader_parameter/tex_draw = ExtResource("4_pattern")
-shader_parameter/g_color_a = Color(0.012, 0.021, 0.034, 0.24)
-shader_parameter/g_color_b = Color(0.12, 0.17, 0.28, 0.11)
-shader_parameter/g_rot_global_speed = 0.6
-shader_parameter/g_rot_min_speed = 0.08
-shader_parameter/g_rot_max_speed = 0.7
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
-bg_color = Color(0.012, 0.017, 0.028, 0.985)
+[sub_resource type="StyleBoxFlat" id="ProgressTrackStyle"]
+bg_color = Color(0.04, 0.055, 0.035, 0.9)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.34, 0.46, 0.68, 0.50)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-content_margin_left = 34.0
-content_margin_top = 24.0
-content_margin_right = 34.0
-content_margin_bottom = 24.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
-bg_color = Color(0.025, 0.033, 0.052, 0.96)
-border_width_left = 3
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.28, 0.39, 0.57, 0.52)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-content_margin_left = 18.0
-content_margin_top = 10.0
-content_margin_right = 16.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_hover"]
-bg_color = Color(0.052, 0.063, 0.092, 0.99)
-border_width_left = 6
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.54, 0.16, 0.94)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-content_margin_left = 18.0
-content_margin_top = 10.0
-content_margin_right = 16.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
-bg_color = Color(0.082, 0.071, 0.060, 1)
-border_width_left = 6
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.64, 0.22, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-content_margin_left = 18.0
-content_margin_top = 10.0
-content_margin_right = 16.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_disabled"]
-bg_color = Color(0.015, 0.020, 0.030, 0.82)
-border_width_left = 3
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.17, 0.21, 0.29, 0.34)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-content_margin_left = 18.0
-content_margin_top = 10.0
-content_margin_right = 16.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_button_focus"]
-bg_color = Color(0.042, 0.052, 0.080, 0.99)
-border_width_left = 6
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.54, 0.16, 0.84)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-content_margin_left = 18.0
-content_margin_top = 10.0
-content_margin_right = 16.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_back"]
-bg_color = Color(0.020, 0.027, 0.043, 0.96)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.28, 0.39, 0.57, 0.44)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
+border_color = Color(0.34, 0.27, 0.13, 0.7)
 
 [node name="LevelSelectMenu" type="CanvasLayer"]
 visible = false
@@ -159,209 +19,64 @@ layer = 85
 process_mode = 3
 script = ExtResource("1_select")
 
-[node name="Root" type="Control" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
+[node name="Root" type="Node2D" parent="."]
+script = ExtResource("4_stage")
 
-[node name="MenuBackground" type="Control" parent="Root"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="GameplayMachineShell" parent="Root" instance=ExtResource("2_shell")]
 
-[node name="Background" type="ColorRect" parent="Root/MenuBackground"]
-material = SubResource("ShaderMaterial_fog")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="ScreenWash" type="ColorRect" parent="Root"]
+z_index = 2
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
 mouse_filter = 2
-
-[node name="BackgroundPattern" type="ColorRect" parent="Root/MenuBackground"]
-material = SubResource("ShaderMaterial_splatter")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.035, 0.039, 0.059, 1)
-
-[node name="DarkWash" type="ColorRect" parent="Root/MenuBackground"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.002, 0.004, 0.010, 0.34)
-
-[node name="TopAccent" type="ColorRect" parent="Root"]
-anchor_right = 1.0
-offset_bottom = 3.0
-mouse_filter = 2
-color = Color(1, 0.50, 0.14, 0.94)
-
-[node name="GhostFrame" type="Control" parent="Root"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -640.0
-offset_top = -395.0
-offset_right = 640.0
-offset_bottom = 395.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Top" type="ColorRect" parent="Root/GhostFrame"]
-offset_right = 1280.0
-offset_bottom = 1.0
-mouse_filter = 2
-color = Color(0.38, 0.52, 0.76, 0.12)
-
-[node name="Bottom" type="ColorRect" parent="Root/GhostFrame"]
-offset_top = 789.0
-offset_right = 1280.0
-offset_bottom = 790.0
-mouse_filter = 2
-color = Color(0.38, 0.52, 0.76, 0.08)
-
-[node name="Left" type="ColorRect" parent="Root/GhostFrame"]
-offset_right = 1.0
-offset_bottom = 790.0
-mouse_filter = 2
-color = Color(0.38, 0.52, 0.76, 0.09)
-
-[node name="Right" type="ColorRect" parent="Root/GhostFrame"]
-offset_left = 1279.0
-offset_right = 1280.0
-offset_bottom = 790.0
-mouse_filter = 2
-color = Color(0.38, 0.52, 0.76, 0.09)
-
-[node name="TL_H" type="ColorRect" parent="Root/GhostFrame"]
-offset_left = -1.0
-offset_top = -1.0
-offset_right = 62.0
-offset_bottom = 2.0
-mouse_filter = 2
-color = Color(1, 0.52, 0.15, 0.27)
-
-[node name="TL_V" type="ColorRect" parent="Root/GhostFrame"]
-offset_left = -1.0
-offset_top = -1.0
-offset_right = 2.0
-offset_bottom = 62.0
-mouse_filter = 2
-color = Color(1, 0.52, 0.15, 0.27)
-
-[node name="BR_H" type="ColorRect" parent="Root/GhostFrame"]
-offset_left = 1218.0
-offset_top = 788.0
-offset_right = 1281.0
-offset_bottom = 791.0
-mouse_filter = 2
-color = Color(1, 0.52, 0.15, 0.20)
-
-[node name="BR_V" type="ColorRect" parent="Root/GhostFrame"]
-offset_left = 1278.0
-offset_top = 728.0
-offset_right = 1281.0
-offset_bottom = 791.0
-mouse_filter = 2
-color = Color(1, 0.52, 0.15, 0.20)
+color = Color(0.004, 0.014, 0.008, 0.60)
 
 [node name="PanelGroup" type="Control" parent="Root"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -620.0
-offset_top = -380.0
-offset_right = 620.0
-offset_bottom = 380.0
-grow_horizontal = 2
-grow_vertical = 2
+z_index = 2
+layout_mode = 0
+offset_left = 580.0
+offset_top = 223.0
+offset_right = 1348.0
+offset_bottom = 811.0
 mouse_filter = 1
-
-[node name="Shadow" type="ColorRect" parent="Root/PanelGroup"]
-offset_left = 14.0
-offset_top = 16.0
-offset_right = 1254.0
-offset_bottom = 776.0
-mouse_filter = 2
-color = Color(0, 0, 0, 0.62)
-
-[node name="OuterGlow" type="ColorRect" parent="Root/PanelGroup"]
-offset_left = -3.0
-offset_top = -3.0
-offset_right = 1243.0
-offset_bottom = 763.0
-mouse_filter = 2
-color = Color(0.15, 0.27, 0.52, 0.12)
+theme = ExtResource("3_theme")
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
-offset_right = 1240.0
-offset_bottom = 760.0
-theme_override_styles/panel = SubResource("StyleBox_panel")
+layout_mode = 0
+offset_right = 768.0
+offset_bottom = 588.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 6
-alignment = 1
+theme_override_constants/separation = 5
 
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.62, 0.86, 0.92)
-theme_override_font_sizes/font_size = 12
-text = "CAMPAIGN // PERFORMANCE ARCHIVE"
+theme_override_colors/font_color = Color(0.70, 0.72, 0.57, 1)
+theme_override_font_sizes/font_size = 11
+text = "A.R.C. PERFORMANCE ARCHIVE  //  AUTHORIZED TEST RECORDS"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.985, 0.975, 0.95, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 42
-text = "LEVEL SELECT"
+theme_override_colors/font_color = Color(1, 0.70, 0.26, 1)
+theme_override_font_sizes/font_size = 31
+text = "TEST ARCHIVE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Root/PanelGroup/Panel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.52, 0.61, 1)
-theme_override_font_sizes/font_size = 12
-text = "SURVIVE THE BOX  //  CHASE THE RANK  //  REPLAY FOR MASTERY"
-horizontal_alignment = 1
-
-[node name="TitleAccent" type="ColorRect" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 3)
-layout_mode = 2
-mouse_filter = 2
-color = Color(1, 0.53, 0.15, 0.94)
-
 [node name="ProgressRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(0, 28)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 
 [node name="ProgressLabel" type="Label" parent="Root/PanelGroup/Panel/VBox/ProgressRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.70, 0.76, 0.88, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.73, 0.75, 0.65, 1)
+theme_override_font_sizes/font_size = 11
 text = "01 / 10 TESTS UNLOCKED"
 
 [node name="Spacer" type="Control" parent="Root/PanelGroup/Panel/VBox/ProgressRow"]
@@ -371,238 +86,125 @@ size_flags_horizontal = 3
 [node name="ProgressHint" type="Label" parent="Root/PanelGroup/Panel/VBox/ProgressRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.62, 0.20, 0.92)
-theme_override_font_sizes/font_size = 13
-text = "CONTINUE  //  LEVEL 01  //  FIRST CONTACT"
-horizontal_alignment = 2
+theme_override_colors/font_color = Color(1, 0.62, 0.20, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "CONTINUE  //  LEVEL 01"
 
-[node name="ProgressTrack" type="Control" parent="Root/PanelGroup/Panel/VBox"]
-custom_minimum_size = Vector2(1030, 6)
+[node name="ProgressTrack" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
-mouse_filter = 2
-
-[node name="Track" type="ColorRect" parent="Root/PanelGroup/Panel/VBox/ProgressTrack"]
-offset_right = 1030.0
-offset_bottom = 6.0
-mouse_filter = 2
-color = Color(0.16, 0.21, 0.31, 0.60)
+theme_override_styles/panel = SubResource("ProgressTrackStyle")
 
 [node name="ProgressFill" type="ColorRect" parent="Root/PanelGroup/Panel/VBox/ProgressTrack"]
 unique_name_in_owner = true
-offset_right = 103.0
-offset_bottom = 6.0
+layout_mode = 0
+anchor_bottom = 1.0
+offset_right = 70.0
+grow_vertical = 2
 mouse_filter = 2
-color = Color(1, 0.53, 0.15, 0.92)
+color = Color(1, 0.54, 0.14, 0.88)
 
-[node name="Legend" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+[node name="LevelGrid" type="GridContainer" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.40, 0.46, 0.57, 0.92)
-theme_override_font_sizes/font_size = 11
-text = "EACH TEST RECORDS  //  BEST SCORE    LONGEST SURVIVAL    HIGHEST RANK"
-horizontal_alignment = 1
-
-[node name="Grid" type="GridContainer" parent="Root/PanelGroup/Panel/VBox"]
-layout_mode = 2
-theme_override_constants/h_separation = 14
-theme_override_constants/v_separation = 8
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
 columns = 2
 
-[node name="Level1Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level1Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 01  //  FIRST CONTACT\nBEST SCORE  0    LONGEST  --:--.-    RANK  --"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 01  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level2Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level2Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 02  //  CROSSFIRE\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 02  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level3Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level3Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 03  //  THE SWEEP\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 03  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level4Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level4Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 04  //  THE GAP\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 04  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level5Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level5Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.74, 0.36, 1)
-theme_override_colors/font_hover_color = Color(1, 0.84, 0.50, 1)
-theme_override_colors/font_focus_color = Color(1, 0.84, 0.50, 1)
-theme_override_colors/font_disabled_color = Color(0.38, 0.34, 0.30, 0.80)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 05  //  SYNTHESIS  [BOSS I]\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 05  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level6Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level6Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 06  //  THE PULSE\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 06  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level7Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level7Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 07  //  THE FLOOD\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 07  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level8Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level8Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 08  //  AFTERSHOCK\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 08  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level9Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level9Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_focus_color = Color(1, 0.72, 0.32, 1)
-theme_override_colors/font_disabled_color = Color(0.34, 0.38, 0.46, 0.78)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 09  //  DEAD ZONES\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 09  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="Level10Button" type="Button" parent="Root/PanelGroup/Panel/VBox/Grid"]
+[node name="Level10Button" type="Button" parent="Root/PanelGroup/Panel/VBox/LevelGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 82)
+custom_minimum_size = Vector2(352, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.74, 0.36, 1)
-theme_override_colors/font_hover_color = Color(1, 0.84, 0.50, 1)
-theme_override_colors/font_focus_color = Color(1, 0.84, 0.50, 1)
-theme_override_colors/font_disabled_color = Color(0.38, 0.34, 0.30, 0.80)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBox_button_normal")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_button_disabled")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "LEVEL 10  //  CONVERGENCE  [BOSS II]\nLOCKED"
+theme_override_font_sizes/font_size = 12
 alignment = 0
+text = "TEST 10  //  UNINITIALIZED\nSCORE 0   TIME --:--.-   RANK --"
 
-[node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 40)
+[node name="FooterRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.80, 0.84, 0.91, 1)
-theme_override_colors/font_hover_color = Color(1, 0.68, 0.28, 1)
-theme_override_colors/font_focus_color = Color(1, 0.68, 0.28, 1)
-theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("StyleBox_back")
-theme_override_styles/hover = SubResource("StyleBox_button_hover")
-theme_override_styles/pressed = SubResource("StyleBox_button_pressed")
-theme_override_styles/focus = SubResource("StyleBox_button_focus")
-text = "BACK TO MAIN MENU"
+theme_override_constants/separation = 10
 
-[node name="Footer" type="Label" parent="Root"]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -36.0
-offset_right = -28.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.34, 0.40, 0.52, 0.72)
+[node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox/FooterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 40)
+layout_mode = 2
+text = "< RETURN TO TERMINAL"
+
+[node name="FooterHint" type="Label" parent="Root/PanelGroup/Panel/VBox/FooterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.49, 0.52, 0.44, 1)
 theme_override_font_sizes/font_size = 10
-text = "EVERY FIFTH LEVEL IS A BOSS TEST    //    PERFORMANCE RECORDS ARE SAVED PER LEVEL    //    ESC = BACK"
-horizontal_alignment = 1
+text = "SELECT A TEST RECORD TO BEGIN"
+horizontal_alignment = 2
+vertical_alignment = 1
