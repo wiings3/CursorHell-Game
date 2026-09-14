@@ -21,7 +21,15 @@ func _run() -> void:
 
 	check(endless is CursorHellBaseLevel, "Endless Mode must reuse CursorHellBaseLevel.")
 	check(endless.get_node("LevelHUD/ScreenUI/EndlessPhaseHUD") != null, "Endless phase HUD is missing.")
-	check(endless.get_node("TargetRuntime") is CursorHellEndlessTargetRuntime, "Endless score target runtime is missing.")
+	var target_runtime := endless.get_node("TargetRuntime") as CursorHellEndlessTargetRuntime
+	check(target_runtime != null, "Endless score target runtime is missing.")
+	if target_runtime != null:
+		check(target_runtime.CHAIN_LENGTH == 4, "Endless target chains must contain four targets.")
+		check(target_runtime.CHAIN_SCORES.size() == target_runtime.CHAIN_LENGTH, "Every chain step must define a score reward.")
+		check(target_runtime.CHAIN_PURGE_RADII.size() == target_runtime.CHAIN_LENGTH, "Every chain step must define a purge radius.")
+		check(float(target_runtime.CHAIN_PURGE_RADII[3]) > float(target_runtime.CHAIN_PURGE_RADII[0]), "The chain finisher purge must be larger than the opening purge.")
+		check(int(target_runtime.CHAIN_SCORES[3]) > int(target_runtime.CHAIN_SCORES[0]), "The chain finisher must be worth more than the opening target.")
+
 	check(str(endless._timeline_at(0.0)["kind"]) == "prepare", "0:00 must begin in PREPARE.")
 	check(str(endless._timeline_at(4.99)["kind"]) == "prepare", "First five seconds must remain downtime.")
 	check(str(endless._timeline_at(5.0)["kind"]) == "normal" and int(endless._timeline_at(5.0)["phase"]) == 1, "Phase 1 must begin at 0:05.")
@@ -46,6 +54,11 @@ func _run() -> void:
 		await process_frame
 		check(target.score_bonus > 0, "Score targets must award a score bonus.")
 		check(target.purge_radius > target.hit_radius, "Score target purge radius must be larger than its click radius.")
+		target.configure_chain(4, 4, 2.35, 220.0, 2500)
+		check(target.chain_step == 4, "Score target must accept finisher chain state.")
+		check(target.purge_radius == 220.0, "Score target finisher purge radius must be configurable.")
+		check(target.score_bonus == 2500, "Score target finisher score must be configurable.")
+		check(target.get_node("StageLabel") != null, "Score target must show its chain stage.")
 		root.remove_child(target)
 		target.queue_free()
 
