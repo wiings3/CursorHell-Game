@@ -2,17 +2,26 @@ extends "res://scripts/levels/standard_dodge_level.gd"
 class_name CursorHellEndlessMode
 
 const PREPARE_TIME := 5.0
-const NORMAL_PHASE_DURATION := 25.0
+const NORMAL_PHASE_DURATION := 12.0
 const NORMAL_PHASES_PER_BOSS := 5
 const BOSS_PHASE_DURATION := 30.0
 const POST_BOSS_BREATHER := 5.0
 const CYCLE_DURATION := NORMAL_PHASE_DURATION * NORMAL_PHASES_PER_BOSS + BOSS_PHASE_DURATION + POST_BOSS_BREATHER
 const EFFECTIVE_ROUND_TIME := 315360000.0
 
+const TIER_1_PATTERNS := ["ALTERNATING", "OPPOSITION", "SPLIT LANE", "SWEEP"]
+const TIER_2_PATTERNS := ["OPPOSITION", "SPLIT LANE", "SWEEP", "CORRIDOR", "CROSS FIRE"]
+const TIER_3_PATTERNS := ["SWEEP", "CORRIDOR", "CROSS FIRE", "DOUBLE SWEEP", "MIXED PRESSURE"]
+const TIER_4_PATTERNS := ["CORRIDOR", "CROSS FIRE", "DOUBLE SWEEP", "SAFE CORRIDOR", "TIGHT WARNING", "MIXED PRESSURE"]
+
 var last_segment_key := ""
 var last_segment_kind := ""
 var last_segment_number := 0
 var corridor_step := 0
+var pattern_step := 0
+var active_pattern_key := ""
+var active_phase_pattern := ""
+var previous_phase_pattern := ""
 
 @onready var endless_hud: Control = hud.get_node("ScreenUI/EndlessPhaseHUD") as Control
 @onready var phase_label: Label = hud.get_node("ScreenUI/EndlessPhaseHUD/PhaseLabel") as Label
@@ -33,6 +42,10 @@ func _reset_round(start_now: bool) -> void:
 	last_segment_kind = ""
 	last_segment_number = 0
 	corridor_step = 0
+	pattern_step = 0
+	active_pattern_key = ""
+	active_phase_pattern = ""
+	previous_phase_pattern = ""
 	super._reset_round(start_now)
 	if is_instance_valid(endless_hud):
 		endless_hud.visible = true
@@ -40,8 +53,6 @@ func _reset_round(start_now: bool) -> void:
 	_sync_endless_hud()
 
 func _start_countdown() -> void:
-	# Endless begins at 0:00. Its first five seconds are the prepare window, so it
-	# does not stack the campaign's 3-2-1 countdown on top of that downtime.
 	state = "playing"
 	countdown_left = 0.0
 	countdown_step = -1
@@ -62,12 +73,9 @@ func _get_level_number() -> int:
 	return 0
 
 func _get_round_time() -> float:
-	# BaseLevel's reusable runtime expects a duration. Endless overrides _win(),
-	# displays elapsed time instead, and therefore has no reachable clear state.
 	return EFFECTIVE_ROUND_TIME
 
 func _win() -> void:
-	# Endless Mode has no victory condition.
 	pass
 
 func _get_phase() -> int:
@@ -91,16 +99,19 @@ func _get_spawn_interval(_current_phase: int) -> float:
 	var info := _timeline_at(elapsed)
 	if str(info["kind"]) == "boss":
 		var boss := int(info["boss"])
-		return maxf(0.88, 1.48 - float(boss - 1) * 0.055)
+		return maxf(0.78, 1.26 - float(boss - 1) * 0.045)
 	if str(info["kind"]) != "normal":
 		return 999.0
 
 	var phase := int(info["phase"])
 	var tier := int(info["tier"])
-	var interval := 1.72 - float(phase - 1) * 0.045 - float(tier - 1) * 0.04
-	if _current_mutator(info) == "DOUBLE SWEEP":
+	var interval := 1.30 - float(phase - 1) * 0.025 - float(tier - 1) * 0.035
+	var pattern := _pattern_for_info(info)
+	if pattern == "DOUBLE SWEEP" or pattern == "SAFE CORRIDOR":
 		interval += 0.16
-	return maxf(0.58, interval)
+	elif pattern == "CORRIDOR" or pattern == "CROSS FIRE":
+		interval += 0.08
+	return maxf(0.55, interval)
 
 func _graze_enabled_for_phase(current_phase: int) -> bool:
 	return current_phase > 0
@@ -111,11 +122,8 @@ func _update_level_tutorial() -> void:
 		"prepare":
 			tutorial_label.text = "PREPARE\nThreat sequence begins at 0:05."
 		"normal":
-			var mutator := _current_mutator(info)
-			if mutator.is_empty():
-				tutorial_label.text = "PHASE %02d  //  TIER %d\nSurvive. Graze for score." % [int(info["phase"]), int(info["tier"])]
-			else:
-				tutorial_label.text = "PHASE %02d  //  %s\nAdapt to the active modifier." % [int(info["phase"]), mutator]
+			var pattern := _pattern_for_info(info)
+			tutorial_label.text = "PHASE %02d  //  %s\nSurvive. Graze for score." % [int(info["phase"]), pattern]
 		"boss":
 			tutorial_label.text = "BOSS PHASE %d\nSurvive the protocol shift." % int(info["boss"])
 		"breather":
@@ -133,41 +141,51 @@ func _schedule_normal_pattern(info: Dictionary) -> void:
 	var speed := _normal_speed(phase, tier)
 	var radius := minf(9.0, 7.0 + float(tier - 1) * 0.25)
 	var delay := _warning_delay(phase, tier)
-	var mutator := _current_mutator(info)
-	var roll := rng.randf()
+	var pattern := _pattern_for_info(info)
 
-	if mutator == "TIGHT WARNING":
-		delay = maxf(0.50, delay * 0.82)
-	elif mutator == "OPPOSITE FIRE":
+	if pattern == "TIGHT WARNING":
+		delay = maxf(0.48, delay * 0.78)
+		if pattern_step % 2 == 0:
+			_queue_opposite_pair(speed, radius, delay)
+		else:
+			_queue_same_side_double(speed, radius, delay)
+	elif pattern == "ALTERNATING":
+		_queue_alternating(speed, radius, delay)
+	elif pattern == "OPPOSITION":
 		_queue_opposite_pair(speed, radius, delay)
-		return
-	elif mutator == "DOUBLE SWEEP":
-		_queue_double_sweep(speed, radius, delay)
-		return
-	elif mutator == "SAFE CORRIDOR":
-		_queue_safe_corridor(speed * 0.92, radius, delay)
-		return
-
-	var complexity := phase + tier * 2
-	if complexity >= 12 and roll < 0.16:
-		_queue_cardinal_cross(speed * 0.94, radius, delay)
-	elif complexity >= 8 and roll < 0.34:
-		_queue_wall_gap(rng.randi_range(0, 3), speed * 0.92, radius, delay, rng.randf_range(0.30, 0.70))
-	elif complexity >= 5 and roll < 0.56:
-		_queue_opposite_pair(speed, radius, delay)
-	elif complexity >= 3 and roll < 0.74:
+	elif pattern == "SPLIT LANE":
 		_queue_same_side_double(speed, radius, delay)
+	elif pattern == "SWEEP":
+		_queue_sweep(speed, radius, delay)
+	elif pattern == "CORRIDOR":
+		_queue_wall_gap((pattern_step + tier) % 4, speed * 0.94, radius, delay, _stepped_gap())
+	elif pattern == "CROSS FIRE":
+		_queue_cross_fire(speed, radius, delay)
+	elif pattern == "DOUBLE SWEEP":
+		_queue_double_sweep(speed, radius, delay)
+	elif pattern == "SAFE CORRIDOR":
+		_queue_safe_corridor(speed * 0.92, radius, delay)
+	elif pattern == "MIXED PRESSURE":
+		match pattern_step % 3:
+			0:
+				_queue_opposite_pair(speed, radius, delay)
+			1:
+				_queue_same_side_double(speed, radius, delay)
+			_:
+				_queue_cross_fire(speed * 0.95, radius, delay)
 	else:
 		_queue_single(speed, radius, delay)
+
+	pattern_step += 1
 
 func _schedule_boss_pattern(info: Dictionary) -> void:
 	var boss := int(info["boss"])
 	var tier := int(info["tier"])
 	var phase_elapsed := float(info["phase_elapsed"])
 	var pattern_index := int(floor(phase_elapsed / 6.0)) % 5
-	var speed := minf(292.0, 178.0 + float(boss - 1) * 8.0 + float(tier - 1) * 3.0)
+	var speed := minf(300.0, 188.0 + float(boss - 1) * 8.0 + float(tier - 1) * 3.0)
 	var radius := minf(9.5, 7.5 + float(boss - 1) * 0.18)
-	var delay := maxf(0.56, 0.96 - float(boss - 1) * 0.025)
+	var delay := maxf(0.54, 0.92 - float(boss - 1) * 0.025)
 
 	match pattern_index:
 		0:
@@ -182,6 +200,32 @@ func _schedule_boss_pattern(info: Dictionary) -> void:
 		_:
 			_queue_double_sweep(speed, radius, delay)
 
+func _pattern_for_info(info: Dictionary) -> String:
+	if str(info["kind"]) != "normal":
+		return ""
+	var key := str(info["key"])
+	if active_pattern_key == key and not active_phase_pattern.is_empty():
+		return active_phase_pattern
+
+	var pool := _pattern_pool_for_tier(int(info["tier"]))
+	var candidates := pool.duplicate()
+	if candidates.size() > 1 and not previous_phase_pattern.is_empty():
+		candidates.erase(previous_phase_pattern)
+	active_phase_pattern = str(candidates[rng.randi_range(0, candidates.size() - 1)])
+	active_pattern_key = key
+	previous_phase_pattern = active_phase_pattern
+	pattern_step = 0
+	return active_phase_pattern
+
+func _pattern_pool_for_tier(tier: int) -> Array:
+	if tier <= 1:
+		return TIER_1_PATTERNS
+	if tier == 2:
+		return TIER_2_PATTERNS
+	if tier == 3:
+		return TIER_3_PATTERNS
+	return TIER_4_PATTERNS
+
 func _queue_single(speed: float, radius: float, delay: float) -> void:
 	var side := rng.randi_range(0, 3)
 	var lane := rng.randf_range(0.11, 0.89)
@@ -191,6 +235,14 @@ func _queue_single(speed: float, radius: float, delay: float) -> void:
 		lane = rng.randf_range(0.11, 0.89)
 	last_lane_by_side[side] = lane
 	queue_projectile_warning(side, lane, speed, radius, delay)
+
+func _queue_alternating(speed: float, radius: float, delay: float) -> void:
+	var axis := pattern_step % 2
+	var side := axis if pattern_step % 4 < 2 else axis + 2
+	if pattern_step % 2 == 1:
+		side = 1 if side == 0 else 0 if side == 1 else 3 if side == 2 else 2
+	var lane := 0.22 + float((pattern_step * 3) % 6) * 0.11
+	queue_projectile_warning(side, clampf(lane, 0.14, 0.86), speed, radius, delay)
 
 func _queue_opposite_pair(speed: float, radius: float, delay: float) -> void:
 	var side := rng.randi_range(0, 3)
@@ -206,6 +258,23 @@ func _queue_same_side_double(speed: float, radius: float, delay: float) -> void:
 	queue_projectile_warning(side, clampf(center - gap, 0.10, 0.90), speed, radius, delay)
 	queue_projectile_warning(side, clampf(center + gap, 0.10, 0.90), speed * 1.03, radius, delay + 0.06)
 
+func _queue_sweep(speed: float, radius: float, delay: float) -> void:
+	var side := pattern_step % 4
+	var centers := [0.22, 0.34, 0.46, 0.58, 0.70, 0.80]
+	var center := float(centers[pattern_step % centers.size()])
+	queue_projectile_warning(side, clampf(center - 0.09, 0.10, 0.90), speed, radius, delay)
+	queue_projectile_warning(side, clampf(center + 0.09, 0.10, 0.90), speed * 1.02, radius, delay + 0.06)
+
+func _queue_cross_fire(speed: float, radius: float, delay: float) -> void:
+	var horizontal := pattern_step % 2 == 0
+	var first := 0 if horizontal else 2
+	var second := 1 if horizontal else 3
+	var lane := rng.randf_range(0.22, 0.78)
+	queue_projectile_warning(first, lane, speed, radius, delay)
+	queue_projectile_warning(second, clampf(1.0 - lane, 0.18, 0.82), speed * 0.97, radius, delay + 0.10)
+	var perpendicular := 2 if horizontal else 0
+	queue_projectile_warning(perpendicular, rng.randf_range(0.25, 0.75), speed * 0.92, radius, delay + 0.18)
+
 func _queue_cardinal_cross(speed: float, radius: float, delay: float) -> void:
 	var lane := rng.randf_range(0.28, 0.72)
 	for side in range(4):
@@ -219,6 +288,10 @@ func _queue_wall_gap(side: int, speed: float, radius: float, delay: float, gap_c
 		if absf(lane - gap_center) < 0.15:
 			continue
 		queue_projectile_warning(side, lane, speed, radius, delay)
+
+func _stepped_gap() -> float:
+	var gaps := [0.28, 0.40, 0.52, 0.64, 0.72, 0.60, 0.48, 0.36]
+	return float(gaps[pattern_step % gaps.size()])
 
 func _queue_safe_corridor(speed: float, radius: float, delay: float) -> void:
 	var gap_centers := [0.28, 0.40, 0.52, 0.64, 0.72]
@@ -244,21 +317,13 @@ func _queue_double_sweep(speed: float, radius: float, delay: float) -> void:
 	queue_projectile_warning(second_side, clampf(1.0 - lane + offset, 0.10, 0.90), speed, radius, delay + 0.24)
 
 func _normal_speed(phase: int, tier: int) -> float:
-	var phase_gain := minf(float(phase - 1) * 4.0, 96.0)
-	var tier_gain := minf(float(tier - 1) * 8.0, 48.0)
-	return minf(300.0, 148.0 + phase_gain + tier_gain)
+	var phase_gain := minf(float(phase - 1) * 3.0, 72.0)
+	var tier_gain := minf(float(tier - 1) * 9.0, 54.0)
+	return minf(305.0, 168.0 + phase_gain + tier_gain)
 
 func _warning_delay(phase: int, tier: int) -> float:
-	var delay := 1.02 - float(phase - 1) * 0.015 - float(tier - 1) * 0.025
-	return maxf(0.54, delay)
-
-func _current_mutator(info: Dictionary) -> String:
-	var tier := int(info["tier"])
-	if tier < 4 or str(info["kind"]) != "normal":
-		return ""
-	var phase := int(info["phase"])
-	var mutators := ["TIGHT WARNING", "OPPOSITE FIRE", "DOUBLE SWEEP", "SAFE CORRIDOR"]
-	return str(mutators[(phase - 1) % mutators.size()])
+	var delay := 0.96 - float(phase - 1) * 0.010 - float(tier - 1) * 0.025
+	return maxf(0.52, delay)
 
 func _handle_segment_change() -> void:
 	var info := _timeline_at(elapsed)
@@ -276,6 +341,8 @@ func _handle_segment_change() -> void:
 		_clear_all_hazards()
 
 	_remember_segment(info)
+	if str(info["kind"]) == "normal":
+		_pattern_for_info(info)
 	_update_level_tutorial()
 
 func _award_phase_clear(phase_number: int) -> void:
@@ -328,8 +395,7 @@ func _sync_endless_hud() -> void:
 			progress_fill.color = Color(0.72, 0.67, 0.56, 0.92)
 		"normal":
 			phase_label.text = "PHASE %02d" % int(info["phase"])
-			var mutator := _current_mutator(info)
-			tier_label.text = "TIER %d" % int(info["tier"]) if mutator.is_empty() else "TIER %d  //  %s" % [int(info["tier"]), mutator]
+			tier_label.text = "TIER %d  //  %s" % [int(info["tier"]), _pattern_for_info(info)]
 			progress_fill.color = Color(1.0, 0.61, 0.16, 0.92)
 		"boss":
 			phase_label.text = "BOSS PHASE %d" % int(info["boss"])
@@ -444,7 +510,7 @@ func _get_intro_subtitle() -> String:
 	return "ENDLESS MODE  //  NO FINISH LINE"
 
 func _get_intro_body() -> String:
-	return "Survive as long as possible.\n\n5 seconds of preparation.\n25-second phases increase pressure without removing readability.\nEvery 5 phases triggers a boss protocol.\nBoss clears grant a 5-second breather and advance the threat tier.\n\nGraze aggressively to push your score."
+	return "Survive as long as possible.\n\n5 seconds of preparation.\n12-second phases rotate through different pressure patterns.\nEvery 5 phases triggers a boss protocol at roughly the one-minute mark.\nBoss clears grant a 5-second breather and replace the phase pool with harder patterns.\n\nEvery run begins at Phase 1 under the same progression rules."
 
 func _get_pause_subtitle() -> String:
 	return "ENDLESS MODE"
