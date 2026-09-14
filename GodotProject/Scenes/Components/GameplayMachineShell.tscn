@@ -154,7 +154,7 @@ mouse_filter = 2
 [node name="LightBeam" type="PointLight2D" parent="."]
 position = Vector2(1823.0001, 353)
 scale = Vector2(3.1199996, 2.87)
-item_cull_mask = 2
+range_item_cull_mask = 2
 texture = ExtResource("9_vxnlb")
 script = ExtResource("10_oofic")
 
@@ -164,7 +164,7 @@ scale = Vector2(7.7799997, 7.1125016)
 energy = 1.4
 range_z_min = -1
 range_z_max = 0
-item_cull_mask = 2
+range_item_cull_mask = 2
 texture = ExtResource("9_vxnlb")
 
 [node name="OrangeCircle" type="TextureRect" parent="."]
