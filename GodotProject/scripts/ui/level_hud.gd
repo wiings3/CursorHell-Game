@@ -15,7 +15,7 @@ const DEFAULT_SCREEN_RECT := Rect2(556.0, 202.0, 816.0, 630.0)
 const DEFAULT_TIMER_RECT := Rect2(315.0, 270.0, 143.0, 73.0)
 const DEFAULT_SCORE_RECT := Rect2(1478.0, 273.0, 143.0, 71.0)
 const DEFAULT_IDENTITY_RECT := Rect2(680.0, 218.0, 560.0, 49.0)
-const DEFAULT_TUTORIAL_RECT := Rect2(660.0, 904.0, 600.0, 58.0)
+const DEFAULT_TUTORIAL_RECT := Rect2(660.0, 917.0, 600.0, 56.0)
 const DEFAULT_HINT_RECT := Rect2(592.0, 838.0, 744.0, 38.0)
 
 @onready var screen_ui: Control = $ScreenUI
