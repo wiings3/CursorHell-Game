@@ -2,6 +2,7 @@
 extends SceneTree
 
 const Catalog = preload("res://scripts/level_catalog.gd")
+const AMBIENT_LIGHT_MASK := 2
 const OBSOLETE_LEVEL_SCENES := [
 	"res://Scenes/Levels/Level1.tscn",
 	"res://Scenes/Levels/Level2.tscn",
@@ -60,6 +61,10 @@ func _run() -> void:
 		var hud = level.hud
 		var metadata: Dictionary = Catalog.get_level(index)
 		var hint_label := hud.get_node("HintLabel") as Control
+		var decay_background := shell.get_node("DecayBackground") as CanvasItem
+		var arena_background := shell.get_node("ScreenClip/ArenaContent/ArenaBackground/Background") as CanvasItem
+		var ambient_light := shell.get_node("LightBeam") as PointLight2D
+		var roof_light := shell.get_node("LightBeam2") as PointLight2D
 
 		check(level.state == "intro", "Intro missing: %d" % index)
 		check(hud.screen_ui.get_rect().is_equal_approx(shell.get_layout_rect(shell.screen)), "Screen HUD local alignment: %d" % index)
@@ -78,6 +83,10 @@ func _run() -> void:
 		check(hud.level_name_label.text == str(metadata.get("name", "")), "Level identity: %d" % index)
 		check(hud.boss_tag_label.text == str(metadata.get("boss_tag", "")), "Boss tag text: %d" % index)
 		check(hud.boss_tag_label.visible == bool(metadata.get("is_boss", false)), "Boss identity visibility: %d" % index)
+		check(decay_background.light_mask == AMBIENT_LIGHT_MASK, "Cabinet background light mask: %d" % index)
+		check(ambient_light.item_cull_mask == AMBIENT_LIGHT_MASK, "Ambient light cull mask: %d" % index)
+		check(roof_light.item_cull_mask == AMBIENT_LIGHT_MASK, "Roof light cull mask: %d" % index)
+		check((arena_background.light_mask & AMBIENT_LIGHT_MASK) == 0, "Ambient light mask leaks into gameplay arena: %d" % index)
 
 		level._reset_round(true)
 		check(level.state == "countdown", "Countdown missing: %d" % index)
