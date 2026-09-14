@@ -84,8 +84,8 @@ func _run() -> void:
 		check(hud.boss_tag_label.text == str(metadata.get("boss_tag", "")), "Boss tag text: %d" % index)
 		check(hud.boss_tag_label.visible == bool(metadata.get("is_boss", false)), "Boss identity visibility: %d" % index)
 		check(decay_background.light_mask == AMBIENT_LIGHT_MASK, "Cabinet background light mask: %d" % index)
-		check(ambient_light.item_cull_mask == AMBIENT_LIGHT_MASK, "Ambient light cull mask: %d" % index)
-		check(roof_light.item_cull_mask == AMBIENT_LIGHT_MASK, "Roof light cull mask: %d" % index)
+		check(ambient_light.range_item_cull_mask == AMBIENT_LIGHT_MASK, "Ambient light cull mask: %d" % index)
+		check(roof_light.range_item_cull_mask == AMBIENT_LIGHT_MASK, "Roof light cull mask: %d" % index)
 		check((arena_background.light_mask & AMBIENT_LIGHT_MASK) == 0, "Ambient light mask leaks into gameplay arena: %d" % index)
 
 		level._reset_round(true)
