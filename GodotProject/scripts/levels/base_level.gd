@@ -581,6 +581,11 @@ func _format_score(value: int) -> String:
 		remaining = remaining.substr(0, remaining.length() - 3)
 	return remaining + result
 
+func _get_win_action_text() -> String:
+	if has_next_level:
+		return "CLICK TO CONTINUE\nR = REPLAY LEVEL"
+	return "CLICK OR PRESS R TO PLAY AGAIN"
+
 func _show_intro() -> void:
 	state = "intro"
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -663,8 +668,8 @@ func _get_win_body(final_score: int, best_score: int) -> String:
 func _get_win_tutorial_text() -> String:
 	return "Click = next  |  R = replay  |  Esc = pause"
 
-func _get_completion_bonus() -> int:
-	return 1000
+func _get_completion_bonus() -> float:
+	return 0.0
 
 func _format_time(seconds: float) -> String:
 	var whole := maxi(0, int(floor(seconds)))
