@@ -82,32 +82,32 @@ func intersects_segment(start: Vector2, finish: Vector2) -> bool:
 		var dx := finish.x - start.x
 		if absf(dx) <= 0.0001:
 			return false
-		var t := (coordinate - start.x) / dx
-		if t < 0.0 or t > 1.0:
+		var vertical_t := (coordinate - start.x) / dx
+		if vertical_t < 0.0 or vertical_t > 1.0:
 			return false
-		var y := lerpf(start.y, finish.y, t)
-		return y >= ARENA.position.y and y <= ARENA.end.y
+		var crossing_y := lerpf(start.y, finish.y, vertical_t)
+		return crossing_y >= ARENA.position.y and crossing_y <= ARENA.end.y
 
 	var dy := finish.y - start.y
 	if absf(dy) <= 0.0001:
 		return false
-	var t := (coordinate - start.y) / dy
-	if t < 0.0 or t > 1.0:
+	var horizontal_t := (coordinate - start.y) / dy
+	if horizontal_t < 0.0 or horizontal_t > 1.0:
 		return false
-	var x := lerpf(start.x, finish.x, t)
-	return x >= ARENA.position.x and x <= ARENA.end.x
+	var crossing_x := lerpf(start.x, finish.x, horizontal_t)
+	return crossing_x >= ARENA.position.x and crossing_x <= ARENA.end.x
 
 func _apply_geometry() -> void:
 	if not is_instance_valid(glow) or not is_instance_valid(core):
 		return
 	if orientation == "vertical":
-		var points := PackedVector2Array([Vector2(coordinate, ARENA.position.y), Vector2(coordinate, ARENA.end.y)])
-		glow.points = points
-		core.points = points
+		var vertical_points := PackedVector2Array([Vector2(coordinate, ARENA.position.y), Vector2(coordinate, ARENA.end.y)])
+		glow.points = vertical_points
+		core.points = vertical_points
 	else:
-		var points := PackedVector2Array([Vector2(ARENA.position.x, coordinate), Vector2(ARENA.end.x, coordinate)])
-		glow.points = points
-		core.points = points
+		var horizontal_points := PackedVector2Array([Vector2(ARENA.position.x, coordinate), Vector2(ARENA.end.x, coordinate)])
+		glow.points = horizontal_points
+		core.points = horizontal_points
 	glow.width = beam_width
 	core.width = maxf(2.0, beam_width * 0.16)
 
