@@ -10,6 +10,7 @@ const SCORE_TARGET_FLAG_KEY := "score_target_explained"
 
 const TUTORIAL_ANTI_CAMP := "anti_camp"
 const TUTORIAL_SCORE_TARGET := "score_target"
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
 
 @onready var eyebrow_label: Label = $Root/PanelGroup/Panel/VBox/Eyebrow
 @onready var title_label: Label = $Root/PanelGroup/Panel/VBox/Title
@@ -33,6 +34,11 @@ func _ready() -> void:
 	hide()
 
 func _on_tree_node_added(node: Node) -> void:
+	if node is CursorHellBaseLevel:
+		CrashTrace.write("SceneTree node_added gameplay root: %s" % node.name)
+		if not node.ready.is_connected(_on_traced_level_ready.bind(node)):
+			node.ready.connect(_on_traced_level_ready.bind(node), CONNECT_ONE_SHOT)
+
 	if visible or _tutorial_pending:
 		return
 
@@ -46,6 +52,9 @@ func _on_tree_node_added(node: Node) -> void:
 		if _score_target_explained:
 			return
 		_show_tutorial(TUTORIAL_SCORE_TARGET)
+
+func _on_traced_level_ready(level: Node) -> void:
+	CrashTrace.write("SceneTree gameplay root READY signal: %s" % level.name)
 
 func _show_tutorial(tutorial_kind: String) -> void:
 	_active_tutorial = tutorial_kind
