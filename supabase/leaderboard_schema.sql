@@ -14,8 +14,28 @@ create table if not exists public.endless_leaderboard (
 alter table public.endless_leaderboard enable row level security;
 revoke all on public.endless_leaderboard from anon, authenticated;
 
+drop policy if exists "public leaderboard safe read" on public.endless_leaderboard;
+create policy "public leaderboard safe read"
+on public.endless_leaderboard
+for select
+to anon, authenticated
+using (true);
+
+grant select (
+  player_id,
+  callsign,
+  best_survival_ms,
+  survival_score,
+  survival_phase,
+  best_score,
+  score_survival_ms,
+  score_phase,
+  updated_at
+) on public.endless_leaderboard to anon, authenticated;
+
 drop view if exists public.endless_leaderboard_public;
-create view public.endless_leaderboard_public as
+create view public.endless_leaderboard_public
+with (security_invoker = true) as
 select
   player_id,
   callsign,
@@ -29,6 +49,12 @@ select
 from public.endless_leaderboard;
 
 grant select on public.endless_leaderboard_public to anon, authenticated;
+
+create index if not exists endless_leaderboard_survival_rank_idx
+on public.endless_leaderboard (best_survival_ms desc, survival_score desc);
+
+create index if not exists endless_leaderboard_score_rank_idx
+on public.endless_leaderboard (best_score desc, score_survival_ms desc);
 
 create or replace function public.submit_endless_result(
   p_player_id uuid,
@@ -119,4 +145,5 @@ end;
 $$;
 
 revoke all on function public.submit_endless_result(uuid,uuid,text,bigint,bigint,integer) from public;
-grant execute on function public.submit_endless_result(uuid,uuid,text,bigint,bigint,integer) to anon, authenticated;
+revoke execute on function public.submit_endless_result(uuid,uuid,text,bigint,bigint,integer) from authenticated;
+grant execute on function public.submit_endless_result(uuid,uuid,text,bigint,bigint,integer) to anon;
