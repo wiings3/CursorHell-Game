@@ -12,6 +12,7 @@ script = ExtResource("1_endless")
 
 [node name="GameplayMachineShell" parent="." instance=ExtResource("2_shell")]
 unique_name_in_owner = true
+editable_children = true
 
 [node name="WarningLayer" parent="GameplayMachineShell/ScreenClip/ArenaContent" instance=ExtResource("3_warning")]
 unique_name_in_owner = true
