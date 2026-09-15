@@ -11,7 +11,6 @@ script = ExtResource("1_level")
 
 [node name="GameplayMachineShell" parent="." instance=ExtResource("2_shell")]
 unique_name_in_owner = true
-editable_children = true
 
 [node name="Pylons" type="Node2D" parent="GameplayMachineShell/ScreenClip/ArenaContent"]
 unique_name_in_owner = true
@@ -30,3 +29,5 @@ position = Vector2(800, 472.68)
 [node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
 unique_name_in_owner = true
 level_display_text = "LEVEL 9\nDEAD ZONES"
+
+[editable path="GameplayMachineShell"]
