@@ -49,6 +49,8 @@ func _on_tree_node_added(node: Node) -> void:
 		return
 
 	if node is CursorHellScoreTarget:
+		if node.get_meta("suppress_score_target_tutorial", false):
+			return
 		if _score_target_explained:
 			return
 		_show_tutorial(TUTORIAL_SCORE_TARGET)
