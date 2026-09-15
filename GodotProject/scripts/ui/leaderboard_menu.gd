@@ -5,15 +5,16 @@ signal back_requested
 signal callsign_changed(callsign: String)
 signal refresh_requested(board: String)
 
-const ROW_HEIGHT := 38.0
-const RANK_WIDTH := 64.0
-const CALLSIGN_WIDTH := 280.0
-const TIME_WIDTH := 130.0
-const SCORE_WIDTH := 160.0
-const PHASE_WIDTH := 98.0
+const ROW_HEIGHT := 44.0
 const NORMAL_TEXT := Color(0.86, 0.85, 0.78, 1)
 const OWN_TEXT := Color(1.0, 0.68, 0.28, 1)
 const MUTED_TEXT := Color(0.62, 0.65, 0.54, 1)
+
+# Keep minimum widths deliberately conservative. The cells expand by ratio to use
+# the available table width, but can never force the cabinet panel wider than its
+# authored bounds.
+const COLUMN_MIN_WIDTHS := [52.0, 150.0, 92.0, 100.0, 62.0]
+const COLUMN_STRETCH := [0.70, 2.60, 1.25, 1.40, 0.90]
 
 @onready var survival_button: Button = %SurvivalButton
 @onready var score_button: Button = %ScoreButton
@@ -108,25 +109,29 @@ func _save_callsign() -> void:
 func _add_record_row(rank: int, name: String, time_ms: int, score: int, phase: int, is_own: bool) -> void:
 	var row := HBoxContainer.new()
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
-	row.add_theme_constant_override("separation", 0)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 8)
 	rows_vbox.add_child(row)
 
 	var color := OWN_TEXT if is_own else NORMAL_TEXT
 	var rank_text := "> %d" % rank if is_own else str(rank)
-	row.add_child(_make_cell(rank_text, RANK_WIDTH, HORIZONTAL_ALIGNMENT_LEFT, color))
-	row.add_child(_make_cell(name, CALLSIGN_WIDTH, HORIZONTAL_ALIGNMENT_LEFT, color))
-	row.add_child(_make_cell(_format_time_ms(time_ms), TIME_WIDTH, HORIZONTAL_ALIGNMENT_CENTER, color))
-	row.add_child(_make_cell(_format_score(score), SCORE_WIDTH, HORIZONTAL_ALIGNMENT_CENTER, color))
-	row.add_child(_make_cell("%02d" % phase, PHASE_WIDTH, HORIZONTAL_ALIGNMENT_RIGHT, color))
+	row.add_child(_make_cell(rank_text, 0, HORIZONTAL_ALIGNMENT_LEFT, color))
+	row.add_child(_make_cell(name, 1, HORIZONTAL_ALIGNMENT_LEFT, color))
+	row.add_child(_make_cell(_format_time_ms(time_ms), 2, HORIZONTAL_ALIGNMENT_CENTER, color))
+	row.add_child(_make_cell(_format_score(score), 3, HORIZONTAL_ALIGNMENT_CENTER, color))
+	row.add_child(_make_cell("%02d" % phase, 4, HORIZONTAL_ALIGNMENT_RIGHT, color))
 
-func _make_cell(text_value: String, width: float, alignment: HorizontalAlignment, color: Color) -> Label:
+func _make_cell(text_value: String, column: int, alignment: HorizontalAlignment, color: Color) -> Label:
 	var label := Label.new()
-	label.custom_minimum_size = Vector2(width, ROW_HEIGHT)
+	label.custom_minimum_size = Vector2(COLUMN_MIN_WIDTHS[column], ROW_HEIGHT)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_stretch_ratio = COLUMN_STRETCH[column]
 	label.text = text_value
 	label.horizontal_alignment = alignment
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.add_theme_color_override("font_color", color)
-	label.add_theme_font_size_override("font_size", 15)
+	label.add_theme_font_size_override("font_size", 16)
 	return label
 
 func _show_message_row(message: String) -> void:
@@ -135,13 +140,13 @@ func _show_message_row(message: String) -> void:
 
 func _add_message_row(message: String) -> void:
 	var label := Label.new()
-	label.custom_minimum_size = Vector2(0, 86)
+	label.custom_minimum_size = Vector2(0, 100)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.text = message
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_color_override("font_color", MUTED_TEXT)
-	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_font_size_override("font_size", 15)
 	rows_vbox.add_child(label)
 
 func _clear_rows() -> void:
