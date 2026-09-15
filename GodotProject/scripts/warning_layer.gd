@@ -2,6 +2,7 @@
 extends Node2D
 class_name CursorHellWarningLayer
 
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
 const WarningMarkerScene := preload("res://Scenes/Components/WarningMarker.tscn")
 const NeedleWarningMarkerScene := preload("res://Scenes/Components/NeedleWarningMarker.tscn")
 
@@ -12,12 +13,15 @@ var warnings: Array = []
 @onready var design_preview: Node2D = $DesignPreview
 
 func _ready() -> void:
+	if not Engine.is_editor_hint():
+		CrashTrace.write("WarningLayer._ready BEGIN")
 	# Keep one example marker visible in the 2D editor so the warning art can be
 	# selected and inspected. It never appears during gameplay.
 	if Engine.is_editor_hint():
 		design_preview.visible = true
 	else:
 		design_preview.visible = false
+		CrashTrace.write("WarningLayer._ready END")
 
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
