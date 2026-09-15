@@ -11,7 +11,6 @@ script = ExtResource("1_level")
 
 [node name="GameplayMachineShell" parent="." instance=ExtResource("2_shell")]
 unique_name_in_owner = true
-editable_children = true
 
 [node name="WarningLayer" parent="GameplayMachineShell/ScreenClip/ArenaContent" instance=ExtResource("3_warning")]
 unique_name_in_owner = true
@@ -27,3 +26,5 @@ position = Vector2(800, 472.68)
 [node name="LevelHUD" parent="." instance=ExtResource("5_hud")]
 unique_name_in_owner = true
 level_display_text = "LEVEL 7\nTHE FLOOD"
+
+[editable path="GameplayMachineShell"]
