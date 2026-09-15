@@ -7,6 +7,8 @@ signal settings_requested
 signal main_menu_requested
 signal quit_requested
 
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
+
 @onready var scrim: ColorRect = $Root/Scrim
 @onready var panel_group: Control = $Root/PanelGroup
 @onready var level_label: Label = %LevelLabel
@@ -20,8 +22,11 @@ var panel_home := Vector2.ZERO
 var machine_shell: CursorHellMachineShell
 
 func bind_machine_shell(shell: CursorHellMachineShell) -> void:
+	CrashTrace.write("PauseMenu.bind_machine_shell BEGIN")
 	machine_shell = shell
+	CrashTrace.write("PauseMenu.bind_machine_shell assigned shell")
 	_apply_viewport_layout()
+	CrashTrace.write("PauseMenu.bind_machine_shell END")
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -36,6 +41,7 @@ func _ready() -> void:
 	quit_button.pressed.connect(func() -> void: quit_requested.emit())
 
 func _apply_viewport_layout() -> void:
+	CrashTrace.write("PauseMenu._apply_viewport_layout BEGIN shell=%s" % str(is_instance_valid(machine_shell)))
 	var viewport_size := get_viewport().get_visible_rect().size
 	var design_size := CursorHellMachineShell.DESIGN_SIZE
 	var viewport_scale := minf(viewport_size.x / design_size.x, viewport_size.y / design_size.y)
@@ -43,11 +49,14 @@ func _apply_viewport_layout() -> void:
 	transform = Transform2D(0.0, Vector2.ONE * viewport_scale, 0.0, viewport_offset)
 	var root: Control = $Root
 	if is_instance_valid(machine_shell):
+		CrashTrace.write("PauseMenu._apply_viewport_layout before get_layout_rect")
 		var screen_rect := machine_shell.get_layout_rect(machine_shell.screen)
+		CrashTrace.write("PauseMenu._apply_viewport_layout after get_layout_rect")
 		root.position = screen_rect.position
 		root.size = screen_rect.size
 	panel_home = (root.size - panel_group.size * panel_group.scale) * 0.5
 	panel_group.position = panel_home
+	CrashTrace.write("PauseMenu._apply_viewport_layout END")
 
 func _input(event: InputEvent) -> void:
 	if not visible or not (event is InputEventKey):
