@@ -20,7 +20,6 @@ const LOGICAL_ARENA := Rect2(390.0, 72.0, 820.0, 756.0)
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
-		CrashTrace.reset()
 		CrashTrace.write("GameplayMachineShell._ready BEGIN")
 	# BaseLevel updates its root transform before child components. Keep the CRT
 	# on the same transform as this authored cabinet so it cannot drift when the
