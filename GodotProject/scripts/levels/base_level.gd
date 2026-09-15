@@ -53,18 +53,14 @@ var run_stats = RunStats.new()
 # loader while still being able to present the correct completion action.
 var has_next_level: bool = false
 
-# These gameplay nodes live inside an instanced GameplayMachineShell scene.
-# Use explicit authored paths instead of %UniqueName lookups across the instance
-# boundary; exported builds do not reliably resolve those nested unique names
-# from the level root.
-@onready var machine_shell: CursorHellMachineShell = $GameplayMachineShell
-@onready var player: CursorHellPlayer = $GameplayMachineShell/ScreenClip/ArenaContent/Player
-@onready var projectile_layer: Node2D = $GameplayMachineShell/ScreenClip/ArenaContent/Projectiles
-@onready var warning_layer: CursorHellWarningLayer = $GameplayMachineShell/ScreenClip/ArenaContent/WarningLayer
+@onready var player: CursorHellPlayer = %Player
+@onready var projectile_layer: Node2D = %Projectiles
+@onready var warning_layer: CursorHellWarningLayer = %WarningLayer
+@onready var machine_shell: CursorHellMachineShell = %GameplayMachineShell
 
 # The complete HUD is now a reusable component scene. BaseLevel talks to the
 # component root instead of reaching through another scene's unique-node scope.
-@onready var hud: CursorHellLevelHUD = $LevelHUD
+@onready var hud: CursorHellLevelHUD = %LevelHUD
 @onready var ui_layer: CanvasLayer = hud
 @onready var timer_label: Label = hud.timer_label
 @onready var score_label: Label = hud.score_label
@@ -573,8 +569,12 @@ func _update_ui() -> void:
 	else:
 		combo_label.text = ""
 
+func _format_time(seconds: float) -> String:
+	var whole := int(floor(seconds))
+	return "%d:%02d" % [int(whole / 60), whole % 60]
+
 func _format_score(value: int) -> String:
-	var remaining := str(maxi(value, 0))
+	var remaining := str(value)
 	var result := ""
 	while remaining.length() > 3:
 		result = "," + remaining.substr(remaining.length() - 3, 3) + result
@@ -586,16 +586,6 @@ func _get_win_action_text() -> String:
 		return "CLICK TO CONTINUE\nR = REPLAY LEVEL"
 	return "CLICK OR PRESS R TO PLAY AGAIN"
 
-func _show_intro() -> void:
-	state = "intro"
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_show_message_panel(false)
-	message_title.text = _get_intro_title()
-	message_subtitle.text = _get_intro_subtitle()
-	message_body.text = _get_intro_body()
-	tutorial_label.text = _get_intro_tutorial_text()
-	_update_ui()
-
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -603,7 +593,7 @@ func _notification(what: int) -> void:
 
 # Level-specific hooks ---------------------------------------------------------
 # Subclasses override these. BaseLevel owns the reusable runtime systems while
-# each level only defines identity, tutorial copy, and projectile scheduling.
+# each level owns its pacing, text, projectile rules, and scoring details.
 
 func _get_level_number() -> int:
 	return 0
@@ -611,66 +601,59 @@ func _get_level_number() -> int:
 func _get_round_time() -> float:
 	return 45.0
 
+func _get_completion_bonus() -> float:
+	return 0.0
+
 func _get_phase() -> int:
 	return 0
 
-func _get_spawn_interval(_phase: int) -> float:
-	return 0.95
-
-func _schedule_level_projectile(_phase: int) -> void:
-	pass
-
-func _graze_enabled_for_phase(phase: int) -> bool:
-	return phase >= 3
-
 func _update_level_tutorial() -> void:
 	pass
+
+func _schedule_level_projectile(_current_phase: int) -> void:
+	pass
+
+func _get_spawn_interval(_current_phase: int) -> float:
+	return 1.0
+
+func _graze_enabled_for_phase(_current_phase: int) -> bool:
+	return true
 
 func _get_intro_title() -> String:
 	return "LEVEL"
 
 func _get_intro_subtitle() -> String:
-	return "CLICK TO BEGIN"
+	return ""
 
 func _get_intro_body() -> String:
-	return "Move the cursor. Avoid projectiles.\n\nCLICK TO BEGIN"
-
-func _get_intro_tutorial_text() -> String:
-	return "Mouse = move  |  R = restart  |  Esc = pause"
-
-func _get_countdown_tutorial_text() -> String:
-	return _get_intro_tutorial_text()
-
-func _get_countdown_subtitle() -> String:
-	return "SURVIVE"
+	return "CLICK TO BEGIN"
 
 func _get_pause_subtitle() -> String:
-	return "SYSTEM HOLD"
+	return "PAUSED"
+
+func _get_countdown_tutorial_text() -> String:
+	return "GET READY"
+
+func _get_countdown_subtitle() -> String:
+	return ""
 
 func _get_death_title() -> String:
-	return "SYSTEM FAILURE"
+	return "RUN ENDED"
 
 func _get_death_subtitle() -> String:
-	return "IMPACT DETECTED"
+	return "IMPACT"
 
-func _get_death_body(reason: String, survived: float, final_score: int, best_score: int) -> String:
-	return "%s\n\nSURVIVED  %s\nSCORE     %s\nBEST      %s\n\nCLICK TO RETRY\nR = restart" % [reason.to_upper(), _format_time(survived), _format_score(final_score), _format_score(best_score)]
+func _get_death_body(reason: String, run_time: float, final_score: int, best_score: int) -> String:
+	return "%s\n\nTIME   %s\nSCORE  %s\nBEST   %s\n\nCLICK OR PRESS R TO RETRY" % [reason.to_upper(), _format_time(run_time), _format_score(final_score), _format_score(best_score)]
 
 func _get_win_title() -> String:
 	return "LEVEL COMPLETE"
 
 func _get_win_subtitle() -> String:
-	return "SURVIVED"
-
-func _get_win_body(final_score: int, best_score: int) -> String:
-	return "SCORE  %s\nBEST   %s\n\nCLICK TO CONTINUE" % [_format_score(final_score), _format_score(best_score)]
+	return "CLEARED"
 
 func _get_win_tutorial_text() -> String:
-	return "Click = next  |  R = replay  |  Esc = pause"
+	return "LEVEL COMPLETE"
 
-func _get_completion_bonus() -> float:
-	return 0.0
-
-func _format_time(seconds: float) -> String:
-	var whole := maxi(0, int(floor(seconds)))
-	return "%d:%02d" % [int(whole / 60), whole % 60]
+func _get_win_body(final_score: int, best_score: int) -> String:
+	return "FINAL SCORE   %s\nBEST SCORE    %s\n\n%s" % [_format_score(final_score), _format_score(best_score), _get_win_action_text()]
