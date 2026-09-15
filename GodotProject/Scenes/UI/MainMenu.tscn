@@ -54,20 +54,20 @@ z_index = 2
 layout_mode = 3
 anchors_preset = 0
 offset_left = 676.0
-offset_top = 226.0
+offset_top = 216.0
 offset_right = 1252.0
-offset_bottom = 812.0
+offset_bottom = 822.0
 mouse_filter = 1
 theme = ExtResource("3_theme")
 
 [node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
 layout_mode = 0
 offset_right = 576.0
-offset_bottom = 586.0
+offset_bottom = 606.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 7
+theme_override_constants/separation = 4
 alignment = 1
 
 [node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
@@ -107,7 +107,7 @@ mouse_filter = 2
 
 [node name="ContinueButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../StartButton")
 text = "CONTINUE"
@@ -115,25 +115,34 @@ alignment = 0
 
 [node name="StartButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ContinueButton")
-focus_neighbor_bottom = NodePath("../LevelSelectButton")
+focus_neighbor_bottom = NodePath("../PrototypeButton")
 text = "START NEW RUN"
+alignment = 0
+
+[node name="PrototypeButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+focus_neighbor_top = NodePath("../StartButton")
+focus_neighbor_bottom = NodePath("../LevelSelectButton")
+text = "ROUTE PROTOTYPE"
 alignment = 0
 
 [node name="LevelSelectButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-focus_neighbor_top = NodePath("../StartButton")
+focus_neighbor_top = NodePath("../PrototypeButton")
 focus_neighbor_bottom = NodePath("../EndlessButton")
 text = "LEVEL SELECT"
 alignment = 0
 
 [node name="EndlessButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_top = NodePath("../LevelSelectButton")
 focus_neighbor_bottom = NodePath("../LeaderboardButton")
@@ -142,7 +151,7 @@ alignment = 0
 
 [node name="LeaderboardButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_top = NodePath("../EndlessButton")
 focus_neighbor_bottom = NodePath("../SettingsButton")
@@ -151,7 +160,7 @@ alignment = 0
 
 [node name="SettingsButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_top = NodePath("../LeaderboardButton")
 focus_neighbor_bottom = NodePath("../QuitButton")
@@ -160,7 +169,7 @@ alignment = 0
 
 [node name="QuitButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_top = NodePath("../SettingsButton")
 text = "QUIT"
