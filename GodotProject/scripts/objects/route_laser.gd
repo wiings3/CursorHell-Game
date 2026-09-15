@@ -14,6 +14,10 @@ var beam_width := 22.0
 var state := "dormant"
 var state_time := 0.0
 
+var sweep_enabled := false
+var sweep_from := 800.0
+var sweep_to := 800.0
+
 func _ready() -> void:
 	_apply_geometry()
 	_apply_visuals()
@@ -24,20 +28,37 @@ func configure(new_orientation: String, new_coordinate: float, new_charge_time: 
 	charge_time = maxf(new_charge_time, 0.15)
 	lethal_time = maxf(new_lethal_time, 0.15)
 	beam_width = maxf(new_beam_width, 4.0)
+	sweep_enabled = false
+	sweep_from = coordinate
+	sweep_to = coordinate
 	if is_node_ready():
 		_apply_geometry()
 		_apply_visuals()
+
+func configure_sweep(new_from: float, new_to: float) -> void:
+	sweep_enabled = true
+	sweep_from = new_from
+	sweep_to = new_to
+	coordinate = sweep_from
+	if is_node_ready():
+		_apply_geometry()
 
 func prime() -> void:
 	if state != "dormant":
 		return
 	state = "charging"
 	state_time = 0.0
+	if sweep_enabled:
+		coordinate = sweep_from
+		_apply_geometry()
 	_apply_visuals()
 
 func reset_laser() -> void:
 	state = "dormant"
 	state_time = 0.0
+	if sweep_enabled:
+		coordinate = sweep_from
+		_apply_geometry()
 	_apply_visuals()
 
 func is_lethal() -> bool:
@@ -57,6 +78,10 @@ func _process(delta: float) -> void:
 			state_time = 0.0
 			_apply_visuals()
 	elif state == "lethal":
+		if sweep_enabled:
+			var sweep_progress := clampf(state_time / maxf(lethal_time, 0.001), 0.0, 1.0)
+			coordinate = lerpf(sweep_from, sweep_to, sweep_progress)
+			_apply_geometry()
 		var pulse := 0.72 + 0.28 * absf(sin(state_time * 28.0))
 		glow.modulate.a = pulse
 		core.modulate.a = 1.0
@@ -118,8 +143,8 @@ func _apply_visuals() -> void:
 		"dormant":
 			glow.default_color = Color(0.78, 0.42, 0.18, 0.20)
 			core.default_color = Color(1.0, 0.67, 0.28, 0.34)
-			glow.modulate.a = 0.42
-			core.modulate.a = 0.55
+			glow.modulate.a = 0.24
+			core.modulate.a = 0.34
 		"charging":
 			glow.default_color = Color(1.0, 0.36, 0.10, 0.82)
 			core.default_color = Color(1.0, 0.82, 0.36, 1.0)
@@ -133,5 +158,5 @@ func _apply_visuals() -> void:
 		_:
 			glow.default_color = Color(0.28, 0.24, 0.18, 0.10)
 			core.default_color = Color(0.50, 0.43, 0.32, 0.12)
-			glow.modulate.a = 0.28
-			core.modulate.a = 0.30
+			glow.modulate.a = 0.12
+			core.modulate.a = 0.16
