@@ -7,6 +7,7 @@ signal menu_requested
 
 const DESIGN_SIZE := CursorHellMachineShell.DESIGN_SIZE
 const PerformanceRank = preload("res://scripts/performance_rank.gd")
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
 
 @onready var root: Control = $Root
 @onready var scrim: ColorRect = $Root/Scrim
@@ -33,8 +34,11 @@ var panel_home := Vector2.ZERO
 var machine_shell: CursorHellMachineShell
 
 func bind_machine_shell(shell: CursorHellMachineShell) -> void:
+	CrashTrace.write("TransitionOverlay.bind_machine_shell BEGIN")
 	machine_shell = shell
+	CrashTrace.write("TransitionOverlay.bind_machine_shell assigned shell")
 	_apply_viewport_layout()
+	CrashTrace.write("TransitionOverlay.bind_machine_shell END")
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -68,6 +72,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 func show_intro(level_number: int, title: String, subtitle: String, body: String) -> void:
+	CrashTrace.write("TransitionOverlay.show_intro BEGIN")
 	mode = "intro"
 	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.03, 0.08, 0.035, 0.08))
 	state_label.text = "LEVEL %d" % level_number
@@ -78,8 +83,10 @@ func show_intro(level_number: int, title: String, subtitle: String, body: String
 	_set_result_nodes_visible(false)
 	prompt_label.text = "CLICK OR R TO BEGIN    //    ESC = MENU"
 	_show_animated()
+	CrashTrace.write("TransitionOverlay.show_intro END")
 
 func show_endless_intro(title: String, subtitle: String, body: String) -> void:
+	CrashTrace.write("TransitionOverlay.show_endless_intro BEGIN")
 	mode = "endless_intro"
 	_set_mode_style(Color(1.0, 0.62, 0.18, 1.0), Color(0.03, 0.08, 0.035, 0.08))
 	state_label.text = "ENDLESS MODE"
@@ -90,6 +97,7 @@ func show_endless_intro(title: String, subtitle: String, body: String) -> void:
 	_set_result_nodes_visible(false)
 	prompt_label.text = "CLICK OR R TO BEGIN    //    ESC = MENU"
 	_show_animated()
+	CrashTrace.write("TransitionOverlay.show_endless_intro END")
 
 func show_failure(level_number: int, title: String, stats: CursorHellRunStats, best_score: int, is_new_best: bool) -> void:
 	mode = "failure"
@@ -236,18 +244,23 @@ func _set_mode_style(accent: Color, tint: Color) -> void:
 	mode_tint.color = tint
 
 func _apply_viewport_layout() -> void:
+	CrashTrace.write("TransitionOverlay._apply_viewport_layout BEGIN shell=%s" % str(is_instance_valid(machine_shell)))
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		CrashTrace.write("TransitionOverlay._apply_viewport_layout early return empty viewport")
 		return
 	var viewport_scale: float = minf(viewport_size.x / DESIGN_SIZE.x, viewport_size.y / DESIGN_SIZE.y)
 	var viewport_offset: Vector2 = (viewport_size - DESIGN_SIZE * viewport_scale) * 0.5
 	transform = Transform2D(0.0, Vector2.ONE * viewport_scale, 0.0, viewport_offset)
 	if is_instance_valid(machine_shell):
+		CrashTrace.write("TransitionOverlay._apply_viewport_layout before get_layout_rect")
 		var screen_rect := machine_shell.get_layout_rect(machine_shell.screen)
+		CrashTrace.write("TransitionOverlay._apply_viewport_layout after get_layout_rect")
 		root.position = screen_rect.position
 		root.size = screen_rect.size
 	panel_home = (root.size - panel_root.size) * 0.5
 	panel_root.position = panel_home
+	CrashTrace.write("TransitionOverlay._apply_viewport_layout END")
 
 func _clean_intro_body(body: String) -> String:
 	var cleaned := body.replace("\n\nCLICK TO BEGIN", "")
