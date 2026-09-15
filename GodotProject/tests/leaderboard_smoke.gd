@@ -36,6 +36,7 @@ func _run() -> void:
 	check(menu.get_node_or_null("Root/PanelGroup/Panel/VBox/BoardTabs/SurvivalButton") != null, "Survival tab is missing.")
 	check(menu.get_node_or_null("Root/PanelGroup/Panel/VBox/BoardTabs/ScoreButton") != null, "Score tab is missing.")
 	check(menu.get_node_or_null("Root/PanelGroup/Panel/VBox/CallsignRow/CallsignEdit") != null, "Callsign field is missing.")
+	check(menu.get_node_or_null("Root/PanelGroup/Panel/VBox/RowsPanel/RowsMargin/RowsLayout/RowsScroll/RowsVBox") != null, "Leaderboard row container is missing.")
 
 	menu.queue_free()
 	service.queue_free()
