@@ -2,6 +2,7 @@
 extends Node2D
 class_name CursorHellMachineShell
 
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
 const DESIGN_SIZE := Vector2(1920.0, 1080.0)
 # Keep the campaign simulation in its existing coordinates. Only its display
 # transform changes, so every warning, projectile, pylon and collision agrees.
@@ -18,6 +19,9 @@ const LOGICAL_ARENA := Rect2(390.0, 72.0, 820.0, 756.0)
 @onready var crt_overlay: ColorRect = $CRTCanvas/ColorRect
 
 func _ready() -> void:
+	if not Engine.is_editor_hint():
+		CrashTrace.reset()
+		CrashTrace.write("GameplayMachineShell._ready BEGIN")
 	# BaseLevel updates its root transform before child components. Keep the CRT
 	# on the same transform as this authored cabinet so it cannot drift when the
 	# window letterboxes or the cabinet shakes on impact.
@@ -26,6 +30,8 @@ func _ready() -> void:
 	_update_arena_transform()
 	_sync_crt_canvas()
 	set_process(true)
+	if not Engine.is_editor_hint():
+		CrashTrace.write("GameplayMachineShell._ready END")
 
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
