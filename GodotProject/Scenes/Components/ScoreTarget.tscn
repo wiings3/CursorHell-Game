@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://csbkgry8u5qt3"]
 
-[ext_resource type="Script" path="res://scripts/objects/score_target.gd" id="1_target"]
+[ext_resource type="Script" uid="uid://bjkc3uj2fghum" path="res://scripts/objects/score_target.gd" id="1_target"]
 
 [node name="ScoreTarget" type="Node2D"]
 script = ExtResource("1_target")
@@ -20,8 +20,8 @@ default_color = Color(0.2, 0.92, 1, 0.95)
 antialiased = true
 
 [node name="Core" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(0, -12, 12, 0, 0, 12, -12, 0)
 color = Color(0.72, 1, 1, 0.95)
+polygon = PackedVector2Array(0, -12, 12, 0, 0, 12, -12, 0)
 
 [node name="CrossH" type="Line2D" parent="."]
 points = PackedVector2Array(-18, 0, 18, 0)
@@ -46,3 +46,4 @@ theme_override_font_sizes/font_size = 14
 text = "1/4"
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
