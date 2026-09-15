@@ -5,12 +5,22 @@ signal back_requested
 signal callsign_changed(callsign: String)
 signal refresh_requested(board: String)
 
+const ROW_HEIGHT := 38.0
+const RANK_WIDTH := 64.0
+const CALLSIGN_WIDTH := 280.0
+const TIME_WIDTH := 130.0
+const SCORE_WIDTH := 160.0
+const PHASE_WIDTH := 98.0
+const NORMAL_TEXT := Color(0.86, 0.85, 0.78, 1)
+const OWN_TEXT := Color(1.0, 0.68, 0.28, 1)
+const MUTED_TEXT := Color(0.62, 0.65, 0.54, 1)
+
 @onready var survival_button: Button = %SurvivalButton
 @onready var score_button: Button = %ScoreButton
 @onready var callsign_edit: LineEdit = %CallsignEdit
 @onready var save_callsign_button: Button = %SaveCallsignButton
 @onready var status_label: Label = %StatusLabel
-@onready var rows_label: Label = %RowsLabel
+@onready var rows_vbox: VBoxContainer = %RowsVBox
 @onready var back_button: Button = %BackButton
 
 var current_board := "survival"
@@ -36,7 +46,7 @@ func configure(callsign: String, own_player_id: String) -> void:
 func show_menu() -> void:
 	visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	rows_label.text = "LOADING GLOBAL RECORDS..."
+	_show_message_row("LOADING GLOBAL RECORDS...")
 	refresh_requested.emit(current_board)
 	if callsign_edit.text.strip_edges().is_empty():
 		callsign_edit.grab_focus()
@@ -47,12 +57,12 @@ func hide_menu() -> void:
 	visible = false
 
 func set_loading() -> void:
-	rows_label.text = "LOADING GLOBAL RECORDS..."
+	_show_message_row("LOADING GLOBAL RECORDS...")
 	status_label.text = "CONTACTING GLOBAL ARCHIVE..."
 
 func set_error(message: String) -> void:
 	status_label.text = message
-	rows_label.text = "NO GLOBAL RECORDS AVAILABLE"
+	_show_message_row("NO GLOBAL RECORDS AVAILABLE")
 
 func set_status(message: String) -> void:
 	status_label.text = message
@@ -60,12 +70,11 @@ func set_status(message: String) -> void:
 func set_rows(board: String, rows: Array) -> void:
 	current_board = board
 	status_label.text = "SURVIVAL RANKING" if board == "survival" else "SCORE RANKING"
+	_clear_rows()
 	if rows.is_empty():
-		rows_label.text = "NO RECORDS YET  //  BE THE FIRST"
+		_add_message_row("NO RECORDS YET  //  BE THE FIRST")
 		return
-	var lines := PackedStringArray()
-	lines.append("#    CALLSIGN          TIME       SCORE        PHASE")
-	lines.append("------------------------------------------------------")
+
 	for index in range(rows.size()):
 		var row = rows[index]
 		if typeof(row) != TYPE_DICTIONARY:
@@ -75,9 +84,8 @@ func set_rows(board: String, rows: Array) -> void:
 		var time_ms := int(data.get("score_survival_ms", 0)) if board == "score" else int(data.get("best_survival_ms", 0))
 		var score := int(data.get("best_score", 0)) if board == "score" else int(data.get("survival_score", 0))
 		var phase := int(data.get("score_phase", 0)) if board == "score" else int(data.get("survival_phase", 0))
-		var marker := ">" if str(data.get("player_id", "")) == player_id else " "
-		lines.append("%s%-3d  %-16s  %-8s  %-11s  %02d" % [marker, index + 1, name, _format_time_ms(time_ms), _format_score(score), phase])
-	rows_label.text = "\n".join(lines)
+		var is_own := str(data.get("player_id", "")) == player_id
+		_add_record_row(index + 1, name, time_ms, score, phase, is_own)
 
 func _select_board(board: String) -> void:
 	current_board = board
@@ -96,6 +104,49 @@ func _save_callsign() -> void:
 			return
 	callsign_edit.text = clean
 	callsign_changed.emit(clean)
+
+func _add_record_row(rank: int, name: String, time_ms: int, score: int, phase: int, is_own: bool) -> void:
+	var row := HBoxContainer.new()
+	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	row.add_theme_constant_override("separation", 0)
+	rows_vbox.add_child(row)
+
+	var color := OWN_TEXT if is_own else NORMAL_TEXT
+	var rank_text := "> %d" % rank if is_own else str(rank)
+	row.add_child(_make_cell(rank_text, RANK_WIDTH, HORIZONTAL_ALIGNMENT_LEFT, color))
+	row.add_child(_make_cell(name, CALLSIGN_WIDTH, HORIZONTAL_ALIGNMENT_LEFT, color))
+	row.add_child(_make_cell(_format_time_ms(time_ms), TIME_WIDTH, HORIZONTAL_ALIGNMENT_CENTER, color))
+	row.add_child(_make_cell(_format_score(score), SCORE_WIDTH, HORIZONTAL_ALIGNMENT_CENTER, color))
+	row.add_child(_make_cell("%02d" % phase, PHASE_WIDTH, HORIZONTAL_ALIGNMENT_RIGHT, color))
+
+func _make_cell(text_value: String, width: float, alignment: HorizontalAlignment, color: Color) -> Label:
+	var label := Label.new()
+	label.custom_minimum_size = Vector2(width, ROW_HEIGHT)
+	label.text = text_value
+	label.horizontal_alignment = alignment
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_font_size_override("font_size", 15)
+	return label
+
+func _show_message_row(message: String) -> void:
+	_clear_rows()
+	_add_message_row(message)
+
+func _add_message_row(message: String) -> void:
+	var label := Label.new()
+	label.custom_minimum_size = Vector2(0, 86)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.text = message
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", MUTED_TEXT)
+	label.add_theme_font_size_override("font_size", 14)
+	rows_vbox.add_child(label)
+
+func _clear_rows() -> void:
+	for child in rows_vbox.get_children():
+		child.queue_free()
 
 func _format_time_ms(milliseconds: int) -> String:
 	var total_seconds := maxf(0.0, float(milliseconds) / 1000.0)
