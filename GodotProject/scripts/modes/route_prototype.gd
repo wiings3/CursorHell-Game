@@ -47,7 +47,7 @@ func _input(event: InputEvent) -> void:
 	if state == "playing" and event is InputEventMouseButton:
 		var mouse_button := event as InputEventMouseButton
 		if mouse_button.button_index == MOUSE_BUTTON_LEFT and mouse_button.pressed:
-			if is_instance_valid(active_target) and active_target.contains_point(player.position):
+			if is_instance_valid(active_target) and active_target.contains_point(player.global_position):
 				_hit_active_target()
 				return
 
