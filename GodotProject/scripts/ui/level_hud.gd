@@ -2,6 +2,8 @@
 extends CanvasLayer
 class_name CursorHellLevelHUD
 
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
+
 @export_multiline var level_display_text: String = "LEVEL 1\nFIRST CONTACT"
 
 # These are layout constants rather than exported properties so they can never
@@ -47,16 +49,26 @@ var last_score_width := -1.0
 @onready var countdown_subtitle: Label = %CountdownSubtitle
 
 func _ready() -> void:
+	if not Engine.is_editor_hint():
+		CrashTrace.write("LevelHUD._ready BEGIN")
 	# BaseLevel owns the cabinet transform. Run after it so this CanvasLayer can
 	# mirror the machine exactly instead of maintaining a second layout system.
 	process_priority = 100
 	machine_shell = get_parent().get_node_or_null("%GameplayMachineShell") as CursorHellMachineShell
+	if not Engine.is_editor_hint():
+		CrashTrace.write("LevelHUD machine shell lookup complete: %s" % str(machine_shell != null))
 	_sync_canvas_transform()
+	if not Engine.is_editor_hint():
+		CrashTrace.write("LevelHUD canvas transform complete")
 	_apply_cabinet_layout()
+	if not Engine.is_editor_hint():
+		CrashTrace.write("LevelHUD cabinet layout complete")
 	if Engine.is_editor_hint():
 		_apply_level_display_text()
 	else:
 		_apply_runtime_level_identity()
+		CrashTrace.write("LevelHUD runtime identity complete")
+		CrashTrace.write("LevelHUD._ready END")
 
 func _process(_delta: float) -> void:
 	_sync_canvas_transform()
