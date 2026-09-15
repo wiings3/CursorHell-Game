@@ -1,6 +1,8 @@
 extends CanvasLayer
 class_name CursorHellMainMenu
 
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
+
 signal continue_requested
 signal start_level_one_requested
 signal level_select_requested
@@ -25,13 +27,28 @@ var panel_home := Vector2.ZERO
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	panel_home = panel_group.position
-	continue_button.pressed.connect(func() -> void: continue_requested.emit())
-	start_button.pressed.connect(func() -> void: start_level_one_requested.emit())
+	continue_button.pressed.connect(_trace_continue_request)
+	start_button.pressed.connect(_trace_campaign_request)
 	level_select_button.pressed.connect(func() -> void: level_select_requested.emit())
-	endless_button.pressed.connect(func() -> void: endless_requested.emit())
+	endless_button.pressed.connect(_trace_endless_request)
 	leaderboard_button.pressed.connect(func() -> void: leaderboard_requested.emit())
 	settings_button.pressed.connect(func() -> void: settings_requested.emit())
 	quit_button.pressed.connect(func() -> void: quit_requested.emit())
+
+func _trace_continue_request() -> void:
+	CrashTrace.reset()
+	CrashTrace.write("MAIN MENU: CONTINUE pressed; emitting continue_requested")
+	continue_requested.emit()
+
+func _trace_campaign_request() -> void:
+	CrashTrace.reset()
+	CrashTrace.write("MAIN MENU: START GAME pressed; emitting start_level_one_requested")
+	start_level_one_requested.emit()
+
+func _trace_endless_request() -> void:
+	CrashTrace.reset()
+	CrashTrace.write("MAIN MENU: ENDLESS pressed; emitting endless_requested")
+	endless_requested.emit()
 
 func configure(has_save: bool, continue_level: int, highest_unlocked: int, endless_best_time: float = 0.0) -> void:
 	continue_button.disabled = not has_save
