@@ -97,6 +97,10 @@ func _spawn_target(index: int) -> void:
 	var target := TargetScene.instantiate() as CursorHellScoreTarget
 	if target == null:
 		return
+	# Route targets reuse the score-target visual, but they are mandatory route
+	# objectives, not the optional Endless chain mechanic. Prevent the legacy
+	# first-time chain tutorial from intercepting this mode.
+	target.set_meta("suppress_score_target_tutorial", true)
 	route_objects.add_child(target)
 	target.position = TARGET_POSITIONS[index]
 	target.configure_chain(index + 1, TARGET_POSITIONS.size(), 999.0, 30.0, 1000)
