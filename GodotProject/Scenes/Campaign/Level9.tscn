@@ -11,6 +11,7 @@ script = ExtResource("1_level")
 
 [node name="GameplayMachineShell" parent="." instance=ExtResource("2_shell")]
 unique_name_in_owner = true
+editable_children = true
 
 [node name="Pylons" type="Node2D" parent="GameplayMachineShell/ScreenClip/ArenaContent"]
 unique_name_in_owner = true
