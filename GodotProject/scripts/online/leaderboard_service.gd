@@ -9,6 +9,13 @@ const CONFIG_PATH := "res://leaderboard_config.json"
 const PROFILE_PATH := "user://cursor_hell_online.cfg"
 const PROFILE_SECTION := "profile"
 
+# Publishable Supabase client credentials are safe to ship with the game. Keep a
+# built-in fallback so exported builds do not depend on an arbitrary JSON file
+# being included by the exporter. Environment variables and leaderboard_config
+# still override these values for development/testing.
+const DEFAULT_SUPABASE_URL := "https://dmwitrauuiawxozulglp.supabase.co"
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY := "sb_publishable_YaajwkT19b5MiOpaOTmQow_YteCQFrQ"
+
 var supabase_url := ""
 var anon_key := ""
 var configured := false
@@ -28,17 +35,25 @@ func _load_config() -> void:
 		anon_key = env_key
 		configured = true
 		return
-	if not FileAccess.file_exists(CONFIG_PATH):
-		return
-	var file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
-	if file == null:
-		return
-	var parsed = JSON.parse_string(file.get_as_text())
-	if typeof(parsed) != TYPE_DICTIONARY:
-		return
-	supabase_url = str(parsed.get("url", "")).strip_edges().trim_suffix("/")
-	anon_key = str(parsed.get("anon_key", "")).strip_edges()
-	configured = not supabase_url.is_empty() and not anon_key.is_empty() and not supabase_url.contains("YOUR_PROJECT")
+
+	# Always start from the production-safe client defaults. leaderboard_config
+	# is optional and may not exist in an exported PCK.
+	supabase_url = DEFAULT_SUPABASE_URL
+	anon_key = DEFAULT_SUPABASE_PUBLISHABLE_KEY
+
+	if FileAccess.file_exists(CONFIG_PATH):
+		var file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
+		if file != null:
+			var parsed = JSON.parse_string(file.get_as_text())
+			if typeof(parsed) == TYPE_DICTIONARY:
+				var configured_url := str(parsed.get("url", "")).strip_edges().trim_suffix("/")
+				var configured_key := str(parsed.get("anon_key", "")).strip_edges()
+				if not configured_url.is_empty() and not configured_url.contains("YOUR_PROJECT"):
+					supabase_url = configured_url
+				if not configured_key.is_empty():
+					anon_key = configured_key
+
+	configured = not supabase_url.is_empty() and not anon_key.is_empty()
 
 func _load_profile() -> void:
 	var config := ConfigFile.new()
