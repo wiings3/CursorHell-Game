@@ -5,6 +5,7 @@ signal continue_requested
 signal start_level_one_requested
 signal level_select_requested
 signal endless_requested
+signal leaderboard_requested
 signal settings_requested
 signal quit_requested
 
@@ -14,6 +15,7 @@ signal quit_requested
 @onready var start_button: Button = %StartButton
 @onready var level_select_button: Button = %LevelSelectButton
 @onready var endless_button: Button = %EndlessButton
+@onready var leaderboard_button: Button = %LeaderboardButton
 @onready var settings_button: Button = %SettingsButton
 @onready var quit_button: Button = %QuitButton
 @onready var save_status: Label = %SaveStatus
@@ -27,6 +29,7 @@ func _ready() -> void:
 	start_button.pressed.connect(func() -> void: start_level_one_requested.emit())
 	level_select_button.pressed.connect(func() -> void: level_select_requested.emit())
 	endless_button.pressed.connect(func() -> void: endless_requested.emit())
+	leaderboard_button.pressed.connect(func() -> void: leaderboard_requested.emit())
 	settings_button.pressed.connect(func() -> void: settings_requested.emit())
 	quit_button.pressed.connect(func() -> void: quit_requested.emit())
 

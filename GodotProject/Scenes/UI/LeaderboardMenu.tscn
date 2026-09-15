@@ -1,0 +1,139 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/leaderboard_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" uid="uid://nrmyvx8v1qyq" path="res://Scenes/Components/GameplayMachineShell.tscn" id="2_shell"]
+[ext_resource type="Theme" uid="uid://dqmmg88ocwudh" path="res://Assets/UI/CabinetUITheme.tres" id="3_theme"]
+[ext_resource type="Script" uid="uid://bffjdpwx3oi82" path="res://scripts/ui/cabinet_menu_stage.gd" id="4_stage"]
+
+[node name="LeaderboardMenu" type="CanvasLayer"]
+visible = false
+layer = 85
+process_mode = 3
+script = ExtResource("1_menu")
+
+[node name="Root" type="Node2D" parent="."]
+script = ExtResource("4_stage")
+
+[node name="GameplayMachineShell" parent="Root" instance=ExtResource("2_shell")]
+
+[node name="ScreenWash" type="ColorRect" parent="Root"]
+z_index = 2
+offset_left = 556.0
+offset_top = 202.0
+offset_right = 1372.0
+offset_bottom = 832.0
+mouse_filter = 2
+color = Color(0.004, 0.014, 0.008, 0.60)
+
+[node name="PanelGroup" type="Control" parent="Root"]
+z_index = 2
+offset_left = 580.0
+offset_top = 223.0
+offset_right = 1348.0
+offset_bottom = 811.0
+mouse_filter = 1
+theme = ExtResource("3_theme")
+
+[node name="Panel" type="PanelContainer" parent="Root/PanelGroup"]
+offset_right = 768.0
+offset_bottom = 588.0
+
+[node name="VBox" type="VBoxContainer" parent="Root/PanelGroup/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Eyebrow" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.70, 0.72, 0.57, 1)
+theme_override_font_sizes/font_size = 10
+text = "A.R.C. GLOBAL ARCHIVE  //  ENDLESS PROTOCOL"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.70, 0.26, 1)
+theme_override_font_sizes/font_size = 32
+text = "GLOBAL LEADERBOARD"
+horizontal_alignment = 1
+
+[node name="CallsignRow" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CallsignLabel" type="Label" parent="Root/PanelGroup/Panel/VBox/CallsignRow"]
+custom_minimum_size = Vector2(120, 34)
+layout_mode = 2
+text = "CALLSIGN"
+vertical_alignment = 1
+
+[node name="CallsignEdit" type="LineEdit" parent="Root/PanelGroup/Panel/VBox/CallsignRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+max_length = 16
+placeholder_text = "ENTER CALLSIGN"
+
+[node name="SaveCallsignButton" type="Button" parent="Root/PanelGroup/Panel/VBox/CallsignRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 34)
+layout_mode = 2
+text = "SAVE"
+
+[node name="BoardTabs" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SurvivalButton" type="Button" parent="Root/PanelGroup/Panel/VBox/BoardTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SURVIVAL"
+
+[node name="ScoreButton" type="Button" parent="Root/PanelGroup/Panel/VBox/BoardTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SCORE"
+
+[node name="StatusLabel" type="Label" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.62, 0.20, 1)
+theme_override_font_sizes/font_size = 11
+text = "GLOBAL ENDLESS RECORDS"
+horizontal_alignment = 1
+
+[node name="RowsPanel" type="PanelContainer" parent="Root/PanelGroup/Panel/VBox"]
+custom_minimum_size = Vector2(0, 355)
+layout_mode = 2
+
+[node name="RowsLabel" type="Label" parent="Root/PanelGroup/Panel/VBox/RowsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.85, 0.78, 1)
+theme_override_font_sizes/font_size = 13
+text = "LOADING GLOBAL RECORDS..."
+vertical_alignment = 0
+
+[node name="Footer" type="HBoxContainer" parent="Root/PanelGroup/Panel/VBox"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="Root/PanelGroup/Panel/VBox/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 38)
+layout_mode = 2
+text = "< BACK"
+
+[node name="Hint" type="Label" parent="Root/PanelGroup/Panel/VBox/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.52, 0.55, 0.46, 1)
+theme_override_font_sizes/font_size = 10
+text = "TOP 50 GLOBAL ENDLESS RECORDS"
+horizontal_alignment = 2
+vertical_alignment = 1

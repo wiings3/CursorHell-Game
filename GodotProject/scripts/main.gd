@@ -8,7 +8,8 @@ const EndlessScene := preload("res://Scenes/Modes/EndlessMode.tscn")
 const FACTORY_RESET_PATHS: Array[String] = [
 	"user://cursor_hell_save.json",
 	"user://cursor_hell_tutorial_flags.cfg",
-	"user://cursor_hell_settings.cfg"
+	"user://cursor_hell_settings.cfg",
+	"user://cursor_hell_online.cfg"
 ]
 
 @export var starting_level_index: int = 0
@@ -17,10 +18,12 @@ const FACTORY_RESET_PATHS: Array[String] = [
 @export_category("Debug")
 @export var debug_console_enabled: bool = true
 
+@onready var leaderboard_service: CursorHellLeaderboardService = %LeaderboardService
 @onready var level_container: Node = %LevelContainer
 @onready var transition_overlay: CursorHellTransitionOverlay = %TransitionOverlay
 @onready var main_menu: CursorHellMainMenu = %MainMenu
 @onready var level_select_menu: CursorHellLevelSelectMenu = %LevelSelectMenu
+@onready var leaderboard_menu: CursorHellLeaderboardMenu = %LeaderboardMenu
 @onready var pause_menu: CursorHellPauseMenu = %PauseMenu
 @onready var settings_menu: CursorHellSettingsMenu = %SettingsMenu
 @onready var anti_camp_tutorial: CursorHellAntiCampTutorial = %AntiCampTutorial
@@ -47,11 +50,18 @@ func _ready() -> void:
 	main_menu.start_level_one_requested.connect(_on_main_menu_start_requested)
 	main_menu.level_select_requested.connect(_on_main_menu_level_select_requested)
 	main_menu.endless_requested.connect(_on_main_menu_endless_requested)
+	main_menu.leaderboard_requested.connect(_on_main_menu_leaderboard_requested)
 	main_menu.settings_requested.connect(_on_main_menu_settings_requested)
 	main_menu.quit_requested.connect(_quit_game)
 
 	level_select_menu.level_selected.connect(_on_level_selected)
 	level_select_menu.back_requested.connect(_on_level_select_back_requested)
+	leaderboard_menu.back_requested.connect(_on_leaderboard_back_requested)
+	leaderboard_menu.callsign_changed.connect(_on_leaderboard_callsign_changed)
+	leaderboard_menu.refresh_requested.connect(_on_leaderboard_refresh_requested)
+	leaderboard_service.leaderboard_loaded.connect(_on_leaderboard_loaded)
+	leaderboard_service.leaderboard_failed.connect(_on_leaderboard_failed)
+	leaderboard_service.submission_finished.connect(_on_leaderboard_submission_finished)
 	settings_menu.back_requested.connect(_on_settings_back_requested)
 
 	pause_menu.resume_requested.connect(_on_pause_resume_requested)
@@ -73,7 +83,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not is_instance_valid(current_level):
 		return
-	if main_menu.visible or level_select_menu.visible or pause_menu.visible or settings_menu.visible or anti_camp_tutorial.visible or debug_console.is_open:
+	if main_menu.visible or level_select_menu.visible or leaderboard_menu.visible or pause_menu.visible or settings_menu.visible or anti_camp_tutorial.visible or debug_console.is_open:
 		return
 	if current_level.state == "paused":
 		_open_pause_menu()
@@ -84,6 +94,7 @@ func _prepare_level_change() -> void:
 	transition_overlay.hide_immediate()
 	main_menu.hide_menu()
 	level_select_menu.hide_menu()
+	leaderboard_menu.hide_menu()
 	pause_menu.hide_menu()
 	settings_menu.hide_menu()
 	if is_instance_valid(current_level):
@@ -214,6 +225,8 @@ func _on_endless_failed() -> void:
 	var is_new_score := int(summary.get("score", 0)) > previous_score
 	var is_new_time := float(summary.get("time", 0.0)) > previous_time
 	save_manager.record_endless_result(summary)
+	if leaderboard_service.can_submit():
+		leaderboard_service.submit_endless(summary)
 	_refresh_main_menu_save_status()
 	current_level._hide_message_panel()
 	current_level.set_process_input(false)
@@ -258,6 +271,7 @@ func _show_main_menu() -> void:
 	settings_return_to_pause = false
 	transition_overlay.hide_immediate()
 	level_select_menu.hide_menu()
+	leaderboard_menu.hide_menu()
 	pause_menu.hide_menu()
 	settings_menu.hide_menu()
 	if is_instance_valid(current_level):
@@ -282,6 +296,39 @@ func _on_main_menu_start_requested() -> void:
 
 func _on_main_menu_endless_requested() -> void:
 	load_endless_mode()
+
+func _on_main_menu_leaderboard_requested() -> void:
+	main_menu.hide_menu()
+	leaderboard_menu.configure(leaderboard_service.callsign, leaderboard_service.player_id)
+	leaderboard_menu.show_menu()
+
+func _on_leaderboard_back_requested() -> void:
+	leaderboard_menu.hide_menu()
+	_refresh_main_menu_save_status()
+	main_menu.show_menu()
+
+func _on_leaderboard_callsign_changed(value: String) -> void:
+	if leaderboard_service.set_callsign(value):
+		leaderboard_menu.configure(leaderboard_service.callsign, leaderboard_service.player_id)
+		leaderboard_menu.set_status("CALLSIGN SAVED  //  " + leaderboard_service.callsign)
+	else:
+		leaderboard_menu.set_status("INVALID CALLSIGN")
+
+func _on_leaderboard_refresh_requested(board: String) -> void:
+	leaderboard_menu.set_loading()
+	leaderboard_service.fetch_board(board, 50)
+
+func _on_leaderboard_loaded(board: String, rows: Array) -> void:
+	if leaderboard_menu.visible:
+		leaderboard_menu.set_rows(board, rows)
+
+func _on_leaderboard_failed(message: String) -> void:
+	if leaderboard_menu.visible:
+		leaderboard_menu.set_error(message)
+
+func _on_leaderboard_submission_finished(ok: bool, message: String) -> void:
+	if leaderboard_menu.visible:
+		leaderboard_menu.set_status(message if ok else "SUBMISSION FAILED  //  " + message)
 
 func _on_main_menu_level_select_requested() -> void:
 	main_menu.hide_menu()
@@ -387,7 +434,7 @@ func _on_debug_console_closed() -> void:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
 	get_tree().paused = false
-	if main_menu.visible or level_select_menu.visible or settings_menu.visible:
+	if main_menu.visible or level_select_menu.visible or leaderboard_menu.visible or settings_menu.visible:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
 	if is_instance_valid(current_level) and (current_level.state == "playing" or current_level.state == "countdown"):
@@ -487,6 +534,6 @@ func _print_debug_help() -> void:
 	debug_console.write_line("  current            Show the current level/mode")
 	debug_console.write_line("  restart            Reload the current level/mode")
 	debug_console.write_line("  resetcamp          Clear first-time anti-camp tutorial flag")
-	debug_console.write_line("  factoryreset       Delete all progression, tutorial flags, and settings")
+	debug_console.write_line("  factoryreset       Delete all progression, tutorial flags, settings, and online identity")
 	debug_console.write_line("  clear              Clear console output")
 	debug_console.write_line("  close              Close the console")
