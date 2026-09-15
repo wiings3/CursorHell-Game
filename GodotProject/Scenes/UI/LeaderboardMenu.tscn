@@ -114,9 +114,9 @@ layout_mode = 2
 
 [node name="RowsMargin" type="MarginContainer" parent="Root/PanelGroup/Panel/VBox/RowsPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
+theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
+theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 12
 
 [node name="RowsLayout" type="VBoxContainer" parent="Root/PanelGroup/Panel/VBox/RowsPanel/RowsMargin"]
@@ -192,6 +192,7 @@ custom_minimum_size = Vector2(0, 274)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
 
 [node name="RowsVBox" type="VBoxContainer" parent="Root/PanelGroup/Panel/VBox/RowsPanel/RowsMargin/RowsLayout/RowsScroll"]
 unique_name_in_owner = true
