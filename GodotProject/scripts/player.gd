@@ -1,6 +1,8 @@
 extends Node2D
 class_name CursorHellPlayer
 
+const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
+
 @onready var visual_root: Node2D = $VisualRoot
 @onready var glow_large: Polygon2D = $VisualRoot/GlowLarge
 @onready var glow_inner: Polygon2D = $VisualRoot/GlowInner
@@ -13,10 +15,12 @@ var glow_large_base_scale := Vector2.ONE
 var glow_inner_base_scale := Vector2.ONE
 
 func _ready() -> void:
+	CrashTrace.write("Player._ready BEGIN")
 	# All actual player art lives in Player.tscn so it is visible and editable in
 	# the 2D editor. This script only supplies lightweight runtime animation.
 	glow_large_base_scale = glow_large.scale
 	glow_inner_base_scale = glow_inner.scale
+	CrashTrace.write("Player._ready END")
 
 func _process(delta: float) -> void:
 	pulse += delta * 4.0
