@@ -39,16 +39,19 @@ func _trace_continue_request() -> void:
 	CrashTrace.reset()
 	CrashTrace.write("MAIN MENU: CONTINUE pressed; emitting continue_requested")
 	continue_requested.emit()
+	CrashTrace.write("MAIN MENU: continue_requested returned")
 
 func _trace_campaign_request() -> void:
 	CrashTrace.reset()
 	CrashTrace.write("MAIN MENU: START GAME pressed; emitting start_level_one_requested")
 	start_level_one_requested.emit()
+	CrashTrace.write("MAIN MENU: start_level_one_requested returned")
 
 func _trace_endless_request() -> void:
 	CrashTrace.reset()
 	CrashTrace.write("MAIN MENU: ENDLESS pressed; emitting endless_requested")
 	endless_requested.emit()
+	CrashTrace.write("MAIN MENU: endless_requested returned")
 
 func configure(has_save: bool, continue_level: int, highest_unlocked: int, endless_best_time: float = 0.0) -> void:
 	continue_button.disabled = not has_save
