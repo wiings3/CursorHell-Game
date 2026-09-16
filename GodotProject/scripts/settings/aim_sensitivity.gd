@@ -17,11 +17,11 @@ const MAX_DPI := 32000
 # intentionally model hip-fire/look sensitivity only; scoped/ADS multipliers are
 # separate systems in those games and are not part of this conversion.
 const PRESETS := [
-	{"id": "CS2", "label": "COUNTER-STRIKE 2", "yaw": 0.022, "slider_min": 0.05, "slider_max": 5.0},
-	{"id": "VALORANT", "label": "VALORANT", "yaw": 0.07, "slider_min": 0.02, "slider_max": 1.60},
-	{"id": "APEX", "label": "APEX LEGENDS", "yaw": 0.022, "slider_min": 0.05, "slider_max": 5.0},
-	{"id": "OVERWATCH_2", "label": "OVERWATCH 2", "yaw": 0.0066, "slider_min": 0.15, "slider_max": 16.70},
-	{"id": "CALL_OF_DUTY", "label": "CALL OF DUTY", "yaw": 0.0066, "slider_min": 0.15, "slider_max": 16.70}
+	{"id": "CS2", "label": "COUNTER-STRIKE 2", "yaw": 0.022, "slider_min": 0.01, "slider_max": 10.0},
+	{"id": "VALORANT", "label": "VALORANT", "yaw": 0.07, "slider_min": 0.003, "slider_max": 3.143},
+	{"id": "APEX", "label": "APEX LEGENDS", "yaw": 0.022, "slider_min": 0.01, "slider_max": 10.0},
+	{"id": "OVERWATCH_2", "label": "OVERWATCH 2", "yaw": 0.0066, "slider_min": 0.034, "slider_max": 33.334},
+	{"id": "CALL_OF_DUTY", "label": "CALL OF DUTY", "yaw": 0.0066, "slider_min": 0.034, "slider_max": 33.334}
 ]
 
 static func get_presets() -> Array:
@@ -39,31 +39,32 @@ static func get_preset(preset_id: String) -> Dictionary:
 		var preset: Dictionary = raw_preset
 		if str(preset.get("id", "")) == preset_id:
 			return preset
-	return PRESETS[0]
+	var fallback: Dictionary = PRESETS[0]
+	return fallback
 
 static func get_yaw(preset_id: String) -> float:
 	return float(get_preset(preset_id).get("yaw", CS2_YAW))
 
 static func to_cs2_equivalent(preset_id: String, displayed_sensitivity: float) -> float:
-	var yaw := get_yaw(preset_id)
-	var canonical := displayed_sensitivity * yaw / CS2_YAW
+	var yaw: float = get_yaw(preset_id)
+	var canonical: float = displayed_sensitivity * yaw / CS2_YAW
 	return clampf(canonical, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT)
 
 static func from_cs2_equivalent(preset_id: String, cs2_equivalent: float) -> float:
-	var yaw := get_yaw(preset_id)
+	var yaw: float = get_yaw(preset_id)
 	return clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT) * CS2_YAW / yaw
 
 static func logical_motion_gain(cs2_equivalent: float) -> float:
 	# The 2D arena cannot literally reproduce a 3D camera. We map the cabinet's
 	# full logical width to a 106.26-degree reference view so the physical mouse
 	# distance represented by a flick follows the same yaw math as the FPS preset.
-	var pixels_per_degree := REFERENCE_ARENA_WIDTH / REFERENCE_HORIZONTAL_FOV
+	var pixels_per_degree: float = REFERENCE_ARENA_WIDTH / REFERENCE_HORIZONTAL_FOV
 	return CS2_YAW * clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT) * pixels_per_degree
 
 static func cm_per_360(cs2_equivalent: float, dpi: int) -> float:
-	var safe_dpi := clampi(dpi, MIN_DPI, MAX_DPI)
-	var safe_sensitivity := clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT)
-	var counts_per_360 := 360.0 / (CS2_YAW * safe_sensitivity)
+	var safe_dpi: int = clampi(dpi, MIN_DPI, MAX_DPI)
+	var safe_sensitivity: float = clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT)
+	var counts_per_360: float = 360.0 / (CS2_YAW * safe_sensitivity)
 	return counts_per_360 / float(safe_dpi) * 2.54
 
 static func cs2_edpi(cs2_equivalent: float, dpi: int) -> float:
