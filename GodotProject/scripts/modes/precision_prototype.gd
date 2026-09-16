@@ -1,172 +1,179 @@
 extends "res://scripts/levels/base_level.gd"
 class_name CursorHellPrecisionPrototype
 
-const TargetScene := preload("res://Scenes/Components/ScoreTarget.tscn")
-const LaserScene := preload("res://Scenes/Components/RouteLaser.tscn")
+const EnemyScript = preload("res://scripts/objects/micro_enemy.gd")
+const BulletScript = preload("res://scripts/objects/micro_bullet.gd")
+const CrosshairScript = preload("res://scripts/objects/micro_crosshair.gd")
 
-# This prototype tests the intended FPS-adjacent hand rhythm:
-# acquire -> flick -> click -> evade -> reacquire.
-# Targets vary in distance, size, lifetime and priority. Hazards exist to disrupt
-# the shot rather than becoming the objective themselves.
+const BODY_SPEED := 305.0
+const BODY_RADIUS := 10.0
+const FIRE_COOLDOWN := 0.11
+const QUICK_COUNTDOWN := 0.55
+const TOTAL_ENEMIES := 10
+
+# Four deliberately small combat waves. The room is meant to answer one thing:
+# does moving with WASD while independently aiming and shooting with the mouse
+# create a more active core than moving the cursor itself?
 const WAVES := [
 	{
-		"gap": 0.20,
-		"targets": [
-			{"position": Vector2(1080.0, 450.0), "radius": 38.0, "lifetime": 2.40, "label": "ACQUIRE", "kind": "normal", "score": 800}
+		"gap": 0.30,
+		"enemies": [
+			{"position": Vector2(1080.0, 245.0), "kind": "gunner", "radius": 26.0, "spawn": 0.18, "initial": 0.78, "repeat": 1.30, "score": 1000}
 		]
 	},
 	{
-		"gap": 0.14,
-		"targets": [
-			{"position": Vector2(510.0, 220.0), "radius": 28.0, "lifetime": 1.20, "label": "SNAP", "kind": "normal", "score": 950}
+		"gap": 0.32,
+		"enemies": [
+			{"position": Vector2(525.0, 225.0), "kind": "gunner", "radius": 24.0, "spawn": 0.20, "initial": 0.46, "repeat": 1.20, "score": 1050},
+			{"position": Vector2(1085.0, 690.0), "kind": "gunner", "radius": 24.0, "spawn": 0.20, "initial": 0.30, "repeat": 1.24, "score": 1050}
 		]
 	},
 	{
-		"gap": 0.16,
-		"targets": [
-			{"position": Vector2(565.0, 270.0), "radius": 15.0, "lifetime": 0.86, "label": "MICRO", "kind": "precision", "score": 1250}
+		"gap": 0.34,
+		"enemies": [
+			{"position": Vector2(805.0, 175.0), "kind": "burst", "radius": 27.0, "spawn": 0.20, "initial": 0.38, "repeat": 1.48, "score": 1250},
+			{"position": Vector2(500.0, 650.0), "kind": "gunner", "radius": 23.0, "spawn": 0.20, "initial": 0.58, "repeat": 1.16, "score": 1100},
+			{"position": Vector2(1110.0, 455.0), "kind": "sniper", "radius": 20.0, "spawn": 0.20, "initial": 0.34, "repeat": 1.55, "score": 1400}
 		]
 	},
 	{
-		"gap": 0.12,
-		"targets": [
-			{"position": Vector2(1100.0, 715.0), "radius": 24.0, "lifetime": 0.96, "label": "SWITCH", "kind": "normal", "score": 1050}
-		]
-	},
-	{
-		"gap": 0.16,
-		"targets": [
-			{"position": Vector2(520.0, 540.0), "radius": 22.0, "lifetime": 0.72, "label": "THREAT", "kind": "threat", "score": 1300}
-		]
-	},
-	{
-		"gap": 0.12,
-		"hazards": [
-			{"orientation": "vertical", "coordinate": 820.0, "charge": 0.46, "lethal": 1.45, "width": 20.0}
-		],
-		"targets": [
-			{"position": Vector2(1090.0, 190.0), "radius": 22.0, "lifetime": 1.18, "label": "CROSS", "kind": "normal", "score": 1200}
-		]
-	},
-	{
-		"gap": 0.10,
-		"hazards": [
-			{"orientation": "horizontal", "coordinate": 760.0, "charge": 0.38, "lethal": 1.85, "width": 20.0, "sweep_from": 760.0, "sweep_to": 180.0}
-		],
-		"targets": [
-			{"position": Vector2(525.0, 700.0), "radius": 20.0, "lifetime": 1.05, "label": "TRACK", "kind": "normal", "score": 1250}
-		]
-	},
-	{
-		"gap": 0.12,
-		"targets": [
-			{"position": Vector2(1105.0, 470.0), "radius": 18.0, "lifetime": 0.84, "label": "REACQUIRE", "kind": "precision", "score": 1400}
-		]
-	},
-	{
-		"gap": 0.18,
-		"targets": [
-			{"position": Vector2(505.0, 205.0), "radius": 19.0, "lifetime": 0.60, "label": "FAST", "kind": "threat", "score": 1550},
-			{"position": Vector2(1085.0, 690.0), "radius": 25.0, "lifetime": 1.34, "label": "HOLD", "kind": "normal", "score": 1050}
-		]
-	},
-	{
-		"gap": 0.12,
-		"hazards": [
-			{"orientation": "horizontal", "coordinate": 430.0, "charge": 0.36, "lethal": 1.35, "width": 18.0}
-		],
-		"targets": [
-			{"position": Vector2(805.0, 575.0), "radius": 12.0, "lifetime": 0.98, "label": "PRECISION", "kind": "precision", "score": 1800}
-		]
-	},
-	{
-		"gap": 0.08,
-		"targets": [
-			{"position": Vector2(480.0, 185.0), "radius": 20.0, "lifetime": 0.72, "label": "1", "kind": "normal", "score": 1400}
-		]
-	},
-	{
-		"gap": 0.07,
-		"targets": [
-			{"position": Vector2(1130.0, 710.0), "radius": 18.0, "lifetime": 0.64, "label": "2", "kind": "normal", "score": 1500}
-		]
-	},
-	{
-		"gap": 0.06,
-		"hazards": [
-			{"orientation": "vertical", "coordinate": 925.0, "charge": 0.34, "lethal": 1.35, "width": 18.0},
-			{"orientation": "horizontal", "coordinate": 560.0, "charge": 0.54, "lethal": 1.30, "width": 18.0}
-		],
-		"targets": [
-			{"position": Vector2(800.0, 235.0), "radius": 14.0, "lifetime": 0.60, "label": "3", "kind": "threat", "score": 1900}
+		"gap": 0.0,
+		"enemies": [
+			{"position": Vector2(485.0, 455.0), "kind": "burst", "radius": 25.0, "spawn": 0.18, "initial": 0.36, "repeat": 1.36, "score": 1300},
+			{"position": Vector2(1080.0, 205.0), "kind": "gunner", "radius": 22.0, "spawn": 0.18, "initial": 0.42, "repeat": 1.08, "score": 1200},
+			{"position": Vector2(795.0, 715.0), "kind": "sniper", "radius": 19.0, "spawn": 0.18, "initial": 0.30, "repeat": 1.44, "score": 1500},
+			{"position": Vector2(1095.0, 675.0), "kind": "gunner", "radius": 22.0, "spawn": 0.18, "initial": 0.56, "repeat": 1.10, "score": 1200}
 		]
 	}
 ]
 
 @onready var precision_objects: Node2D = %PrecisionObjects
 
-var wave_index := 0
-var active_targets: Array[CursorHellScoreTarget] = []
-var active_lasers: Array[CursorHellRouteLaser] = []
+var active_enemies: Array = []
+var active_bullets: Array = []
+var crosshair
+var weapon_line: Line2D
+var shot_line: Line2D
+var wave_index := -1
+var wave_delay := -1.0
 var first_wave_started := false
-var pending_wave_delay := -1.0
+var fire_cooldown := 0.0
+var shots := 0
 var hits := 0
-var target_misses := 0
-var shot_misses := 0
-var perfects := 0
-var reaction_samples: Array[float] = []
+var kills := 0
+var enemy_shots := 0
 var feedback_text := ""
 var feedback_time := 0.0
+var shot_flash_time := 0.0
 var final_time := 0.0
+var final_accuracy := 0.0
 var final_grade := ""
+
+func _ready() -> void:
+	_build_runtime_visuals()
+	super._ready()
+
+func _build_runtime_visuals() -> void:
+	crosshair = CrosshairScript.new()
+	crosshair.name = "AimCrosshair"
+	crosshair.z_index = 20
+	precision_objects.add_child(crosshair)
+
+	weapon_line = Line2D.new()
+	weapon_line.name = "WeaponAim"
+	weapon_line.width = 2.0
+	weapon_line.default_color = Color(0.42, 0.92, 1.0, 0.48)
+	weapon_line.antialiased = true
+	weapon_line.z_index = 4
+	precision_objects.add_child(weapon_line)
+
+	shot_line = Line2D.new()
+	shot_line.name = "ShotTrace"
+	shot_line.width = 2.5
+	shot_line.default_color = Color(1.0, 0.90, 0.58, 0.92)
+	shot_line.antialiased = true
+	shot_line.z_index = 15
+	shot_line.visible = false
+	precision_objects.add_child(shot_line)
 
 func _reset_round(start_now: bool) -> void:
 	if is_instance_valid(precision_objects):
 		for child in precision_objects.get_children():
+			if child == crosshair or child == weapon_line or child == shot_line:
+				continue
 			precision_objects.remove_child(child)
 			child.queue_free()
-	wave_index = 0
-	active_targets.clear()
-	active_lasers.clear()
+
+	active_enemies.clear()
+	active_bullets.clear()
+	wave_index = -1
+	wave_delay = -1.0
 	first_wave_started = false
-	pending_wave_delay = -1.0
+	fire_cooldown = 0.0
+	shots = 0
 	hits = 0
-	target_misses = 0
-	shot_misses = 0
-	perfects = 0
-	reaction_samples.clear()
+	kills = 0
+	enemy_shots = 0
 	feedback_text = ""
 	feedback_time = 0.0
+	shot_flash_time = 0.0
 	final_time = 0.0
+	final_accuracy = 0.0
 	final_grade = ""
+
 	super._reset_round(start_now)
+
+	player.position = Vector2(800.0, 450.0)
+	crosshair.position = player.position + Vector2(150.0, 0.0)
+	crosshair.visible = state == "countdown"
+	weapon_line.visible = state == "countdown"
+	shot_line.visible = false
+	_update_aim_line()
 	_update_ui()
 
 func _reset_player_position() -> void:
 	player.position = Vector2(800.0, 450.0)
 
+func _capture_mouse() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED_HIDDEN)
+
+func _start_countdown() -> void:
+	state = "countdown"
+	countdown_left = QUICK_COUNTDOWN
+	countdown_step = -1
+	_hide_message_panel()
+	_capture_mouse()
+	tutorial_label.text = _get_countdown_tutorial_text()
+	countdown_label.visible = true
+	countdown_subtitle.visible = true
+	countdown_label.text = "READY"
+	countdown_label.add_theme_color_override("font_color", Color(0.98, 0.97, 0.93))
+	countdown_subtitle.text = _get_countdown_subtitle()
+
+func _update_countdown(delta: float) -> void:
+	countdown_left = maxf(0.0, countdown_left - delta)
+	if countdown_left <= 0.16:
+		countdown_label.text = "GO"
+		countdown_label.add_theme_color_override("font_color", Color(1.0, 0.70, 0.24))
+	if countdown_left <= 0.0:
+		state = "playing"
+		countdown_label.visible = false
+		countdown_subtitle.visible = false
+		_update_level_tutorial()
+
 func _input(event: InputEvent) -> void:
 	if state == "playing" and event is InputEventMouseButton:
 		var mouse_button := event as InputEventMouseButton
 		if mouse_button.button_index == MOUSE_BUTTON_LEFT and mouse_button.pressed:
-			var target := _target_under_cursor()
-			if is_instance_valid(target):
-				_hit_target(target)
-			else:
-				shot_misses += 1
-				score = maxf(0.0, score - 125.0)
-				_set_feedback("MISS", 0.46)
-			_update_ui()
+			_fire_weapon()
 			return
 
-	var old_position := player.position if is_instance_valid(player) else Vector2.ZERO
-	super._input(event)
+	# Mouse movement now belongs only to the crosshair. Never pass it to BaseLevel,
+	# because BaseLevel's normal cursor-control path would move the body as well.
+	if (state == "playing" or state == "countdown") and event is InputEventMouseMotion:
+		return
 
-	if state == "playing" and event is InputEventMouseMotion and is_instance_valid(player):
-		for laser in active_lasers:
-			if is_instance_valid(laser) and laser.intersects_segment(old_position, player.position):
-				_begin_death("Laser contact")
-				return
+	super._input(event)
 
 func _physics_process(delta: float) -> void:
 	var previous_state := state
@@ -174,205 +181,274 @@ func _physics_process(delta: float) -> void:
 
 	if previous_state != "playing" and state == "playing" and not first_wave_started:
 		first_wave_started = true
-		_spawn_wave(0)
+		_begin_wave(0)
 
 	if state != "playing":
 		return
 
+	fire_cooldown = maxf(0.0, fire_cooldown - delta)
 	feedback_time = maxf(0.0, feedback_time - delta)
+	_update_crosshair_from_mouse()
 
-	if pending_wave_delay >= 0.0:
-		pending_wave_delay -= delta
-		if pending_wave_delay <= 0.0:
-			pending_wave_delay = -1.0
-			_spawn_wave(wave_index)
+	var old_player_position := player.position
+	_move_body(delta)
 
-	for index in range(active_lasers.size() - 1, -1, -1):
-		var laser := active_lasers[index]
-		if not is_instance_valid(laser):
-			active_lasers.remove_at(index)
-			continue
-		if laser.state == "spent":
-			active_lasers.remove_at(index)
-			laser.queue_free()
-			continue
-		if laser.contains_point(player.position):
-			_begin_death("Laser contact")
-			return
+	for enemy in active_enemies:
+		if is_instance_valid(enemy):
+			enemy.advance(delta, player.position)
 
+	_advance_bullets(delta, old_player_position)
+	if state != "playing":
+		return
+
+	_check_enemy_contact()
+	if state != "playing":
+		return
+
+	if wave_delay >= 0.0:
+		wave_delay -= delta
+		if wave_delay <= 0.0:
+			wave_delay = -1.0
+			_begin_wave(wave_index + 1)
+
+	_update_crosshair_hot()
+	_update_aim_line()
 	_update_ui()
 
-func _target_under_cursor() -> CursorHellScoreTarget:
-	if not is_instance_valid(player):
-		return null
-	var best_target: CursorHellScoreTarget = null
-	var best_distance := INF
-	for target in active_targets:
-		if not is_instance_valid(target) or target.consumed:
-			continue
-		var distance := target.global_position.distance_to(player.global_position)
-		if distance <= target.hit_radius and distance < best_distance:
-			best_distance = distance
-			best_target = target
-	return best_target
+func _process(delta: float) -> void:
+	super._process(delta)
 
-func _spawn_wave(index: int) -> void:
-	if index < 0 or index >= WAVES.size() or state != "playing":
+	var aiming_active := state == "playing" or state == "countdown"
+	if is_instance_valid(crosshair):
+		crosshair.visible = aiming_active
+	if is_instance_valid(weapon_line):
+		weapon_line.visible = aiming_active
+
+	if aiming_active:
+		_update_crosshair_from_mouse()
+		_update_crosshair_hot()
+		_update_aim_line()
+
+	if shot_flash_time > 0.0:
+		shot_flash_time = maxf(0.0, shot_flash_time - delta)
+		shot_line.visible = true
+		shot_line.modulate.a = clampf(shot_flash_time / 0.07, 0.0, 1.0)
+	else:
+		shot_line.visible = false
+
+func _move_body(delta: float) -> void:
+	var input_direction := Vector2(
+		float(Input.is_physical_key_pressed(KEY_D)) - float(Input.is_physical_key_pressed(KEY_A)),
+		float(Input.is_physical_key_pressed(KEY_S)) - float(Input.is_physical_key_pressed(KEY_W))
+	)
+	if input_direction.length_squared() > 1.0:
+		input_direction = input_direction.normalized()
+
+	var next_position := player.position + input_direction * BODY_SPEED * delta
+	next_position.x = clampf(next_position.x, ARENA.position.x + BODY_RADIUS, ARENA.end.x - BODY_RADIUS)
+	next_position.y = clampf(next_position.y, ARENA.position.y + BODY_RADIUS, ARENA.end.y - BODY_RADIUS)
+	moved_distance += player.position.distance_to(next_position)
+	player.position = next_position
+
+func _update_crosshair_from_mouse() -> void:
+	if not is_instance_valid(crosshair) or not is_instance_valid(machine_shell):
 		return
-	var wave: Dictionary = WAVES[index]
-	_spawn_wave_hazards(wave)
+	var canvas_transform := machine_shell.arena_content.get_global_transform_with_canvas()
+	var local_mouse := canvas_transform.affine_inverse() * get_viewport().get_mouse_position()
+	crosshair.position = Vector2(
+		clampf(local_mouse.x, ARENA.position.x + 8.0, ARENA.end.x - 8.0),
+		clampf(local_mouse.y, ARENA.position.y + 8.0, ARENA.end.y - 8.0)
+	)
 
-	var target_configs: Array = wave.get("targets", [])
-	for raw_target in target_configs:
-		if typeof(raw_target) != TYPE_DICTIONARY:
-			continue
-		var target_config: Dictionary = raw_target
-		_spawn_precision_target(target_config)
+func _update_aim_line() -> void:
+	if not is_instance_valid(crosshair) or not is_instance_valid(weapon_line) or not is_instance_valid(player):
+		return
+	var direction := crosshair.position - player.position
+	if direction.length_squared() <= 0.001:
+		direction = Vector2.RIGHT
+	else:
+		direction = direction.normalized()
+	weapon_line.points = PackedVector2Array([
+		player.position + direction * 10.0,
+		player.position + direction * 34.0
+	])
 
-	_update_level_tutorial()
+func _update_crosshair_hot() -> void:
+	if is_instance_valid(crosshair):
+		crosshair.set_hot(_enemy_under_crosshair() != null)
 
-func _spawn_wave_hazards(wave: Dictionary) -> void:
-	var hazard_configs: Array = wave.get("hazards", [])
-	for raw_hazard in hazard_configs:
-		if typeof(raw_hazard) != TYPE_DICTIONARY:
-			continue
-		var hazard_config: Dictionary = raw_hazard
-		_spawn_laser(hazard_config)
-
-func _spawn_precision_target(config: Dictionary) -> void:
-	var target := TargetScene.instantiate() as CursorHellScoreTarget
-	if target == null:
+func _fire_weapon() -> void:
+	if state != "playing" or fire_cooldown > 0.0:
 		return
 
-	target.set_meta("suppress_score_target_tutorial", true)
-	target.set_meta("precision_kind", str(config.get("kind", "normal")))
-	target.set_meta("precision_wave", wave_index)
-	precision_objects.add_child(target)
-	var target_position: Vector2 = config.get("position", Vector2(800.0, 450.0))
-	target.position = target_position
-	target.hit_radius = float(config.get("radius", 30.0))
-	var lifetime := float(config.get("lifetime", 1.0))
-	var target_score := int(config.get("score", 1000))
-	target.configure_chain(1, 1, lifetime, target.hit_radius, target_score)
-	target.expired.connect(_on_target_expired)
-	if is_instance_valid(target.purge_ring):
-		target.purge_ring.visible = false
+	fire_cooldown = FIRE_COOLDOWN
+	shots += 1
+	_show_shot_trace()
+	shake = maxf(shake, 0.8)
 
-	var visual_scale := clampf(target.hit_radius / 30.0, 0.38, 1.30)
-	target.scale = Vector2.ONE * visual_scale
-	if is_instance_valid(target.stage_label):
-		target.stage_label.text = str(config.get("label", "HIT"))
-		target.stage_label.scale = Vector2.ONE / visual_scale
-	_style_target(target, str(config.get("kind", "normal")))
-	active_targets.append(target)
-
-func _style_target(target: CursorHellScoreTarget, kind: String) -> void:
-	if not is_instance_valid(target):
+	var enemy = _enemy_under_crosshair()
+	if enemy == null:
+		score = maxf(0.0, score - 75.0)
+		_set_feedback("MISS", 0.34)
+		_update_ui()
 		return
-	var ring_color := Color(0.20, 0.92, 1.0, 0.96)
-	var core_color := Color(0.74, 1.0, 1.0, 0.98)
-	if kind == "precision":
-		ring_color = Color(0.72, 0.82, 1.0, 0.98)
-		core_color = Color(0.96, 0.98, 1.0, 1.0)
-	elif kind == "threat":
-		ring_color = Color(1.0, 0.36, 0.10, 0.98)
-		core_color = Color(1.0, 0.82, 0.30, 1.0)
-
-	target.outer_ring.default_color = ring_color
-	target.core.color = core_color
-	target.cross_h.default_color = core_color
-	target.cross_v.default_color = core_color
-	if is_instance_valid(target.stage_label):
-		target.stage_label.add_theme_color_override("font_color", core_color)
-
-func _hit_target(target: CursorHellScoreTarget) -> void:
-	if not is_instance_valid(target):
-		return
-	var reaction := maxf(target.age, 0.0)
-	var distance := target.global_position.distance_to(player.global_position)
-	var perfect := distance <= target.hit_radius * 0.32
-	var lifetime := maxf(target.lifetime, 0.001)
-	var speed_ratio := clampf(1.0 - reaction / lifetime, 0.0, 1.0)
-	var bonus := target.score_bonus + int(round(speed_ratio * 500.0))
-	if perfect:
-		bonus += 350
-		perfects += 1
 
 	hits += 1
-	reaction_samples.append(reaction)
-	score += bonus
+	kills += 1
+	var reaction := float(enemy.active_age)
+	var quick_bonus := maxi(0, int(round(360.0 - reaction * 180.0)))
+	score += enemy.score_value + quick_bonus
 	score_punch = 1.0
-	active_targets.erase(target)
-	_set_feedback("%s  %dms" % ["PERFECT" if perfect else "HIT", int(round(reaction * 1000.0))], 0.62)
-	target.consume()
+	_set_feedback("KILL  %dms" % int(round(reaction * 1000.0)), 0.48)
+	active_enemies.erase(enemy)
+	enemy.kill()
+	enemy.queue_free()
 
-	if active_targets.is_empty():
-		_finish_wave()
+	if active_enemies.is_empty():
+		_on_wave_cleared()
 
-func _on_target_expired(target: CursorHellScoreTarget) -> void:
-	active_targets.erase(target)
-	if state != "playing":
+	_update_crosshair_hot()
+	_update_ui()
+
+func _show_shot_trace() -> void:
+	if not is_instance_valid(shot_line) or not is_instance_valid(crosshair):
 		return
-
-	target_misses += 1
-	score = maxf(0.0, score - 300.0)
-	var kind := str(target.get_meta("precision_kind", "normal"))
-	if kind == "threat":
-		_set_feedback("LATE  //  THREAT FIRED", 0.80)
-		_fire_reaction_laser()
+	var direction := crosshair.position - player.position
+	if direction.length_squared() <= 0.001:
+		direction = Vector2.RIGHT
 	else:
-		_set_feedback("LATE", 0.62)
+		direction = direction.normalized()
+	shot_line.points = PackedVector2Array([
+		player.position + direction * 10.0,
+		crosshair.position
+	])
+	shot_line.modulate.a = 1.0
+	shot_line.visible = true
+	shot_flash_time = 0.07
 
-	if active_targets.is_empty():
-		_finish_wave()
+func _enemy_under_crosshair():
+	if not is_instance_valid(crosshair):
+		return null
+	var best_enemy = null
+	var best_distance := INF
+	for enemy in active_enemies:
+		if not is_instance_valid(enemy) or not enemy.contains_point(crosshair.position):
+			continue
+		var distance := enemy.position.distance_to(crosshair.position)
+		if distance < best_distance:
+			best_distance = distance
+			best_enemy = enemy
+	return best_enemy
 
-func _finish_wave() -> void:
+func _begin_wave(index: int) -> void:
+	if index < 0 or index >= WAVES.size() or state != "playing":
+		return
+
+	wave_index = index
+	wave_delay = -1.0
+	var wave: Dictionary = WAVES[index]
+	var enemy_configs: Array = wave.get("enemies", [])
+	for raw_config in enemy_configs:
+		if typeof(raw_config) != TYPE_DICTIONARY:
+			continue
+		var config: Dictionary = raw_config
+		var enemy = EnemyScript.new()
+		enemy.position = config.get("position", Vector2(800.0, 300.0))
+		precision_objects.add_child(enemy)
+		enemy.configure(config)
+		enemy.fire_requested.connect(_on_enemy_fire)
+		active_enemies.append(enemy)
+
+	_set_feedback("WAVE %d/%d" % [wave_index + 1, WAVES.size()], 0.62)
+	_update_ui()
+
+func _on_wave_cleared() -> void:
 	if wave_index >= WAVES.size() - 1:
-		_finish_precision_test()
+		_finish_microcombat_room()
 		return
 
-	var completed_wave: Dictionary = WAVES[wave_index]
-	wave_index += 1
-	pending_wave_delay = float(completed_wave.get("gap", 0.12))
+	var wave: Dictionary = WAVES[wave_index]
+	wave_delay = float(wave.get("gap", 0.30))
+	_set_feedback("CLEAR", minf(wave_delay, 0.28))
 
-func _spawn_laser(config: Dictionary) -> void:
-	var laser := LaserScene.instantiate() as CursorHellRouteLaser
-	if laser == null:
+func _on_enemy_fire(enemy: Node2D, locked_target: Vector2, pattern: String) -> void:
+	if state != "playing" or not is_instance_valid(enemy):
 		return
-	precision_objects.add_child(laser)
-	laser.configure(
-		str(config.get("orientation", "vertical")),
-		float(config.get("coordinate", 800.0)),
-		float(config.get("charge", 0.45)),
-		float(config.get("lethal", 1.35)),
-		float(config.get("width", 20.0))
-	)
-	if config.has("sweep_from") and config.has("sweep_to"):
-		laser.configure_sweep(float(config["sweep_from"]), float(config["sweep_to"]))
-	active_lasers.append(laser)
-	laser.prime()
 
-func _fire_reaction_laser() -> void:
-	if not is_instance_valid(player):
-		return
-	var horizontal := wave_index % 2 == 0
-	var config := {
-		"orientation": "horizontal" if horizontal else "vertical",
-		"coordinate": player.position.y if horizontal else player.position.x,
-		"charge": 0.18,
-		"lethal": 1.05,
-		"width": 18.0
-	}
-	_spawn_laser(config)
+	enemy_shots += 1
+	var base_direction := locked_target - enemy.position
+	if base_direction.length_squared() <= 0.001:
+		base_direction = Vector2.DOWN
+	else:
+		base_direction = base_direction.normalized()
 
-func _finish_precision_test() -> void:
-	if state != "playing":
-		return
+	match pattern:
+		"burst":
+			for angle_degrees in [-13.0, 0.0, 13.0]:
+				_spawn_micro_bullet(enemy.position, base_direction.rotated(deg_to_rad(angle_degrees)), 345.0, 6.0, "burst")
+		"sniper":
+			_spawn_micro_bullet(enemy.position, base_direction, 620.0, 5.0, "sniper")
+		_:
+			_spawn_micro_bullet(enemy.position, base_direction, 430.0, 7.5, "gunner")
+
+func _spawn_micro_bullet(origin: Vector2, direction: Vector2, speed: float, radius: float, style: String) -> void:
+	var bullet = BulletScript.new()
+	bullet.configure(origin, direction, speed, radius, style)
+	projectile_layer.add_child(bullet)
+	active_bullets.append(bullet)
+
+func _advance_bullets(delta: float, old_player_position: Vector2) -> void:
+	for index in range(active_bullets.size() - 1, -1, -1):
+		var bullet = active_bullets[index]
+		if not is_instance_valid(bullet):
+			active_bullets.remove_at(index)
+			continue
+
+		bullet.advance(delta)
+		if bullet.is_outside():
+			active_bullets.remove_at(index)
+			bullet.queue_free()
+			continue
+
+		var hit_distance := BODY_RADIUS + float(bullet.radius)
+		var bullet_closest := _closest_point_on_segment(player.position, bullet.previous_position, bullet.position)
+		var body_closest := _closest_point_on_segment(bullet.position, old_player_position, player.position)
+		if bullet_closest.distance_to(player.position) <= hit_distance or body_closest.distance_to(bullet.position) <= hit_distance:
+			_begin_death("Enemy fire")
+			return
+
+func _check_enemy_contact() -> void:
+	for enemy in active_enemies:
+		if not is_instance_valid(enemy) or not enemy.is_active():
+			continue
+		if player.position.distance_to(enemy.position) <= BODY_RADIUS + float(enemy.hit_radius) * 0.62:
+			_begin_death("Enemy contact")
+			return
+
+func _finish_microcombat_room() -> void:
 	final_time = elapsed
-	final_grade = _grade_run()
-	var time_bonus := maxi(0, int(round(18000.0 - final_time * 650.0)))
-	score += time_bonus
+	final_accuracy = _accuracy()
+	final_grade = _grade_for_result(final_time, final_accuracy)
+	var speed_bonus := maxi(0, int(round(6500.0 - final_time * 260.0)))
+	var accuracy_bonus := int(round(final_accuracy * 2000.0))
+	score += speed_bonus + accuracy_bonus
 	_win()
+
+func _accuracy() -> float:
+	if shots <= 0:
+		return 0.0
+	return clampf(float(hits) / float(shots), 0.0, 1.0)
+
+func _grade_for_result(run_time: float, accuracy: float) -> String:
+	if run_time <= 11.5 and accuracy >= 0.90:
+		return "S"
+	if run_time <= 16.0 and accuracy >= 0.78:
+		return "A"
+	if run_time <= 22.0 and accuracy >= 0.65:
+		return "B"
+	if run_time <= 30.0:
+		return "C"
+	return "D"
 
 func _set_feedback(text: String, duration: float) -> void:
 	feedback_text = text
@@ -381,28 +457,32 @@ func _set_feedback(text: String, duration: float) -> void:
 func _update_ui() -> void:
 	if not is_instance_valid(timer_label):
 		return
-	var whole := int(floor(elapsed))
-	var hundredths := int(floor((elapsed - float(whole)) * 100.0))
-	timer_label.text = "%d:%02d.%02d" % [int(whole / 60), whole % 60, hundredths]
-	score_label.text = _format_score(int(score))
-	if feedback_time > 0.0:
-		combo_label.text = feedback_text
+	timer_label.text = _format_precise_time(elapsed)
+	score_label.text = "%d/%d" % [kills, TOTAL_ENEMIES]
+	var accuracy_text := "ACC --"
+	if shots > 0:
+		accuracy_text = "ACC %d%%" % int(round(_accuracy() * 100.0))
+	if feedback_time > 0.0 and not feedback_text.is_empty():
+		combo_label.text = "%s  //  %s" % [accuracy_text, feedback_text]
 	else:
-		combo_label.text = "HIT %02d  //  TARGET MISS %02d  //  SHOT MISS %02d" % [hits, target_misses, shot_misses]
+		combo_label.text = "%s  //  ENEMY SHOTS %d" % [accuracy_text, enemy_shots]
 
 func _update_level_tutorial() -> void:
 	if not is_instance_valid(tutorial_label):
 		return
 	if state == "playing":
-		tutorial_label.text = "PRECISION TEST  //  WAVE %02d/%02d  //  ACQUIRE  FLICK  CLICK" % [wave_index + 1, WAVES.size()]
+		tutorial_label.text = "WASD MOVE  //  MOUSE AIM  //  LMB FIRE  //  ONE HIT = DEAD"
 	else:
-		tutorial_label.text = "REACTION + PRECISION"
+		tutorial_label.text = "MOVE THE BODY. AIM INDEPENDENTLY."
 
 func _get_level_number() -> int:
 	return 0
 
 func _get_round_time() -> float:
-	return 120.0
+	return 300.0
+
+func _get_completion_bonus() -> float:
+	return 0.0
 
 func _get_phase() -> int:
 	return 0
@@ -410,86 +490,48 @@ func _get_phase() -> int:
 func _schedule_level_projectile(_current_phase: int) -> void:
 	pass
 
+func _graze_enabled_for_phase(_current_phase: int) -> bool:
+	return false
+
 func _get_intro_title() -> String:
-	return "PRECISION PROTOTYPE"
+	return "MICROCOMBAT PROTOTYPE"
 
 func _get_intro_subtitle() -> String:
-	return "REACTION // FLICK // TARGET SWITCHING"
+	return "DECOUPLED AIM + MOVEMENT TEST"
 
 func _get_intro_body() -> String:
-	return "THIS TEST IS ABOUT MOUSE EXECUTION, NOT SURVIVAL.\n\nACQUIRE THE ACTIVE TARGET, FLICK TO IT, AND CLICK.\nSMALL TARGETS TEST PRECISION. ORANGE THREATS PUNISH SLOW REACTIONS.\n\nMISSED THREATS FIRE BACK. LASERS FORCE YOU TO REACQUIRE WHILE MOVING.\n\nCLEAR THE SEQUENCE AS QUICKLY AND CLEANLY AS POSSIBLE."
+	return "WASD MOVES YOUR BODY.\nMOUSE AIMS INDEPENDENTLY. LEFT CLICK FIRES.\n\nENEMIES TELEGRAPH SHOTS BEFORE FIRING.\nORANGE = GUNNER  //  MAGENTA = BURST  //  GOLD = SNIPER\n\nONE HIT KILLS YOU. ONE HIT KILLS THEM.\nCLEAR FOUR SHORT WAVES AS FAST AND CLEAN AS POSSIBLE.\n\nR = FAST RESTART"
 
 func _get_countdown_tutorial_text() -> String:
-	return "GET READY // FIND IT AND CLICK"
+	return "WASD + MOUSE // SURVIVE AND SHOOT"
 
 func _get_countdown_subtitle() -> String:
-	return "PRECISION TEST"
+	return "MICROCOMBAT TEST"
+
+func _get_pause_subtitle() -> String:
+	return "WASD MOVE // MOUSE AIM"
 
 func _get_death_title() -> String:
-	return "EXECUTION FAILED"
+	return "RUN LOST"
 
 func _get_death_subtitle() -> String:
-	return "PRECISION TEST // IMPACT"
+	return "ONE HIT // RESET"
 
 func _get_death_body(reason: String, run_time: float, _final_score: int, _best_score: int) -> String:
-	return "%s\n\nTIME          %s\nHITS          %d\nTARGET MISSES %d\nSHOT MISSES   %d\nPERFECTS      %d\nAVG REACTION  %dms\n\nCLICK OR PRESS R TO RETRY" % [
-		reason.to_upper(),
-		_format_precise_time(run_time),
-		hits,
-		target_misses,
-		shot_misses,
-		perfects,
-		_average_reaction_ms()
-	]
+	var accuracy_value := int(round(_accuracy() * 100.0)) if shots > 0 else 0
+	return "%s\n\nTIME      %s\nKILLS     %d/%d\nACCURACY  %d%%\n\nPRESS R OR CLICK TO RETRY" % [reason.to_upper(), _format_precise_time(run_time), kills, TOTAL_ENEMIES, accuracy_value]
 
 func _get_win_title() -> String:
-	return "TEST COMPLETE"
+	return "ROOM CLEAR"
 
 func _get_win_subtitle() -> String:
 	return "GRADE %s" % final_grade
 
 func _get_win_tutorial_text() -> String:
-	return "PRECISION TEST COMPLETE"
+	return "MICROCOMBAT COMPLETE"
 
 func _get_win_body(final_score: int, _best_score: int) -> String:
-	return "TIME          %s\nHITS          %d / %d\nTARGET MISSES %d\nSHOT MISSES   %d\nPERFECTS      %d\nAVG REACTION  %dms\nSCORE         %s\nGRADE         %s\n\nCLICK OR PRESS R TO PLAY AGAIN" % [
-		_format_precise_time(final_time),
-		hits,
-		_total_target_count(),
-		target_misses,
-		shot_misses,
-		perfects,
-		_average_reaction_ms(),
-		_format_score(final_score),
-		final_grade
-	]
-
-func _grade_run() -> String:
-	if target_misses == 0 and shot_misses == 0 and final_time <= 11.5:
-		return "S"
-	if target_misses <= 1 and shot_misses <= 2 and final_time <= 15.0:
-		return "A"
-	if target_misses <= 2 and shot_misses <= 4 and final_time <= 20.0:
-		return "B"
-	if hits >= int(ceil(float(_total_target_count()) * 0.70)):
-		return "C"
-	return "D"
-
-func _average_reaction_ms() -> int:
-	if reaction_samples.is_empty():
-		return 0
-	var total := 0.0
-	for value in reaction_samples:
-		total += value
-	return int(round((total / float(reaction_samples.size())) * 1000.0))
-
-func _total_target_count() -> int:
-	var total := 0
-	for raw_wave in WAVES:
-		var wave: Dictionary = raw_wave
-		var targets: Array = wave.get("targets", [])
-		total += targets.size()
-	return total
+	return "TIME       %s\nACCURACY   %d%%\nENEMY FIRE %d\nGRADE      %s\nSCORE      %s\n\nCLICK OR PRESS R TO RUN IT AGAIN" % [_format_precise_time(final_time), int(round(final_accuracy * 100.0)), enemy_shots, final_grade, _format_score(final_score)]
 
 func _format_precise_time(value: float) -> String:
 	var whole := maxi(0, int(floor(value)))
