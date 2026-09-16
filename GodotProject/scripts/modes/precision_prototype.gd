@@ -263,7 +263,7 @@ func _update_crosshair_from_mouse() -> void:
 func _update_aim_line() -> void:
 	if not is_instance_valid(crosshair) or not is_instance_valid(weapon_line) or not is_instance_valid(player):
 		return
-	var direction := crosshair.position - player.position
+	var direction: Vector2 = crosshair.position - player.position
 	if direction.length_squared() <= 0.001:
 		direction = Vector2.RIGHT
 	else:
@@ -313,7 +313,7 @@ func _fire_weapon() -> void:
 func _show_shot_trace() -> void:
 	if not is_instance_valid(shot_line) or not is_instance_valid(crosshair):
 		return
-	var direction := crosshair.position - player.position
+	var direction: Vector2 = crosshair.position - player.position
 	if direction.length_squared() <= 0.001:
 		direction = Vector2.RIGHT
 	else:
@@ -334,7 +334,7 @@ func _enemy_under_crosshair():
 	for enemy in active_enemies:
 		if not is_instance_valid(enemy) or not enemy.contains_point(crosshair.position):
 			continue
-		var distance := enemy.position.distance_to(crosshair.position)
+		var distance: float = enemy.position.distance_to(crosshair.position)
 		if distance < best_distance:
 			best_distance = distance
 			best_enemy = enemy
