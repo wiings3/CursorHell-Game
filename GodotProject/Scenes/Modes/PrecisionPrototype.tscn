@@ -21,6 +21,8 @@ unique_name_in_owner = true
 
 [node name="PrecisionObjects" type="Node2D" parent="GameplayMachineShell/ScreenClip/ArenaContent"]
 unique_name_in_owner = true
+metadata/auto_player_gap = true
+metadata/laser_gap_size = 180.0
 
 [node name="Player" parent="GameplayMachineShell/ScreenClip/ArenaContent" instance=ExtResource("4_player")]
 unique_name_in_owner = true
