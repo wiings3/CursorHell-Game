@@ -236,7 +236,8 @@ func _spawn_wave_hazards(wave: Dictionary) -> void:
 	for raw_hazard in hazard_configs:
 		if typeof(raw_hazard) != TYPE_DICTIONARY:
 			continue
-		_spawn_laser(raw_hazard as Dictionary)
+		var hazard_config: Dictionary = raw_hazard
+		_spawn_laser(hazard_config)
 
 func _spawn_precision_target(config: Dictionary) -> void:
 	var target := TargetScene.instantiate() as CursorHellScoreTarget
@@ -247,7 +248,8 @@ func _spawn_precision_target(config: Dictionary) -> void:
 	target.set_meta("precision_kind", str(config.get("kind", "normal")))
 	target.set_meta("precision_wave", wave_index)
 	precision_objects.add_child(target)
-	target.position = config.get("position", Vector2(800.0, 450.0)) as Vector2
+	var target_position: Vector2 = config.get("position", Vector2(800.0, 450.0))
+	target.position = target_position
 	target.hit_radius = float(config.get("radius", 30.0))
 	var lifetime := float(config.get("lifetime", 1.0))
 	var target_score := int(config.get("score", 1000))
