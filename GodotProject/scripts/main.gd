@@ -5,6 +5,7 @@ const LevelCatalog = preload("res://scripts/level_catalog.gd")
 const PerformanceRank = preload("res://scripts/performance_rank.gd")
 const EndlessScene := preload("res://Scenes/Modes/EndlessMode.tscn")
 const RoutePrototypeScene := preload("res://Scenes/Modes/RoutePrototype.tscn")
+const PrecisionPrototypeScene := preload("res://Scenes/Modes/PrecisionPrototype.tscn")
 
 const FACTORY_RESET_PATHS: Array[String] = [
 	"user://cursor_hell_save.json",
@@ -50,6 +51,7 @@ func _ready() -> void:
 	main_menu.continue_requested.connect(_on_main_menu_continue_requested)
 	main_menu.start_level_one_requested.connect(_on_main_menu_start_requested)
 	main_menu.prototype_requested.connect(_on_main_menu_prototype_requested)
+	main_menu.precision_prototype_requested.connect(_on_main_menu_precision_prototype_requested)
 	main_menu.level_select_requested.connect(_on_main_menu_level_select_requested)
 	main_menu.endless_requested.connect(_on_main_menu_endless_requested)
 	main_menu.leaderboard_requested.connect(_on_main_menu_leaderboard_requested)
@@ -182,11 +184,32 @@ func load_route_prototype() -> void:
 	current_level._hide_message_panel()
 	transition_overlay.show_intro(0, current_level.get_level_name(), current_level._get_intro_subtitle(), current_level._get_intro_body())
 
+func load_precision_prototype() -> void:
+	_prepare_level_change()
+	current_mode = "precision_prototype"
+	current_level_index = -1
+	current_level_records_progress = false
+	var level_instance := PrecisionPrototypeScene.instantiate()
+	current_level = level_instance as CursorHellBaseLevel
+	if current_level == null:
+		push_error("Cursor Hell: PrecisionPrototype.tscn must extend CursorHellBaseLevel.")
+		return
+
+	current_level.has_next_level = false
+	level_container.add_child(level_instance)
+	transition_overlay.bind_machine_shell(current_level.machine_shell)
+	pause_menu.bind_machine_shell(current_level.machine_shell)
+	current_level.set_process_input(false)
+	current_level._hide_message_panel()
+	transition_overlay.show_intro(0, current_level.get_level_name(), current_level._get_intro_subtitle(), current_level._get_intro_body())
+
 func reload_current_level() -> void:
 	if current_mode == "endless":
 		load_endless_mode()
 	elif current_mode == "route_prototype":
 		load_route_prototype()
+	elif current_mode == "precision_prototype":
+		load_precision_prototype()
 	elif current_level_index >= 0:
 		load_level(current_level_index, current_level_records_progress)
 
@@ -320,6 +343,9 @@ func _on_main_menu_start_requested() -> void:
 func _on_main_menu_prototype_requested() -> void:
 	load_route_prototype()
 
+func _on_main_menu_precision_prototype_requested() -> void:
+	load_precision_prototype()
+
 func _on_main_menu_endless_requested() -> void:
 	load_endless_mode()
 
@@ -396,6 +422,8 @@ func _open_pause_menu() -> void:
 		pause_menu.show_for_mode("ENDLESS MODE")
 	elif current_mode == "route_prototype":
 		pause_menu.show_for_mode("ROUTE PROTOTYPE")
+	elif current_mode == "precision_prototype":
+		pause_menu.show_for_mode("PRECISION PROTOTYPE")
 	else:
 		pause_menu.show_for_level(current_level_index + 1)
 
@@ -434,6 +462,8 @@ func _on_settings_back_requested() -> void:
 			pause_menu.show_for_mode("ENDLESS MODE")
 		elif current_mode == "route_prototype":
 			pause_menu.show_for_mode("ROUTE PROTOTYPE")
+		elif current_mode == "precision_prototype":
+			pause_menu.show_for_mode("PRECISION PROTOTYPE")
 		else:
 			pause_menu.show_for_level(current_level_index + 1)
 		return
@@ -497,6 +527,10 @@ func _on_debug_command_submitted(command_line: String) -> void:
 			load_route_prototype()
 			debug_console.write_line("Loaded Route Prototype.")
 			debug_console.close_console()
+		"precision", "aim":
+			load_precision_prototype()
+			debug_console.write_line("Loaded Precision Prototype.")
+			debug_console.close_console()
 		"restart":
 			if not is_instance_valid(current_level):
 				debug_console.write_line("No level is currently loaded.")
@@ -509,6 +543,8 @@ func _on_debug_command_submitted(command_line: String) -> void:
 				debug_console.write_line("Current mode: endless")
 			elif current_mode == "route_prototype":
 				debug_console.write_line("Current mode: route prototype")
+			elif current_mode == "precision_prototype":
+				debug_console.write_line("Current mode: precision prototype")
 			elif current_level_index >= 0:
 				debug_console.write_line("Current level: level%d" % (current_level_index + 1))
 			else:
@@ -567,6 +603,7 @@ func _print_debug_help() -> void:
 	debug_console.write_line("  level2 / level 2   Jump directly to a registered level")
 	debug_console.write_line("  endless            Jump directly to Endless Mode")
 	debug_console.write_line("  route              Jump directly to Route Prototype")
+	debug_console.write_line("  precision          Jump directly to Precision Prototype")
 	debug_console.write_line("  levels             List registered levels")
 	debug_console.write_line("  current            Show the current level/mode")
 	debug_console.write_line("  restart            Reload the current level/mode")
