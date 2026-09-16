@@ -6,6 +6,7 @@ const CrashTrace = preload("res://scripts/debug/crash_trace.gd")
 signal continue_requested
 signal start_level_one_requested
 signal prototype_requested
+signal precision_prototype_requested
 signal level_select_requested
 signal endless_requested
 signal leaderboard_requested
@@ -17,6 +18,7 @@ signal quit_requested
 @onready var continue_button: Button = %ContinueButton
 @onready var start_button: Button = %StartButton
 @onready var prototype_button: Button = %PrototypeButton
+@onready var precision_prototype_button: Button = %PrecisionPrototypeButton
 @onready var level_select_button: Button = %LevelSelectButton
 @onready var endless_button: Button = %EndlessButton
 @onready var leaderboard_button: Button = %LeaderboardButton
@@ -32,6 +34,7 @@ func _ready() -> void:
 	continue_button.pressed.connect(_trace_continue_request)
 	start_button.pressed.connect(_trace_campaign_request)
 	prototype_button.pressed.connect(_trace_prototype_request)
+	precision_prototype_button.pressed.connect(_trace_precision_prototype_request)
 	level_select_button.pressed.connect(func() -> void: level_select_requested.emit())
 	endless_button.pressed.connect(_trace_endless_request)
 	leaderboard_button.pressed.connect(func() -> void: leaderboard_requested.emit())
@@ -55,6 +58,12 @@ func _trace_prototype_request() -> void:
 	CrashTrace.write("MAIN MENU: ROUTE PROTOTYPE pressed; emitting prototype_requested")
 	prototype_requested.emit()
 	CrashTrace.write("MAIN MENU: prototype_requested returned")
+
+func _trace_precision_prototype_request() -> void:
+	CrashTrace.reset()
+	CrashTrace.write("MAIN MENU: PRECISION PROTOTYPE pressed; emitting precision_prototype_requested")
+	precision_prototype_requested.emit()
+	CrashTrace.write("MAIN MENU: precision_prototype_requested returned")
 
 func _trace_endless_request() -> void:
 	CrashTrace.reset()
