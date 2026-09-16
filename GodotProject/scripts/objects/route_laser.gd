@@ -49,6 +49,7 @@ func configure_sweep(new_from: float, new_to: float) -> void:
 	sweep_from = new_from
 	sweep_to = new_to
 	coordinate = sweep_from
+	_align_auto_gap_with_sibling()
 	if is_node_ready():
 		_apply_geometry()
 
@@ -72,6 +73,7 @@ func prime() -> void:
 	_refresh_auto_gap()
 	if sweep_enabled:
 		coordinate = sweep_from
+		_align_auto_gap_with_sibling()
 		_apply_geometry()
 	_apply_visuals()
 
@@ -81,6 +83,7 @@ func reset_laser() -> void:
 	_refresh_auto_gap()
 	if sweep_enabled:
 		coordinate = sweep_from
+		_align_auto_gap_with_sibling()
 		_apply_geometry()
 	_apply_visuals()
 
@@ -105,6 +108,7 @@ func _process(delta: float) -> void:
 		if sweep_enabled:
 			var sweep_progress := clampf(state_time / maxf(lethal_time, 0.001), 0.0, 1.0)
 			coordinate = lerpf(sweep_from, sweep_to, sweep_progress)
+			_align_auto_gap_with_sibling()
 			_apply_geometry()
 		var pulse := 0.72 + 0.28 * absf(sin(state_time * 28.0))
 		glow.modulate.a = pulse
@@ -168,6 +172,31 @@ func _refresh_auto_gap() -> void:
 	gap_size = maxf(float(get_parent().get_meta("laser_gap_size", 170.0)), beam_width + 32.0)
 	var desired_center := player_node.position.y if orientation == "vertical" else player_node.position.x
 	gap_center = _clamp_gap_center(desired_center)
+	_align_auto_gap_with_sibling()
+
+func _align_auto_gap_with_sibling() -> void:
+	if not gap_enabled or get_parent() == null or not bool(get_parent().get_meta("auto_player_gap", false)):
+		return
+	for sibling in get_parent().get_children():
+		var other := sibling as CursorHellRouteLaser
+		if other == null or other == self or not other.gap_enabled:
+			continue
+		if other.orientation == orientation or other.state == "spent" or other.is_queued_for_deletion():
+			continue
+
+		# Perpendicular beams must share an opening at their intersection. Two
+		# unrelated gaps can otherwise seal an entire diagonal quadrant even though
+		# each beam is technically passable on its own.
+		if orientation == "vertical":
+			gap_center = _clamp_gap_center(other.coordinate)
+			other.gap_center = other._clamp_gap_center(coordinate)
+		else:
+			gap_center = _clamp_gap_center(other.coordinate)
+			other.gap_center = other._clamp_gap_center(coordinate)
+
+		if other.is_node_ready():
+			other._apply_geometry()
+		return
 
 func _clamp_gap_center(value: float) -> float:
 	var half_gap := gap_size * 0.5
