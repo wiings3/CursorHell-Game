@@ -3,8 +3,6 @@ class_name CursorHellAimSensitivity
 
 const SETTINGS_PATH := "user://cursor_hell_settings.cfg"
 const CS2_YAW := 0.022
-const REFERENCE_HORIZONTAL_FOV := 106.260205
-const REFERENCE_ARENA_WIDTH := 820.0
 const DEFAULT_PRESET := "CS2"
 const DEFAULT_CS2_EQUIVALENT := 1.0
 const DEFAULT_DPI := 800
@@ -14,8 +12,8 @@ const MIN_DPI := 100
 const MAX_DPI := 32000
 
 # Yaw is degrees of rotation per mouse count at sensitivity 1.0. The presets
-# intentionally model hip-fire/look sensitivity only; scoped/ADS multipliers are
-# separate systems in those games and are not part of this conversion.
+# model hip-fire/look sensitivity only. Conversions preserve the same canonical
+# CS2-equivalent sensitivity even though Cursor Hell is a 2D aiming game.
 const PRESETS := [
 	{"id": "CS2", "label": "COUNTER-STRIKE 2", "yaw": 0.022, "slider_min": 0.01, "slider_max": 10.0},
 	{"id": "VALORANT", "label": "VALORANT", "yaw": 0.07, "slider_min": 0.003, "slider_max": 3.143},
@@ -55,11 +53,12 @@ static func from_cs2_equivalent(preset_id: String, cs2_equivalent: float) -> flo
 	return clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT) * CS2_YAW / yaw
 
 static func logical_motion_gain(cs2_equivalent: float) -> float:
-	# The 2D arena cannot literally reproduce a 3D camera. We map the cabinet's
-	# full logical width to a 106.26-degree reference view so the physical mouse
-	# distance represented by a flick follows the same yaw math as the FPS preset.
-	var pixels_per_degree: float = REFERENCE_ARENA_WIDTH / REFERENCE_HORIZONTAL_FOV
-	return CS2_YAW * clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT) * pixels_per_degree
+	# There is no exact 3D-camera-to-2D-crosshair conversion. The previous FOV
+	# projection made low FPS sensitivities unusably slow. Treat the canonical
+	# CS2-equivalent number as the 2D mouse-motion gain instead. This preserves
+	# the relative scale between supported games while keeping familiar low-sens
+	# values practical for a free-moving 2D crosshair.
+	return clampf(cs2_equivalent, MIN_CS2_EQUIVALENT, MAX_CS2_EQUIVALENT)
 
 static func cm_per_360(cs2_equivalent: float, dpi: int) -> float:
 	var safe_dpi: int = clampi(dpi, MIN_DPI, MAX_DPI)
