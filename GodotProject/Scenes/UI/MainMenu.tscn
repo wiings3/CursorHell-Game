@@ -127,15 +127,24 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 focus_neighbor_top = NodePath("../StartButton")
-focus_neighbor_bottom = NodePath("../LevelSelectButton")
+focus_neighbor_bottom = NodePath("../PrecisionPrototypeButton")
 text = "ROUTE PROTOTYPE"
+alignment = 0
+
+[node name="PrecisionPrototypeButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+focus_neighbor_top = NodePath("../PrototypeButton")
+focus_neighbor_bottom = NodePath("../LevelSelectButton")
+text = "PRECISION PROTOTYPE"
 alignment = 0
 
 [node name="LevelSelectButton" type="Button" parent="Root/PanelGroup/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-focus_neighbor_top = NodePath("../PrototypeButton")
+focus_neighbor_top = NodePath("../PrecisionPrototypeButton")
 focus_neighbor_bottom = NodePath("../EndlessButton")
 text = "LEVEL SELECT"
 alignment = 0
