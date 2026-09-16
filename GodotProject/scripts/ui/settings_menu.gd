@@ -143,7 +143,7 @@ func _sync_aim_controls() -> void:
 func _refresh_aim_readout() -> void:
 	var cm360 := AimSensitivity.cm_per_360(aim_cs2_equivalent, aim_dpi)
 	var edpi := AimSensitivity.cs2_edpi(aim_cs2_equivalent, aim_dpi)
-	sensitivity_readout.text = "PHYSICAL MATCH  //  %.2f CM/360  //  CS2 EDPI %.0f" % [cm360, edpi]
+	sensitivity_readout.text = "FPS REFERENCE  //  %.2f CM/360  //  CS2 EDPI %.0f" % [cm360, edpi]
 
 func _format_sensitivity(value: float) -> String:
 	var text := String.num(value, 3)
